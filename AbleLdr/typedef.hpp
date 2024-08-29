@@ -6,6 +6,8 @@
 #define GDI_HANDLE_BUFFER_SIZE GDI_HANDLE_BUFFER_SIZE32
 #define RTL_MAX_DRIVE_LETTERS 32
 
+#pragma region [peb typedef]
+
 typedef struct _CLIENT_ID
 {
 	PVOID UniqueProcess;
@@ -405,6 +407,8 @@ typedef struct _OBJECT_ATTRIBUTES {
 	PVOID SecurityQualityOfService;
 } OBJECT_ATTRIBUTES;
 typedef OBJECT_ATTRIBUTES* POBJECT_ATTRIBUTES;
+
+#pragma endregion
 
 // NTSTATUS
 

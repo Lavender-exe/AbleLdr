@@ -1,10 +1,12 @@
 #ifndef ABLELDR_MEMORY_HPP
 #define ABLELDR_MEMORY_HPP
 #include <Windows.h>
+#include "typedef.hpp"
+#include "malapi.hpp"
 
 namespace memory {
-	HMODULE _GetModuleHandle(_In_ LPCWSTR ModuleName);
-	FARPROC _GetProcAddress(_In_ HMODULE ModuleHandle, _In_ LPCSTR FunctionName);
+	HMODULE GetModuleHandleC(_In_ ULONG ModuleHash);
+	FARPROC GetProcAddressC(_In_ HMODULE ModuleHandle, _In_ ULONG FunctionHash);
 } // End of memory namespace
 
 #endif

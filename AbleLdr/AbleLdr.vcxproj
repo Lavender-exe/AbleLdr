@@ -156,6 +156,7 @@
   <ItemGroup>
     <ClCompile Include="execute.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="malapi.cpp" />
     <ClCompile Include="memory.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
