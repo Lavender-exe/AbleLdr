@@ -792,21 +792,95 @@ typedef struct _SYSTEM_PROCESS_INFORMATION
 
 // NTSTATUS
 
-typedef NTSTATUS(NTAPI* typeNtOpenProcess)(_Out_ PHANDLE ProcessHandle, _In_ ACCESS_MASK DesiredAccess, _In_ POBJECT_ATTRIBUTES ObjectAttributes, _In_opt_ PCLIENT_ID ClientId);
-typedef NTSTATUS(NTAPI* typeNtAllocateVirtualMemory)(_In_ HANDLE ProcessHandle, _Inout_ PVOID* BaseAddress, _In_ ULONG_PTR ZeroBits, _Inout_ PSIZE_T RegionSize, _In_ ULONG AllocationType, _In_ ULONG Protect);
-typedef NTSTATUS(NTAPI* typeNtProtectVirtualMemory)(_In_ HANDLE ProcessHandle, _Inout_ PVOID* BaseAddress, _Inout_ PSIZE_T NumberOfBytesToProtect, ULONG NewAccessProtection, PULONG OldAccessPRotection);
-typedef NTSTATUS(NTAPI* typeNtWriteVirtualMemory)(_In_ HANDLE ProcessHandle, _In_ PVOID BaseAddress, _In_ PVOID Buffer, _In_ ULONG NumberOfBytesToWrite, _Out_ PULONG NumberOfBytesWritten OPTIONAL);
+typedef NTSTATUS(NTAPI* typeNtOpenProcess)(
+	_Out_ PHANDLE ProcessHandle,
+	_In_ ACCESS_MASK DesiredAccess,
+	_In_ POBJECT_ATTRIBUTES ObjectAttributes,
+	_In_opt_ PCLIENT_ID ClientId
+	);
+
+typedef NTSTATUS(NTAPI* typeNtAllocateVirtualMemory)(
+	_In_ HANDLE ProcessHandle,
+	_Inout_ PVOID* BaseAddress,
+	_In_ ULONG_PTR ZeroBits,
+	_Inout_ PSIZE_T RegionSize,
+	_In_ ULONG AllocationType,
+	_In_ ULONG Protect
+	);
+
+typedef NTSTATUS(NTAPI* typeNtProtectVirtualMemory)(
+	_In_ HANDLE ProcessHandle,
+	_Inout_ PVOID* BaseAddress,
+	_Inout_ PSIZE_T NumberOfBytesToProtect,
+	ULONG NewAccessProtection,
+	PULONG OldAccessPRotection);
+
+typedef NTSTATUS(NTAPI* typeNtWriteVirtualMemory)(
+	_In_ HANDLE ProcessHandle,
+	_In_ PVOID BaseAddress,
+	_In_ PVOID Buffer,
+	_In_ ULONG NumberOfBytesToWrite,
+	_Out_ PULONG NumberOfBytesWritten OPTIONAL
+	);
+
 typedef NTSTATUS(NTAPI* typeNtClose)(_In_ HANDLE Handle);
-typedef NTSTATUS(NTAPI* typeNtQuerySystemInformation)(_In_ SYSTEM_INFORMATION_CLASS SystemInformationClass, _Out_writes_bytes_opt_(SystemInformationLength) PVOID SystemInformation, _In_ ULONG SystemInformationLength, _Out_opt_ PULONG ReturnLength);
+
+typedef NTSTATUS(NTAPI* typeNtQuerySystemInformation)(
+	_In_ SYSTEM_INFORMATION_CLASS SystemInformationClass,
+	_Out_writes_bytes_opt_(SystemInformationLength) PVOID SystemInformation,
+	_In_ ULONG SystemInformationLength,
+	_Out_opt_ PULONG ReturnLength
+	);
 
 // KERNEL32
-typedef BOOL(WINAPI* typeWriteProcessMemory)(_In_  HANDLE  hProcess, _In_  LPVOID  lpBaseAddress, _In_  LPCVOID lpBuffer, _In_  SIZE_T  nSize, _Out_ SIZE_T* lpNumberOfBytesWritten);
+typedef BOOL(WINAPI* typeWriteProcessMemory)(
+	_In_  HANDLE  hProcess,
+	_In_  LPVOID  lpBaseAddress,
+	_In_  LPCVOID lpBuffer,
+	_In_  SIZE_T  nSize,
+	_Out_ SIZE_T* lpNumberOfBytesWritten
+	);
+
+typedef BOOL(WINAPI* typeHeapFree)(
+	_In_ HANDLE hHeap,
+	_In_ DWORD dwFlags,
+	_In_ _Frees_ptr_opt_ LPVOID lpMem
+	);
+
 typedef BOOL(WINAPI* typeCloseHandle)(_In_ HANDLE hObject);
+
 typedef HANDLE(WINAPI* typeGetLastError)();
-typedef HANDLE(WINAPI* typeOpenProcess)(_In_ DWORD dwDesiredAccess, _In_ BOOL dInheritHandle, _In_ DWORD dwProcessId);
-typedef HANDLE(WINAPI* typeCreateRemoteThread)(_In_ HANDLE hProcess, _In_ LPSECURITY_ATTRIBUTES lpThreadAttributes, _In_ SIZE_T dwStackSize, _In_ LPTHREAD_START_ROUTINE lpStartAddress, _In_  LPVOID lpParameter, _In_  DWORD dwCreationFlags, _Out_ LPDWORD lpThreadId);
+
+typedef HANDLE(WINAPI* typeOpenProcess)(
+	_In_ DWORD dwDesiredAccess,
+	_In_ BOOL dInheritHandle,
+	_In_ DWORD dwProcessId
+	);
+
+typedef HANDLE(WINAPI* typeCreateRemoteThread)(
+	_In_ HANDLE hProcess,
+	_In_ LPSECURITY_ATTRIBUTES lpThreadAttributes,
+	_In_ SIZE_T dwStackSize,
+	_In_ LPTHREAD_START_ROUTINE lpStartAddress,
+	_In_  LPVOID lpParameter,
+	_In_  DWORD dwCreationFlags,
+	_Out_ LPDWORD lpThreadId
+	);
+
 typedef HANDLE(WINAPI* typeGetProcessHeap)();
-typedef LPVOID(WINAPI* typeVirtualAllocEx)(_In_ HANDLE hProcess, _In_opt_ LPVOID lpAddress, _In_ SIZE_T dwSize, _In_ DWORD flAllocationType, _In_ DWORD flProtect);
-typedef LPVOID(WINAPI* typeHeapAlloc)(_In_ HANDLE hHeap, _In_ DWORD dwFlags, _In_ SIZE_T dwBytes);
+
+typedef LPVOID(WINAPI* typeVirtualAllocEx)(
+	_In_ HANDLE hProcess,
+	_In_opt_ LPVOID lpAddress,
+	_In_ SIZE_T dwSize,
+	_In_ DWORD flAllocationType,
+	_In_ DWORD flProtect
+	);
+
+typedef LPVOID(WINAPI* typeHeapAlloc)(
+	_In_ HANDLE hHeap,
+	_In_ DWORD dwFlags,
+	_In_ SIZE_T dwBytes
+	);
 
 #endif

