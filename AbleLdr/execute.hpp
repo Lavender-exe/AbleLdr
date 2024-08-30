@@ -2,12 +2,13 @@
 #define ABLELDR_EXECUTE_HPP
 #include <Windows.h>
 #include "typedef.hpp"
+#include "debug.hpp"
 #include "malapi.hpp"
 #include "memory.hpp"
 
 namespace execute {
-	VOID CreateRemoteThread(_In_ DWORD PID, _In_ unsigned char Shellcode[]);
-	VOID HijackEntryPoint(_In_ HANDLE pHandle, _In_ unsigned char Shellcode[]);
+	BOOL CreateRemoteThread(_In_ DWORD pid, _In_ BYTE* shellcode);
+	BOOL HijackEntryPoint(_In_ HANDLE process_handle, _In_ BYTE* shellcode);
 } // End of execute namespace
 
 #endif

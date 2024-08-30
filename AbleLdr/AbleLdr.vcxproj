@@ -147,6 +147,8 @@
   <ItemGroup>
     <ClInclude Include="config.hpp" />
     <ClInclude Include="debug.hpp" />
+    <ClInclude Include="enumeration.hpp" />
+    <ClInclude Include="evasion.hpp" />
     <ClInclude Include="execute.hpp" />
     <ClInclude Include="macros.hpp" />
     <ClInclude Include="malapi.hpp" />
@@ -154,6 +156,8 @@
     <ClInclude Include="typedef.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="enumeration.cpp" />
+    <ClCompile Include="evasion.cpp" />
     <ClCompile Include="execute.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="malapi.cpp" />

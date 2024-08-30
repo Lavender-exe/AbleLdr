@@ -29,30 +29,30 @@ INT StringCompare(_In_ LPCWSTR String1, _In_ LPCWSTR String2)
 //
 // HashString Implementation (Ascii)
 //
-constexpr ULONG HashStringFowlerNollVoVariant1a(_In_ LPCSTR String)
-{
-	ULONG Hash = 0x6A6CCC06;
-
-	while (*String)
-	{
-		Hash ^= (UCHAR)*String++;
-		Hash *= 0x25EDE3FB;
-	}
-
-	return Hash;
-}
+//constexpr ULONG HashStringFowlerNollVoVariant1a(_In_ LPCSTR String)
+//{
+//	ULONG Hash = 0x6A6CCC06;
+//
+//	while (*String)
+//	{
+//		Hash ^= (UCHAR)*String++;
+//		Hash *= 0x25EDE3FB;
+//	}
+//
+//	return Hash;
+//}
 //
 // HashString Implementation (wChar)
 //
-constexpr ULONG HashStringFowlerNollVoVariant1a(_In_ LPCWSTR String)
-{
-	ULONG Hash = 0x6A6CCC06;
-
-	while (*String)
-	{
-		Hash ^= (UCHAR)*String++;
-		Hash *= 0x25EDE3FB;
-	}
-
-	return Hash;
-}
+// constexpr ULONG HashStringFowlerNollVoVariant1a(_In_ LPCWSTR String)
+// {
+// 	ULONG Hash = 0x6A6CCC06;
+//
+// 	while (*String)
+// 	{
+// 		Hash ^= (UCHAR)*String++;
+// 		Hash *= 0x25EDE3FB;
+// 	}
+//
+// 	return Hash;
+// }

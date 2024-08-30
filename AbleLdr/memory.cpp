@@ -18,11 +18,11 @@ namespace memory {
 			Module = (PLDR_MODULE)((BYTE*)Next - sizeof(LIST_ENTRY));
 
 			if (Module->BaseDllName.Buffer != NULL) {
-				if (ModuleHash - HashString(Module->BaseDllName.Buffer) == 0)
+				if (HashString(Module->BaseDllName.Buffer) - ModuleHash == 0)
 				{
 					Result = (HMODULE)Module->BaseAddress;
+					break;
 				}
-				break;
 			}
 
 			Next = Next->Flink;

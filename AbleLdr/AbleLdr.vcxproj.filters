@@ -36,6 +36,12 @@
     <ClInclude Include="malapi.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="evasion.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="enumeration.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -48,6 +54,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="malapi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="evasion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="enumeration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
