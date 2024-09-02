@@ -21,8 +21,7 @@ namespace enumerate {
 		typeRtlFreeHeap				 rtl_free_heap = NULL;
 
 		// NtQuerySystemInformation
-		ULONG						return_length_1 = NULL;
-		ULONG						return_length_2 = NULL;
+		ULONG						return_length = NULL;
 		PSYSTEM_PROCESS_INFORMATION system_process_information = NULL;
 		NTSTATUS					status = NULL;
 		PVOID						value_to_free = NULL;
@@ -77,19 +76,19 @@ namespace enumerate {
 
 #pragma endregion
 
-		nt_query_system_information(SystemProcessInformation, NULL, 0, &return_length_1);
+		nt_query_system_information(SystemProcessInformation, NULL, 0, &return_length);
 
 		// Double buffer size to make room for increased process info size
-		return_length_1 *= 2;
+		return_length *= 2;
 
-		system_process_information = (PSYSTEM_PROCESS_INFORMATION)rtl_allocate_heap(get_process_heap(), HEAP_ZERO_MEMORY, (SIZE_T)return_length_1);
+		system_process_information = (PSYSTEM_PROCESS_INFORMATION)rtl_allocate_heap(get_process_heap(), HEAP_ZERO_MEMORY, (SIZE_T)return_length);
 		if (system_process_information == NULL)
 		{
 			LOG_ERROR("HeapAlloc Failed. (Code: %08lX)", get_last_error());
 			return FALSE;
 		}
 
-		status = nt_query_system_information(SystemProcessInformation, system_process_information, return_length_1, &return_length_2);
+		status = nt_query_system_information(SystemProcessInformation, system_process_information, return_length, &return_length);
 		if (!NT_SUCCESS(status))
 		{
 			LOG_ERROR("NtQuerySystemInformation Failed to query system information (Code: 0x%0.8X)", status);

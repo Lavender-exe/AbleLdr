@@ -21,9 +21,9 @@
 #define CONFIG_EXECUTION_TARGET_NAME L"notepad.exe"
 
 #if CONFIG_EXECUTION_METHOD == 1
-#define ExecuteShellcode(phandle, shellcode) execute::CreateRemoteThread(phandle, shellcode);
+#define ExecuteShellcode(phandle, shellcode) execute::CreateRemoteThread(phandle, shellcode)
 #elif CONFIG_EXECUTION_METHOD == 2
-#define ExecuteShellcode(phandle, shellcode) execute::HijackEntryPoint(phandle, shellcode);
+#define ExecuteShellcode(phandle, shellcode) execute::HijackEntryPoint(phandle, shellcode)
 #endif
 
 #endif

