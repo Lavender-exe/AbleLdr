@@ -1,6 +1,6 @@
-#include "enumeration.hpp"
+#include "enumerate.hpp"
 
-namespace enumeration {
+namespace enumerate {
 	BOOL GetProcessHandle(_In_ LPCWSTR process_name, _Out_ DWORD* pid, _Out_ HANDLE* process_handle)
 	{
 		BOOL result = FALSE;
@@ -8,20 +8,25 @@ namespace enumeration {
 		HMODULE kernel32 = NULL;
 		HMODULE ntdll = NULL;
 
-		typeGetLastError get_last_error = NULL;
-		typeHeapAlloc heap_alloc = NULL;
-		typeGetProcessHeap get_process_heap = NULL;
-		typeOpenProcess open_process = NULL;
-		typeHeapFree heap_free = NULL;
+		// Kernel32
+		typeGetLastError	get_last_error = NULL;
+		typeHeapAlloc		heap_alloc = NULL;
+		typeGetProcessHeap	get_process_heap = NULL;
+		typeOpenProcess		open_process = NULL;
+		typeHeapFree		heap_free = NULL;
 
-		typeNtOpenProcess nt_open_process = NULL;
+		// Ntdll
+		typeNtOpenProcess			 nt_open_process = NULL;
 		typeNtQuerySystemInformation nt_query_system_information = NULL;
+		typeRtlAllocateHeap			 rtl_allocate_heap = NULL;
+		typeRtlFreeHeap				 rtl_free_heap = NULL;
 
-		ULONG return_length_1 = NULL,
-			return_length_2 = NULL;
+		// NtQuerySystemInformation
+		ULONG						return_length_1 = NULL;
+		ULONG						return_length_2 = NULL;
 		PSYSTEM_PROCESS_INFORMATION system_process_information = NULL;
-		NTSTATUS status = NULL;
-		PVOID value_to_free = NULL;
+		NTSTATUS					status = NULL;
+		PVOID						value_to_free = NULL;
 
 #pragma region [Kernel32 Functions]
 
@@ -57,11 +62,25 @@ namespace enumeration {
 			return FALSE;
 		}
 
+		rtl_allocate_heap = (typeRtlAllocateHeap)memory::GetProcAddressC(ntdll, HashString("RtlAllocateHeap"));
+		if (rtl_allocate_heap == NULL)
+		{
+			LOG_ERROR("Failed to get RtlAllocateHeap. (Code: %08lX)", get_last_error());
+			return FALSE;
+		}
+
+		rtl_free_heap = (typeRtlFreeHeap)memory::GetProcAddressC(ntdll, HashString("RtlFreeHeap"));
+		if (rtl_allocate_heap == NULL)
+		{
+			LOG_ERROR("Failed to get RtlFreeHeap. (Code: %08lX)", get_last_error());
+			return FALSE;
+		}
+
 #pragma endregion
 
 		nt_query_system_information(SystemProcessInformation, NULL, NULL, &return_length_1);
 
-		system_process_information = (PSYSTEM_PROCESS_INFORMATION)heap_alloc(get_process_heap(), HEAP_ZERO_MEMORY, (SIZE_T)&return_length_1);
+		system_process_information = (PSYSTEM_PROCESS_INFORMATION)rtl_allocate_heap(get_process_heap(), HEAP_ZERO_MEMORY, (SIZE_T)return_length_1);
 		if (system_process_information == NULL)
 		{
 			LOG_ERROR("HeapAlloc Failed. (Code: %08lX)", get_last_error());
@@ -73,7 +92,7 @@ namespace enumeration {
 		status = nt_query_system_information(SystemProcessInformation, system_process_information, return_length_1, &return_length_2);
 		if (status != 0x0)
 		{
-			LOG_ERROR("NtQuerySystemInformation Failed (Code: 0x%0.8X)", status);
+			LOG_ERROR("NtQuerySystemInformation Failed to query system information (Code: 0x%0.8X)", status);
 			return FALSE;
 		}
 
@@ -97,7 +116,7 @@ namespace enumeration {
 			system_process_information = (PSYSTEM_PROCESS_INFORMATION)((ULONG_PTR)system_process_information + system_process_information->NextEntryOffset);
 		}
 
-		heap_free(get_process_heap(), 0, value_to_free);
+		rtl_free_heap(get_process_heap(), 0, value_to_free);
 
 		// Check if we successfully got the target process handle
 		if (*pid == NULL || *process_handle == NULL)
@@ -107,4 +126,4 @@ namespace enumeration {
 
 		return result;
 	}
-} // End of enumeration namespace
+} // End of enumerate namespace

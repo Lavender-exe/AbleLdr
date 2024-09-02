@@ -39,7 +39,7 @@
     <ClInclude Include="evasion.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="enumeration.hpp">
+    <ClInclude Include="enumerate.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -59,7 +59,7 @@
     <ClCompile Include="evasion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="enumeration.cpp">
+    <ClCompile Include="enumerate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

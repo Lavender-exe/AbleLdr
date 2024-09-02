@@ -6,7 +6,7 @@
 #include "debug.hpp"
 #include "malapi.hpp"
 #include "memory.hpp"
-#include "enumeration.hpp"
+#include "enumerate.hpp"
 
 namespace execute {
 	BOOL CreateRemoteThread(_In_ HANDLE process_handle, _In_ BYTE* shellcode);

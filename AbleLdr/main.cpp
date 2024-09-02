@@ -1,7 +1,7 @@
 #include "config.hpp"
 #include "typedef.hpp"
 #include "execute.hpp"
-#include "enumeration.hpp"
+#include "enumerate.hpp"
 
 #ifndef _DEBUG
 #pragma comment(linker, "/ENTRY:entry")
@@ -23,7 +23,7 @@ VOID entry(void)
 	BOOL result = FALSE;
 	BOOL process_handle = NULL;
 
-	process_handle = enumeration::GetProcessHandle((LPCWSTR)CONFIG_EXECUTION_TARGET_NAME, NULL, NULL);
+	process_handle = enumerate::GetProcessHandle((LPCWSTR)CONFIG_EXECUTION_TARGET_NAME, 0, 0);
 	if (!process_handle)
 	{
 		LOG_ERROR("Error getting process handle.");
