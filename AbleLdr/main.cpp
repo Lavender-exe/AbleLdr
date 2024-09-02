@@ -21,13 +21,17 @@ VOID entry(void)
 	}; // win-exec-calc-shellcode.bin
 
 	BOOL result = FALSE;
-	BOOL process_handle = NULL;
+	DWORD pid = 0;
+	HANDLE process_handle = NULL;
 
-	process_handle = enumerate::GetProcessHandle((LPCWSTR)CONFIG_EXECUTION_TARGET_NAME, 0, 0);
-	if (!process_handle)
+	if (!enumerate::GetProcessHandle(CONFIG_EXECUTION_TARGET_NAME, &pid, &process_handle))
 	{
 		LOG_ERROR("Error getting process handle.");
 		result = FALSE;
+	}
+	else
+	{
+		LOG_INFO("Obtained PID of %s. (PID: %d)", CONFIG_EXECUTION_TARGET_NAME, pid);
 	}
 
 	ExecuteShellcode((HANDLE)process_handle, shellcode);

@@ -3,8 +3,7 @@
 namespace enumerate {
 	BOOL GetProcessHandle(_In_ LPCWSTR process_name, _Out_ DWORD* pid, _Out_ HANDLE* process_handle)
 	{
-		BOOL result = FALSE;
-
+		BOOL	result = FALSE;
 		HMODULE kernel32 = NULL;
 		HMODULE ntdll = NULL;
 
@@ -78,7 +77,10 @@ namespace enumerate {
 
 #pragma endregion
 
-		nt_query_system_information(SystemProcessInformation, NULL, NULL, &return_length_1);
+		nt_query_system_information(SystemProcessInformation, NULL, 0, &return_length_1);
+
+		// Double buffer size to make room for increased process info size
+		return_length_1 *= 2;
 
 		system_process_information = (PSYSTEM_PROCESS_INFORMATION)rtl_allocate_heap(get_process_heap(), HEAP_ZERO_MEMORY, (SIZE_T)return_length_1);
 		if (system_process_information == NULL)
@@ -87,10 +89,8 @@ namespace enumerate {
 			return FALSE;
 		}
 
-		value_to_free = system_process_information;
-
 		status = nt_query_system_information(SystemProcessInformation, system_process_information, return_length_1, &return_length_2);
-		if (status != 0x0)
+		if (!NT_SUCCESS(status))
 		{
 			LOG_ERROR("NtQuerySystemInformation Failed to query system information (Code: 0x%0.8X)", status);
 			return FALSE;
@@ -116,9 +116,8 @@ namespace enumerate {
 			system_process_information = (PSYSTEM_PROCESS_INFORMATION)((ULONG_PTR)system_process_information + system_process_information->NextEntryOffset);
 		}
 
-		rtl_free_heap(get_process_heap(), 0, value_to_free);
+		rtl_free_heap(get_process_heap(), 0, system_process_information);
 
-		// Check if we successfully got the target process handle
 		if (*pid == NULL || *process_handle == NULL)
 			result = FALSE;
 		else

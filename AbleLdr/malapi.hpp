@@ -12,6 +12,8 @@
 
 #define HashString(x) HashStringFowlerNollVoVariant1a(x)
 
+#define NT_SUCCESS(Status) (((NTSTATUS)(Status)) >= 0)
+
 // https://github.com/iilegacyyii/ThreadlessInject-BOF/blob/main/typedefs.h
 //
 // String compare implementation (ascii).

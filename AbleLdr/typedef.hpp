@@ -828,13 +828,13 @@ typedef NTSTATUS(NTAPI* typeNtWriteVirtualMemory)(
 typedef NTSTATUS(NTAPI* typeNtClose)(_In_ HANDLE Handle);
 
 typedef NTSTATUS(NTAPI* typeNtQuerySystemInformation)(
-	_In_											SYSTEM_INFORMATION_CLASS SystemInformationClass,
-	_Out_writes_bytes_opt_(SystemInformationLength) PVOID SystemInformation,
-	_In_											ULONG SystemInformationLength,
-	_Out_opt_										PULONG ReturnLength
+	_In_		SYSTEM_INFORMATION_CLASS SystemInformationClass,
+	_Inout_		PVOID SystemInformation,
+	_In_		ULONG SystemInformationLength,
+	_Out_opt_	PULONG ReturnLength
 	);
 
-typedef NTSTATUS(NTAPI* typeRtlAllocateHeap)(
+typedef NTSTATUS(__fastcall* typeRtlAllocateHeap)(
 	_In_	 PVOID HeapHandle,
 	_In_opt_ ULONG Flags,
 	_In_	 SIZE_T Size
