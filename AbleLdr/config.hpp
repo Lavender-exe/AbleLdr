@@ -18,7 +18,7 @@
 // Execution Methods
 #define CONFIG_EXECUTION_METHOD 1
 #define CONFIG_EXECUTION_TARGET_PID 9064
-#define CONFIG_EXECUTION_TARGET_NAME L"Notepad.exe"
+#define CONFIG_EXECUTION_TARGET_NAME "notepad.exe"
 
 #if CONFIG_EXECUTION_METHOD == 1
 #define ExecuteShellcode(phandle, shellcode) execute::CreateRemoteThread(phandle, shellcode)

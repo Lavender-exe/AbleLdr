@@ -790,6 +790,33 @@ typedef struct _SYSTEM_PROCESS_INFORMATION
 
 #pragma endregion
 
+#pragma region [ProcessEntry32]
+
+typedef struct tagPROCESSENTRY32 {
+	DWORD     dwSize;
+	DWORD     cntUsage;
+	DWORD     th32ProcessID;
+	ULONG_PTR th32DefaultHeapID;
+	DWORD     th32ModuleID;
+	DWORD     cntThreads;
+	DWORD     th32ParentProcessID;
+	LONG      pcPriClassBase;
+	DWORD     dwFlags;
+	CHAR      szExeFile[MAX_PATH];
+} PROCESSENTRY32;
+typedef PROCESSENTRY32* PPROCESSENTRY32;
+typedef PROCESSENTRY32* LPPROCESSENTRY32;
+
+#define TH32CS_SNAPHEAPLIST 0x00000001
+#define TH32CS_SNAPPROCESS  0x00000002
+#define TH32CS_SNAPTHREAD   0x00000004
+#define TH32CS_SNAPMODULE   0x00000008
+#define TH32CS_SNAPMODULE32 0x00000010
+#define TH32CS_SNAPALL      (TH32CS_SNAPHEAPLIST | TH32CS_SNAPPROCESS | TH32CS_SNAPTHREAD | TH32CS_SNAPMODULE)
+#define TH32CS_INHERIT      0x80000000
+
+#pragma endregion
+
 #pragma region [NTDLL Typedefs]
 // NTSTATUS
 
@@ -834,7 +861,7 @@ typedef NTSTATUS(NTAPI* typeNtQuerySystemInformation)(
 	_Out_opt_	PULONG ReturnLength
 	);
 
-typedef NTSTATUS(__fastcall* typeRtlAllocateHeap)(
+typedef NTSTATUS(NTAPI* typeRtlAllocateHeap)(
 	_In_	 PVOID HeapHandle,
 	_In_opt_ ULONG Flags,
 	_In_	 SIZE_T Size
@@ -864,7 +891,24 @@ typedef BOOL(WINAPI* typeHeapFree)(
 	_In_ _Frees_ptr_opt_ LPVOID lpMem
 	);
 
-typedef BOOL(WINAPI* typeCloseHandle)(_In_ HANDLE hObject);
+typedef BOOL(WINAPI* typeCloseHandle)(
+	_In_ HANDLE hObject
+	);
+
+typedef BOOL(WINAPI* typeProcess32First)(
+	_In_	HANDLE			 hSnapshot,
+	_Inout_	LPPROCESSENTRY32 lppe
+	);
+
+typedef BOOL(WINAPI* typeProcess32Next)(
+	_In_	HANDLE			 hSnapshot,
+	_Out_	LPPROCESSENTRY32 lppe
+	);
+
+typedef HANDLE(WINAPI* typeCreateToolhelp32Snapshot)(
+	_In_ DWORD dwFlags,
+	_In_ DWORD th32ProcessID
+	);
 
 typedef HANDLE(WINAPI* typeGetLastError)();
 
@@ -898,6 +942,16 @@ typedef LPVOID(WINAPI* typeHeapAlloc)(
 	_In_ HANDLE hHeap,
 	_In_ DWORD dwFlags,
 	_In_ SIZE_T dwBytes
+	);
+
+typedef BOOL(WINAPI* typeEnumProcesses)(
+	_Out_	DWORD* lpidProcess,
+	_In_	DWORD	cb,
+	_Out_	LPDWORD	lpcbNeeded
+	);
+
+typedef DWORD(WINAPI* typeGetProcessId)(
+	_In_ HANDLE Process
 	);
 
 #pragma endregion
