@@ -1,7 +1,7 @@
 #include "enumerate.hpp"
 
 namespace enumerate {
-	BOOL GetProcessHandle(_In_ LPCWSTR process_name, _Out_ DWORD* pid, _Out_ HANDLE* process_handle)
+	BOOL GetProcessHandle(_In_ LPCSTR process_name)
 	{
 		BOOL	result = FALSE;
 		HMODULE kernel32 = NULL;
@@ -76,52 +76,60 @@ namespace enumerate {
 
 #pragma endregion
 
-		nt_query_system_information(SystemProcessInformation, NULL, 0, &return_length);
+#pragma region [NtQuerySystemInformation]
 
-		// Double buffer size to make room for increased process info size
-		return_length *= 2;
-
-		system_process_information = (PSYSTEM_PROCESS_INFORMATION)rtl_allocate_heap(get_process_heap(), HEAP_ZERO_MEMORY, (SIZE_T)return_length);
-		if (system_process_information == NULL)
-		{
-			LOG_ERROR("HeapAlloc Failed. (Code: %08lX)", get_last_error());
-			return FALSE;
-		}
-
-		status = nt_query_system_information(SystemProcessInformation, system_process_information, return_length, &return_length);
-		if (!NT_SUCCESS(status))
-		{
-			LOG_ERROR("NtQuerySystemInformation Failed to query system information (Code: 0x%0.8X)", status);
-			return FALSE;
-		}
-
-		while (TRUE)
-		{
-			if (system_process_information->ImageName.Length && StringCompare(system_process_information->ImageName.Buffer, process_name) == 0)
-			{
-				*pid = (DWORD)system_process_information->UniqueProcessId;
-				*process_handle = open_process(PROCESS_ALL_ACCESS, FALSE, (DWORD)system_process_information->UniqueProcessId);
-				LOG_SUCCESS("Got PID: %d", pid);
-				LOG_SUCCESS("Got Process Handle: %d", process_handle);
-
-				break;
-			}
-
-			if (!system_process_information->NextEntryOffset)
-			{
-				break;
-			}
-
-			system_process_information = (PSYSTEM_PROCESS_INFORMATION)((ULONG_PTR)system_process_information + system_process_information->NextEntryOffset);
-		}
-
-		rtl_free_heap(get_process_heap(), 0, system_process_information);
-
-		if (*pid == NULL || *process_handle == NULL)
-			result = FALSE;
-		else
-			result = TRUE;
+		// nt_query_system_information(SystemProcessInformation, NULL, 0, &return_length);
+		//
+		// // Double buffer size to make room for increased process info size
+		// return_length *= 2;
+		//
+		// system_process_information = (PSYSTEM_PROCESS_INFORMATION)rtl_allocate_heap(get_process_heap(), HEAP_ZERO_MEMORY, (SIZE_T)return_length);
+		// if (system_process_information == NULL)
+		// {
+		// 	LOG_ERROR("HeapAlloc Failed. (Code: %08lX)", get_last_error());
+		// 	return FALSE;
+		// }
+		//
+		// status = nt_query_system_information(SystemProcessInformation, system_process_information, return_length, &return_length);
+		// if (!NT_SUCCESS(status))
+		// {
+		// 	LOG_ERROR("NtQuerySystemInformation Failed to query system information (Code: 0x%0.8X)", status);
+		// 	return FALSE;
+		// }
+		//
+		// while (TRUE)
+		// {
+		// 	if (system_process_information->ImageName.Length && StringCompare(system_process_information->ImageName.Buffer, process_name) == 0)
+		// 	{
+		// 		*pid = (DWORD)system_process_information->UniqueProcessId;
+		// 		*process_handle = open_process(PROCESS_ALL_ACCESS, FALSE, (DWORD)system_process_information->UniqueProcessId);
+		// 		LOG_SUCCESS("Got PID: %d", pid);
+		// 		LOG_SUCCESS("Got Process Handle: %d", process_handle);
+		//
+		// 		break;
+		// 	}
+		//
+		// 	if (!system_process_information->NextEntryOffset)
+		// 	{
+		// 		break;
+		// 	}
+		//
+		// 	system_process_information = (PSYSTEM_PROCESS_INFORMATION)((ULONG_PTR)system_process_information + system_process_information->NextEntryOffset);
+		// }
+		//
+		// rtl_free_heap(get_process_heap(), 0, system_process_information);
+		//
+		// if (*pid == NULL || *process_handle == NULL)
+		// 	result = FALSE;
+		// else
+		// 	result = TRUE;
 
 		return result;
+
+#pragma endregion
+
+#pragma region [CreateToolHelp32Snapshot]
+
+#pragma endregion
 	}
 } // End of enumerate namespace

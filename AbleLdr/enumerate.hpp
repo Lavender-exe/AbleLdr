@@ -7,7 +7,7 @@
 #include "debug.hpp"
 
 namespace enumerate {
-	BOOL GetProcessHandle(_In_ LPCWSTR process_name, _Out_ DWORD* pid, _Out_ HANDLE* process_handle);
+	BOOL GetProcessHandle(_In_ LPCSTR process_name);
 } // End of enumerate namespace
 
 #endif
