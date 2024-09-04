@@ -817,6 +817,15 @@ typedef PROCESSENTRY32* LPPROCESSENTRY32;
 
 #pragma endregion
 
+#pragma region [EnumProcesses]
+
+#define EnumProcesses		K32EnumProcesses
+#define EnumProcessModules  K32EnumProcessModules
+#define GetModuleBaseNameA      K32GetModuleBaseNameA
+#define GetModuleBaseNameW      K32GetModuleBaseNameW
+
+#pragma endregion
+
 #pragma region [NTDLL Typedefs]
 // NTSTATUS
 
@@ -905,6 +914,37 @@ typedef BOOL(WINAPI* typeProcess32Next)(
 	_Out_	LPPROCESSENTRY32 lppe
 	);
 
+typedef BOOL(WINAPI* typeEnumProcesses)(
+	_Out_	DWORD* lpidProcess,
+	_In_	DWORD	cb,
+	_Out_	LPDWORD	lpcbNeeded
+	);
+
+typedef BOOL(WINAPI* typeEnumProcessModules)(
+	_In_	 HANDLE hProcess,
+	_Out_	 HMODULE* lphModule,
+	_In_	 DWORD cb,
+	_Out_	 LPDWORD lpcbNeeded
+	);
+
+typedef DWORD(WINAPI* typeGetProcessId)(
+	_In_ HANDLE Process
+	);
+
+typedef DWORD(WINAPI* typeGetModuleBaseNameA)(
+	_In_	 HANDLE hProcess,
+	_In_opt_ HMODULE hModule,
+	_Out_	 LPSTR lpBaseName,
+	_In_	 DWORD nSize
+	);
+
+typedef DWORD(WINAPI* typeGetModuleBaseNameW)(
+	_In_	 HANDLE hProcess,
+	_In_opt_ HMODULE hModule,
+	_Out_	 LPWSTR lpBaseName,
+	_In_	 DWORD nSize
+	);
+
 typedef HANDLE(WINAPI* typeCreateToolhelp32Snapshot)(
 	_In_ DWORD dwFlags,
 	_In_ DWORD th32ProcessID
@@ -942,16 +982,6 @@ typedef LPVOID(WINAPI* typeHeapAlloc)(
 	_In_ HANDLE hHeap,
 	_In_ DWORD dwFlags,
 	_In_ SIZE_T dwBytes
-	);
-
-typedef BOOL(WINAPI* typeEnumProcesses)(
-	_Out_	DWORD* lpidProcess,
-	_In_	DWORD	cb,
-	_Out_	LPDWORD	lpcbNeeded
-	);
-
-typedef DWORD(WINAPI* typeGetProcessId)(
-	_In_ HANDLE Process
 	);
 
 #pragma endregion
