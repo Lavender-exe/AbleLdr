@@ -30,8 +30,7 @@ VOID entry(void)
 		return;
 	}
 
-	// LOG_INFO("Obtained PID of %s. (PID: %d)", CONFIG_EXECUTION_TARGET_NAME, pid);
-	// process_autils::GetProcessHandle(pid);
+	LOG_INFO("Obtained PID of %s. (PID: %d)", CONFIG_EXECUTION_TARGET_NAME, pid);
 
 	if (!ExecuteShellcode(process_handle, shellcode))
 	{
