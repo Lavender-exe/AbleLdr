@@ -145,23 +145,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="config.hpp" />
-    <ClInclude Include="debug.hpp" />
-    <ClInclude Include="utils.hpp" />
-    <ClInclude Include="evasion.hpp" />
-    <ClInclude Include="execute.hpp" />
-    <ClInclude Include="macros.hpp" />
-    <ClInclude Include="malapi.hpp" />
-    <ClInclude Include="memory.hpp" />
-    <ClInclude Include="typedef.hpp" />
+    <None Include="builder.py" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="utils.cpp" />
+    <ClCompile Include="encrypt.cpp" />
     <ClCompile Include="evasion.cpp" />
     <ClCompile Include="execute.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="malapi.cpp" />
-    <ClCompile Include="memory.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="config.hpp" />
+    <ClInclude Include="encrypt.hpp" />
+    <ClInclude Include="evasion.hpp" />
+    <ClInclude Include="execute.hpp" />
+    <ClInclude Include="malapi.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

