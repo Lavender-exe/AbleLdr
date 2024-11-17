@@ -13,7 +13,7 @@ AbleLdr is a project created to learn C and malware development. The main idea i
 
 ## Roadmap
 ### Execution Methods
-- [ ] Remote Process Injection
+- [x] Remote Process Injection
 - [ ] Thread Hijacking
 - [ ] APC Injection
 
