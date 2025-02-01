@@ -4,30 +4,23 @@ namespace encrypt {
 	//
 	// NOT FUNCTIONAL
 	//
-	PBYTE NoEncrypt(_In_ PBYTE shellcode, _In_ PBYTE key, _In_ SIZE_T shellcode_len, _In_ SIZE_T key_len)
+	VOID NoEncrypt(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen)
 	{
 		return shellcode;
 	}
 
-	PBYTE XorEncrypt(_In_ PBYTE shellcode, _In_ PBYTE key, _In_ SIZE_T shellcode_len, _In_ SIZE_T key_len)
+	VOID XorEncrypt(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen)
 	{
-		for (size_t i = 0, j = 0; i < shellcode_len; i++, j++)
-		{
-			if (j > key_len)
-			{
-				j = 0;
-			}
-			shellcode[i] = shellcode[i] ^ key[j];
-		}
-		return shellcode;
+		for (SIZE_T i = 0; i < InputLen; i++)
+			Input[i] ^= Key[i % KeyLen];
 	}
 
-	PBYTE AesEncrypt(_In_ PBYTE shellcode, _In_ PBYTE key, _In_ SIZE_T shellcode_len, _In_ SIZE_T key_len)
+	VOID AesEncrypt(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen)
 	{
 		return shellcode;
 	}
 
-	PBYTE Rc4Encrypt(_In_ PBYTE shellcode, _In_ PBYTE key, _In_ SIZE_T shellcode_len, _In_ SIZE_T key_len)
+	VOID Rc4Encrypt(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen)
 	{
 		return shellcode;
 	}

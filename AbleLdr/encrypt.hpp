@@ -8,10 +8,10 @@ namespace encrypt
 	//
 	// NOT FUNCTIONAL
 	//
-	PBYTE NoEncrypt(_In_ PBYTE shellcode, _In_ PBYTE key, _In_ SIZE_T shellcode_len, _In_ SIZE_T key_len);
-	PBYTE XorEncrypt(_In_ PBYTE shellcode, _In_ PBYTE key, _In_ SIZE_T shellcode_len, _In_ SIZE_T key_len);
-	PBYTE AesEncrypt(_In_ PBYTE shellcode, _In_ PBYTE key, _In_ SIZE_T shellcode_len, _In_ SIZE_T key_len);
-	PBYTE Rc4Encrypt(_In_ PBYTE shellcode, _In_ PBYTE key, _In_ SIZE_T shellcode_len, _In_ SIZE_T key_len);
+	VOID NoEncrypt(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
+	VOID XorEncrypt(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
+	VOID AesEncrypt(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
+	VOID Rc4Encrypt(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
 } // End of encrypt namespace
 
 #endif

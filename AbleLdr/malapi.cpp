@@ -158,7 +158,7 @@ namespace malapi
 	}
 
 	//
-	// Uses VirtualAllocEx, VirtualProtectEx and WriteProcessMemory to write shellcode into memory
+	// Uses VirtualAllocExNuma, VirtualProtectEx and WriteProcessMemory to write shellcode into memory
 	// Returns NULL on failure.
 	//
 	PVOID WriteShellcodeMemory(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size)
@@ -520,34 +520,53 @@ namespace malapi
 	}
 
 	//
+	// memcmp
+	//
+	INT memcmp(const void* s1, const void* s2, size_t n)
+	{
+		const unsigned char* p1 = (const unsigned char*)s1;
+		const unsigned char* end1 = p1 + n;
+		const unsigned char* p2 = (const unsigned char*)s2;
+		int                  d = 0;
+		for (;;) {
+			if (d || p1 >= end1) break;
+			d = (int)*p1++ - (int)*p2++;
+			if (d || p1 >= end1) break;
+			d = (int)*p1++ - (int)*p2++;
+			if (d || p1 >= end1) break;
+			d = (int)*p1++ - (int)*p2++;
+			if (d || p1 >= end1) break;
+			d = (int)*p1++ - (int)*p2++;
+		}
+		return d;
+	}
+
+	//
 	// memcpy implementation.
 	//
-	void* memcpy(_In_ void* Destination, _In_ const void* Source, _In_ SIZE_T Length)
-	{
-		char* s = (char*)Source;
-		char* d = (char*)Destination;
-
-		while (Length--) {
-			*d++ = *s++;
+#if _WINDLL == 0 && !_DEBUG
+#pragma intrinsic(memcpy)
+#pragma function(memcpy)
+	void* __cdecl memcpy(void* dst, void const* src, size_t size) {
+		for (volatile int i = 0; i < size; i++) {
+			((BYTE*)dst)[i] = ((BYTE*)src)[i];
 		}
-
-		return Destination;
+		return dst;
 	}
 
 	//
 	// memset implementation.
 	//
-	void* memset(void* Destination, int Value, size_t Size)
-	{
-		// logic similar to memset's one
-		unsigned char* p = (unsigned char*)Destination;
-		while (Size > 0) {
-			*p = (unsigned char)Value;
-			p++;
-			Size--;
+#pragma intrinsic(memset)
+#pragma function(memset)
+	void* __cdecl memset(void* pTarget, int value, size_t cbTarget) {
+		unsigned char* p = (unsigned char*)pTarget;
+		while (cbTarget-- > 0) {
+			*p++ = (unsigned char)value;
 		}
-		return Destination;
+		return pTarget;
 	}
+#endif
 
 	//
 	// String compare implementation (ascii).

