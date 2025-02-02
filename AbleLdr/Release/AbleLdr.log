@@ -1,0 +1,12 @@
+﻿  encrypt.cpp
+  evasion.cpp
+  execute.cpp
+  main.cpp
+  malapi.cpp
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(229,34): warning C4305: 'initializing': truncation from '__int64' to 'size_t'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(229,34): warning C4309: 'initializing': truncation of constant value
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(234,65): warning C4244: 'return': conversion from 'unsigned __int64' to 'SIZE_T', possible loss of data
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(555,30): warning C4018: '<': signed/unsigned mismatch
+  Generating Code...
+  LINK : /LTCG specified but no code generation required; remove /LTCG from the link command line to improve linker performance
+  AbleLdr.vcxproj -> D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\Release\AbleLdr.exe

