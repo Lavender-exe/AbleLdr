@@ -14,8 +14,11 @@ AbleLdr is a project created to learn C and malware development. The main idea i
 ## Roadmap
 ### Execution Methods
 - [x] Remote Process Injection
-- [ ] Thread Hijacking
+- [x] Thread Hijacking
+- [ ] Process Hollowing
+- [ ] Process Doppleganger
 - [ ] APC Injection
+- [ ] Early Bird APC Injection
 
 ### Guardrails
 - [ ] Domain Checks
@@ -29,6 +32,7 @@ AbleLdr is a project created to learn C and malware development. The main idea i
 ### Anti Sandboxing
 - [ ] Sandbox Detection
 - [ ] Sleep Masking
+- [x] Timeskip Checking
 
 ## Special Thanks
 
