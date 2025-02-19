@@ -1217,6 +1217,37 @@ typedef struct tagTHREADENTRY32 {
 typedef THREADENTRY32* PTHREADENTRY32;
 typedef THREADENTRY32* LPTHREADENTRY32;
 
+typedef ULONGLONG REGHANDLE, * PREGHANDLE;
+
+typedef struct _EVENT_DESCRIPTOR
+{
+	USHORT Id;
+	UCHAR Version;
+	UCHAR Channel;
+	UCHAR Level;
+	UCHAR Opcode;
+	USHORT Task;
+	ULONGLONG Keyword;
+} EVENT_DESCRIPTOR, * PEVENT_DESCRIPTOR;
+
+typedef const EVENT_DESCRIPTOR* PCEVENT_DESCRIPTOR;
+
+typedef struct _EVENT_DATA_DESCRIPTOR EVENT_DATA_DESCRIPTOR, * PEVENT_DATA_DESCRIPTOR;
+
+typedef enum AMSI_RESULT {
+	AMSI_RESULT_CLEAN,
+	AMSI_RESULT_NOT_DETECTED,
+	AMSI_RESULT_BLOCKED_BY_ADMIN_START,
+	AMSI_RESULT_BLOCKED_BY_ADMIN_END,
+	AMSI_RESULT_DETECTED
+};
+
+//
+// https://github.com/tpn/winsdk-10/blob/master/Include/10.0.14393.0/um/amsi.h
+//
+DECLARE_HANDLE(HAMSICONTEXT);
+DECLARE_HANDLE(HAMSISESSION);
+
 #pragma endregion
 
 #pragma region [ntapi_typedefs]
@@ -1358,6 +1389,20 @@ typedef NTSTATUS(NTAPI* typeNtOpenFile)(
 
 typedef NTSTATUS(NTAPI* typeNtDeleteFile)(
 	_In_ POBJECT_ATTRIBUTES ObjectAttributes
+	);
+
+typedef NTSTATUS(NTAPI* typeEtwEventWrite)(
+	_In_ REGHANDLE RegHandle,
+	_In_ PCEVENT_DESCRIPTOR EventDescriptor,
+	_In_ ULONG UserDataCount,
+	_In_reads_opt_(UserDataCount) PEVENT_DATA_DESCRIPTOR UserData
+	);
+
+typedef NTSTATUS(NTAPI* typeNtTraceEvent)(
+	_In_opt_ HANDLE TraceHandle,
+	_In_ ULONG Flags,
+	_In_ ULONG FieldSize,
+	_In_ PVOID Fields
 	);
 
 #pragma endregion
@@ -1569,6 +1614,29 @@ typedef DWORD(WINAPI* typeSuspendThread)(
 	_In_ HANDLE hThread
 	);
 
+typedef HRESULT(WINAPI* typeURLOpenBlockingStream)(
+	LPUNKNOWN pCaller,
+	LPCSTR	  szURL,
+	LPSTREAM* ppStream,
+	_Reserved_ DWORD dwReserved,
+	LPBINDSTATUSCALLBACK lpfnCB
+	);
+
+typedef BOOL(WINAPI* typeFlushInstructionCache)(
+	_In_ HANDLE  hProcess,
+	_In_ LPCVOID lpBaseAddress,
+	_In_ SIZE_T  dwSize
+	);
+
+typedef HRESULT(WINAPI* typeAmsiScanBuffer)(
+	_In_           HAMSICONTEXT amsiContext,
+	_In_           PVOID        buffer,
+	_In_           ULONG        length,
+	_In_           LPCWSTR      contentName,
+	_In_opt_	   HAMSISESSION amsiSession,
+	_Out_          AMSI_RESULT* result
+	);
+
 #pragma endregion
 
 #pragma region [macros]
@@ -1720,6 +1788,12 @@ namespace malapi
 	FARPROC GetProcAddressC(_In_ HMODULE dllBase, _In_ ULONG funcHash);
 
 	//
+	// Patch ETW
+	// https://github.com/Mr-Un1k0d3r/AMSI-ETW-Patch/blob/main/patch-etw-x64.c
+	//
+	BOOL PatchEtw();
+
+	//
 	// Get epoch timestamp (ms) from SHARED_USER_DATA
 	//
 	SIZE_T GetTimestamp(void);
@@ -1750,6 +1824,12 @@ namespace malapi
 	// More info: https://www.legacyy.xyz/defenseevasion/windows/2024/04/24/disabling-etw-ti-without-ppl.html
 	//
 	BOOL DisableETWTi(_In_ HANDLE TargetProcess = (HANDLE)(ULONG_PTR)~1);
+
+	//
+	// Patch ETW
+	// https://github.com/Mr-Un1k0d3r/AMSI-ETW-Patch/blob/main/patch-etw-x64.c
+	//
+	BOOL PatchEtw();
 
 	//
 	// Returns PEB pointer for current process. (Retrieved from TEB)

