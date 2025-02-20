@@ -13,39 +13,56 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{c8a78c0f-23cc-4b52-85f5-e4f80000a720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Execution">
+      <UniqueIdentifier>{e6220f53-c7b2-46ee-a23a-29dbc92a1294}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Evasion">
+      <UniqueIdentifier>{8668834a-30bd-445e-aec4-535f3b57157c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Encryption">
+      <UniqueIdentifier>{6e3e8b0f-3d89-412c-a852-fbe85dc0a754}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="debug.hpp">
+    <None Include="builder.py">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="malapi.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="evasion.cpp">
+      <Filter>Source Files\Evasion</Filter>
+    </ClCompile>
+    <ClCompile Include="execute.cpp">
+      <Filter>Source Files\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="encrypt.cpp">
+      <Filter>Source Files\Encryption</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="malapi.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="config.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="memory.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="typedef.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="macros.hpp">
+    <ClInclude Include="evasion.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="execute.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="malapi.hpp">
+    <ClInclude Include="encrypt.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="memory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="execute.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
