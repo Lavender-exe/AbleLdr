@@ -1184,6 +1184,16 @@ typedef struct _PROCESS_LOGGING_INFORMATION
 
 typedef const OBJECT_ATTRIBUTES* PCOBJECT_ATTRIBUTES;
 
+typedef struct _PROCESS_BASIC_INFORMATION
+{
+	NTSTATUS ExitStatus;                    // The exit status of the process. (GetExitCodeProcess)
+	PPEB PebBaseAddress;                    // A pointer to the process environment block (PEB) of the process.
+	KAFFINITY AffinityMask;                 // The affinity mask of the process. (GetProcessAffinityMask) (deprecated)
+	KPRIORITY BasePriority;                 // The base priority of the process. (GetPriorityClass)
+	HANDLE UniqueProcessId;                 // The unique identifier of the process. (GetProcessId)
+	HANDLE InheritedFromUniqueProcessId;    // The unique identifier of the parent process.
+} PROCESS_BASIC_INFORMATION, * PPROCESS_BASIC_INFORMATION;
+
 typedef struct _IO_STATUS_BLOCK
 {
 	union
@@ -1431,6 +1441,14 @@ typedef BOOL(WINAPI* typeWriteProcessMemory)(
 	_In_  HANDLE  hProcess,
 	_In_  LPVOID  lpBaseAddress,
 	_In_  LPCVOID lpBuffer,
+	_In_  SIZE_T  nSize,
+	_Out_ SIZE_T* lpNumberOfBytesWritten
+	);
+
+typedef BOOL(WINAPI* typeReadProcessMemory)(
+	_In_  HANDLE  hProcess,
+	_In_  LPVOID  lpBaseAddress,
+	_Out_ LPCVOID lpBuffer,
 	_In_  SIZE_T  nSize,
 	_Out_ SIZE_T* lpNumberOfBytesWritten
 	);
@@ -1776,6 +1794,12 @@ namespace malapi
 	// RETURN ProcessHandle
 	//
 	HANDLE CreateSuspendedProcess(_In_ LPSTR file_path);
+
+	//
+	// CreateSuspendedProcess
+	// Return Handle to Thread
+	//
+	HANDLE EntryPointHandle(LPSTR file_path, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size);
 
 	//
 	// GetModuleHandle implementation with API hashing.
