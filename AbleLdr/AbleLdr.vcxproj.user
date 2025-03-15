@@ -9,7 +9,40 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DllDebug|Win32'">
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommand>C:\WINDOWS\SYSTEM32\regsvr32.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments>/s "$(TargetPath)"</LocalDebuggerCommandArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SvcDebug|Win32'">
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommand>C:\WINDOWS\SYSTEM32\regsvr32.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments>/s "$(TargetPath)"</LocalDebuggerCommandArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DllRelease|Win32'">
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommand>C:\WINDOWS\SYSTEM32\regsvr32.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments>/s "$(TargetPath)"</LocalDebuggerCommandArguments>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DllDebug|x64'">
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommand>C:\WINDOWS\SYSTEM32\regsvr32.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments>/s "$(TargetPath)"</LocalDebuggerCommandArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SvcDebug|x64'">
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommand>C:\WINDOWS\SYSTEM32\regsvr32.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments>/s "$(TargetPath)"</LocalDebuggerCommandArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DllRelease|x64'">
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommand>C:\WINDOWS\SYSTEM32\regsvr32.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments>/s "$(TargetPath)"</LocalDebuggerCommandArguments>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ShowAllFiles>false</ShowAllFiles>
   </PropertyGroup>
 </Project>

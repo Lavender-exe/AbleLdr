@@ -25,6 +25,12 @@
     <Filter Include="Source Files\Encryption">
       <UniqueIdentifier>{6e3e8b0f-3d89-412c-a852-fbe85dc0a754}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\DarkLoadLibrary">
+      <UniqueIdentifier>{f9cbc89b-0f60-4e1c-8317-4bc9ff657487}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DarkLoadLibrary">
+      <UniqueIdentifier>{05f0cb8d-97f3-4168-bc0b-608580ce573a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="builder.py">
@@ -47,6 +53,18 @@
     <ClCompile Include="encrypt.cpp">
       <Filter>Source Files\Encryption</Filter>
     </ClCompile>
+    <ClCompile Include="darkloadlib\pebutils.c">
+      <Filter>Source Files\DarkLoadLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="darkloadlib\syscalls.c">
+      <Filter>Source Files\DarkLoadLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="darkloadlib\darkloadlibrary.c">
+      <Filter>Source Files\DarkLoadLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="darkloadlib\ldrutils.c">
+      <Filter>Source Files\DarkLoadLibrary</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="malapi.hpp">
@@ -64,5 +82,25 @@
     <ClInclude Include="encrypt.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="darkloadlib\darkloadlibrary.h">
+      <Filter>Header Files\DarkLoadLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="darkloadlib\ldrutils.h">
+      <Filter>Header Files\DarkLoadLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="darkloadlib\pebstructs.h">
+      <Filter>Header Files\DarkLoadLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="darkloadlib\pebutils.h">
+      <Filter>Header Files\DarkLoadLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="darkloadlib\syscalls.h">
+      <Filter>Header Files\DarkLoadLibrary</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="darkloadlib\syscallsstubs.asm">
+      <Filter>Source Files\DarkLoadLibrary</Filter>
+    </MASM>
   </ItemGroup>
 </Project>
