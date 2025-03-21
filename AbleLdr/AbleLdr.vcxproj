@@ -431,15 +431,11 @@
     <None Include="builder.py" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="encrypt.cpp" />
-    <ClCompile Include="execute.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="malapi.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.hpp" />
-    <ClInclude Include="encrypt.hpp" />
-    <ClInclude Include="execute.hpp" />
     <ClInclude Include="malapi.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>

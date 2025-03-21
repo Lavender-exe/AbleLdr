@@ -1,7 +1,5 @@
 #include "config.hpp"
 #include "malapi.hpp"
-#include "execute.hpp"
-#include "encrypt.hpp"
 
 #ifndef _DEBUG
 #pragma comment(linker, "/ENTRY:entry")
