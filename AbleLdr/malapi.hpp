@@ -1572,6 +1572,12 @@ typedef BOOL(WINAPI* typeCloseHandle)(
 	_In_ HANDLE hObject
 	);
 
+typedef DWORD(WINAPI* typeQueueUserAPC)(
+	_In_ PAPCFUNC  pfnAPC,
+	_In_ HANDLE    hThread,
+	_In_ ULONG_PTR dwData
+	);
+
 typedef HANDLE(WINAPI* typeCreateFileA)(
 	_In_		LPCSTR lpFileName,
 	_In_		DWORD dwDesiredAccess,
@@ -2003,7 +2009,7 @@ namespace malapi
 	// Create Suspended Process
 	// Return ProcessHandle
 	//
-	HANDLE CreateSuspendedProcess(_In_ LPSTR file_path);
+	HANDLE CreateSuspendedProcess(_In_ LPSTR file_path, _Out_ HANDLE* process_handle, _Out_ HANDLE* thread_handle);
 
 	//
 	// Create Suspended Process

