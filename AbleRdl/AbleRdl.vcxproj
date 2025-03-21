@@ -24,6 +24,7 @@
     <ProjectGuid>{049263ca-8721-4c89-ab26-15e34d81b70e}</ProjectGuid>
     <RootNamespace>AbleRdl</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>AbleRdi</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

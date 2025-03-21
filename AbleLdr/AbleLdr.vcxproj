@@ -212,11 +212,13 @@
       <RootFolder>
       </RootFolder>
     </CustomBuildStep>
+    <PostBuildEvent />
+    <PostBuildEvent />
     <PostBuildEvent>
       <Command>"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /f "$(SolutionDir)\Certs\sign.pfx" /p AbleCert  /t http://timestamp.digicert.com /fd sha256 "$(TargetPath)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Sign Compiled Binaries</Message>
+      <Message>[+] Sign Compiled Program</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DllDebug|Win32'">
@@ -236,6 +238,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
+    <PostBuildEvent>
+      <Command>"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /f "$(SolutionDir)\Certs\sign.pfx" /p AbleCert  /t http://timestamp.digicert.com /fd sha256 "$(TargetPath)"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>[+] Sign Compiled Program</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='SvcDebug|Win32'">
     <ClCompile>
@@ -254,6 +262,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
+    <PostBuildEvent>
+      <Command>"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /f "$(SolutionDir)\Certs\sign.pfx" /p AbleCert  /t http://timestamp.digicert.com /fd sha256 "$(TargetPath)"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>[+] Sign Compiled Program</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DllRelease|Win32'">
     <ClCompile>
@@ -272,6 +286,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
+    <PostBuildEvent>
+      <Command>"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /f "$(SolutionDir)\Certs\sign.pfx" /p AbleCert  /t http://timestamp.digicert.com /fd sha256 "$(TargetPath)"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>[+] Sign Compiled Program</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -279,7 +299,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <DebugInformationFormat>None</DebugInformationFormat>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -304,7 +324,7 @@
       <Command>"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /f "$(SolutionDir)\Certs\sign.pfx" /p AbleCert  /t http://timestamp.digicert.com /fd sha256 "$(TargetPath)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Sign Compiled Binaries</Message>
+      <Message>[+] Sign Compiled Program</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -332,11 +352,13 @@
       <RootFolder>
       </RootFolder>
     </CustomBuildStep>
+    <PostBuildEvent />
+    <PostBuildEvent />
     <PostBuildEvent>
       <Command>"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /f "$(SolutionDir)\Certs\sign.pfx" /p AbleCert  /t http://timestamp.digicert.com /fd sha256 "$(TargetPath)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Sign Compiled Binaries</Message>
+      <Message>[+] Sign Compiled Program</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DllDebug|x64'">
@@ -356,6 +378,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
+    <PostBuildEvent>
+      <Command>"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /f "$(SolutionDir)\Certs\sign.pfx" /p AbleCert  /t http://timestamp.digicert.com /fd sha256 "$(TargetPath)"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>[+] Sign Compiled Program</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='SvcDebug|x64'">
     <ClCompile>
@@ -374,6 +402,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
+    <PostBuildEvent>
+      <Command>"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /f "$(SolutionDir)\Certs\sign.pfx" /p AbleCert  /t http://timestamp.digicert.com /fd sha256 "$(TargetPath)"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>[+] Sign Compiled Program</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DllRelease|x64'">
     <ClCompile>
@@ -392,6 +426,12 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
+    <PostBuildEvent>
+      <Command>"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /f "$(SolutionDir)\Certs\sign.pfx" /p AbleCert  /t http://timestamp.digicert.com /fd sha256 "$(TargetPath)"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>[+] Sign Compiled Program</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -424,7 +464,7 @@
       <Command>"C:\Program Files (x86)\Windows Kits\10\bin\10.0.22621.0\x64\signtool.exe" sign /f "$(SolutionDir)\Certs\sign.pfx" /p AbleCert  /t http://timestamp.digicert.com /fd sha256 "$(TargetPath)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Sign Compiled Binaries</Message>
+      <Message>[+] Sign Compiled Program</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

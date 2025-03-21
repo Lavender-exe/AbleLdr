@@ -114,6 +114,7 @@ VOID entry(void)
 	{
 		LOG_ERROR("Failed to execute shellcode.");
 	}
+	LOG_SUCCESS("Executing Shellcode");
 }
 
 #pragma region [alternate entrypoints]

@@ -1375,6 +1375,11 @@ typedef NTSTATUS(NTAPI* typeNtMapViewOfSection)(
 	_In_        ULONG           Win32Protect
 	);
 
+typedef NTSTATUS(NTAPI* typeNtUnmapViewOfSection)(
+	_In_ HANDLE ProcessHandle,
+	_In_opt_ PVOID BaseAddress
+	);
+
 typedef NTSTATUS(NTAPI* typeNtQuerySystemInformation)(
 	_In_      SYSTEM_INFORMATION_CLASS SystemInformationClass,
 	_Inout_   PVOID                    SystemInformation,

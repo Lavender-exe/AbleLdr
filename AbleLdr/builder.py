@@ -12,7 +12,7 @@ class INJECTION_METHODS(enum.Enum):
     AddressofEntryPoint = 4
     ProcessHollowing    = 5
     Doppleganger        = 6
-    EarlyBird           = 7
+    QueueUserAPC        = 7
 
 def fnv1a_32(string: str) -> str:
     """
