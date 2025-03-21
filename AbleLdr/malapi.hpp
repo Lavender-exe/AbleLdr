@@ -2,7 +2,7 @@
 #define MALAPI_MALAPI_HPP
 #include <windows.h>
 #include <winhttp.h>
-#include "darkloadlib/darkloadlibrary.h"
+//#include "darkloadlib/darkloadlibrary.h"
 
 #pragma region [typedefs]
 
@@ -1402,6 +1402,14 @@ typedef NTSTATUS(NTAPI* typeNtQueryInformationProcess)(
 	_Out_writes_bytes_(ProcessInformationLength) PVOID ProcessInformation,
 	_In_                                         ULONG ProcessInformationLength,
 	_Out_opt_                                    PULONG ReturnLength
+	);
+
+typedef NTSTATUS(NTAPI* typeNtQueryInformationThread)(
+	_In_ HANDLE ThreadHandle,
+	_In_ THREADINFOCLASS ThreadInformationClass,
+	_Out_writes_bytes_(ThreadInformationLength) PVOID ThreadInformation,
+	_In_ ULONG ThreadInformationLength,
+	_Out_opt_ PULONG ReturnLength
 	);
 
 typedef NTSTATUS(NTAPI* typeNtCreateProcess)(

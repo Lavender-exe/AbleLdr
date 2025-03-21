@@ -222,7 +222,9 @@ namespace execute {
 
 #pragma endregion
 
-		NtResumeThreadC(process_handle, NULL); // From CONFIG_CREATE_PROCESS 3
+		NtResumeThreadC(process_handle, NULL); // From CONFIG_CREATE_PROCESS_METHOD 3
+		LOG_SUCCESS("Resuming Thread");
+
 		success = TRUE;
 
 	CLEANUP:

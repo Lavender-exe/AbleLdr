@@ -2,6 +2,7 @@
 #define __PEBUTILS__
 
 #include <windows.h>
+
 #include <malloc.h>
 
 #include "pebstructs.h"
@@ -18,17 +19,25 @@ typedef VOID(NTAPI* RTLINITUNICODESTRING)(PUNICODE_STRING DestinationString, PCW
 typedef NTSTATUS(NTAPI* NTQUERYSYSTEMTIME)(PLARGE_INTEGER SystemTime);
 typedef NTSTATUS(NTAPI* RTLHASHUNICODESTRING)(UNICODE_STRING* String, BOOLEAN CaseInSensitive, ULONG HashAlgorithm, ULONG* HashValue);
 typedef SIZE_T(NTAPI* RTLCOMPAREMEMORY)(const VOID* Source1, const VOID* Source2, SIZE_T Length);
-typedef int(__cdecl* _WCSNICMP)(const wchar_t* _Str1, const wchar_t* _Str2, size_t _MaxCount);
-typedef int(__cdecl* STRCMP)(const char* _Str1, const char* _Str2);
-typedef int(WINAPI* MULTIBYTETOWIDECHAR)(
-	UINT   CodePage,
-	DWORD  dwFlags,
-	LPCCH  lpMultiByteStr,
-	int    cbMultiByte,
-	LPWSTR lpWideCharStr,
-	int    cchWideChar
-	);
-typedef int(__cdecl* _WCSICMP)(const wchar_t* _Str1, const wchar_t* _Str2);
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+	typedef int(__cdecl* _WCSNICMP)(const wchar_t* _Str1, const wchar_t* _Str2, size_t _MaxCount);
+	typedef int(__cdecl* STRCMP)(const char* _Str1, const char* _Str2);
+	typedef int(WINAPI* MULTIBYTETOWIDECHAR)(
+		UINT   CodePage,
+		DWORD  dwFlags,
+		LPCCH  lpMultiByteStr,
+		int    cbMultiByte,
+		LPWSTR lpWideCharStr,
+		int    cchWideChar
+		);
+	typedef int(__cdecl* _WCSICMP)(const wchar_t* _Str1, const wchar_t* _Str2);
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef _WIN64
 #define PEB_OFFSET 0x60

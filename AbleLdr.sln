@@ -5,6 +5,8 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AbleLdr", "AbleLdr\AbleLdr.vcxproj", "{EACFA273-E5B3-43A8-99A3-ECFB056BFEBD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AbleRdl", "AbleRdl\AbleRdl.vcxproj", "{049263CA-8721-4C89-AB26-15E34D81B70E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -39,6 +41,26 @@ Global
 		{EACFA273-E5B3-43A8-99A3-ECFB056BFEBD}.SvcDebug|x64.Build.0 = SvcDebug|x64
 		{EACFA273-E5B3-43A8-99A3-ECFB056BFEBD}.SvcDebug|x86.ActiveCfg = SvcDebug|Win32
 		{EACFA273-E5B3-43A8-99A3-ECFB056BFEBD}.SvcDebug|x86.Build.0 = SvcDebug|Win32
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.Debug|x64.ActiveCfg = Debug|x64
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.Debug|x64.Build.0 = Debug|x64
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.Debug|x86.ActiveCfg = Debug|Win32
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.Debug|x86.Build.0 = Debug|Win32
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.DllDebug|x64.ActiveCfg = Debug|x64
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.DllDebug|x64.Build.0 = Debug|x64
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.DllDebug|x86.ActiveCfg = Debug|Win32
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.DllDebug|x86.Build.0 = Debug|Win32
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.DllRelease|x64.ActiveCfg = Release|x64
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.DllRelease|x64.Build.0 = Release|x64
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.DllRelease|x86.ActiveCfg = Release|Win32
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.DllRelease|x86.Build.0 = Release|Win32
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.Release|x64.ActiveCfg = Release|x64
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.Release|x64.Build.0 = Release|x64
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.Release|x86.ActiveCfg = Release|Win32
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.Release|x86.Build.0 = Release|Win32
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.SvcDebug|x64.ActiveCfg = Release|x64
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.SvcDebug|x64.Build.0 = Release|x64
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.SvcDebug|x86.ActiveCfg = Release|Win32
+		{049263CA-8721-4C89-AB26-15E34D81B70E}.SvcDebug|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

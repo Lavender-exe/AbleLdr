@@ -19,9 +19,6 @@
     <Filter Include="Source Files\Execution">
       <UniqueIdentifier>{e6220f53-c7b2-46ee-a23a-29dbc92a1294}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Evasion">
-      <UniqueIdentifier>{8668834a-30bd-445e-aec4-535f3b57157c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Encryption">
       <UniqueIdentifier>{6e3e8b0f-3d89-412c-a852-fbe85dc0a754}</UniqueIdentifier>
     </Filter>
@@ -41,9 +38,6 @@
     <ClCompile Include="malapi.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
-    <ClCompile Include="evasion.cpp">
-      <Filter>Source Files\Evasion</Filter>
-    </ClCompile>
     <ClCompile Include="execute.cpp">
       <Filter>Source Files\Execution</Filter>
     </ClCompile>
@@ -53,18 +47,6 @@
     <ClCompile Include="encrypt.cpp">
       <Filter>Source Files\Encryption</Filter>
     </ClCompile>
-    <ClCompile Include="darkloadlib\pebutils.c">
-      <Filter>Source Files\DarkLoadLibrary</Filter>
-    </ClCompile>
-    <ClCompile Include="darkloadlib\syscalls.c">
-      <Filter>Source Files\DarkLoadLibrary</Filter>
-    </ClCompile>
-    <ClCompile Include="darkloadlib\darkloadlibrary.c">
-      <Filter>Source Files\DarkLoadLibrary</Filter>
-    </ClCompile>
-    <ClCompile Include="darkloadlib\ldrutils.c">
-      <Filter>Source Files\DarkLoadLibrary</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="malapi.hpp">
@@ -73,34 +55,19 @@
     <ClInclude Include="config.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="evasion.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="execute.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="encrypt.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="darkloadlib\darkloadlibrary.h">
-      <Filter>Header Files\DarkLoadLibrary</Filter>
-    </ClInclude>
-    <ClInclude Include="darkloadlib\ldrutils.h">
-      <Filter>Header Files\DarkLoadLibrary</Filter>
-    </ClInclude>
-    <ClInclude Include="darkloadlib\pebstructs.h">
-      <Filter>Header Files\DarkLoadLibrary</Filter>
-    </ClInclude>
-    <ClInclude Include="darkloadlib\pebutils.h">
-      <Filter>Header Files\DarkLoadLibrary</Filter>
-    </ClInclude>
-    <ClInclude Include="darkloadlib\syscalls.h">
-      <Filter>Header Files\DarkLoadLibrary</Filter>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <MASM Include="darkloadlib\syscallsstubs.asm">
-      <Filter>Source Files\DarkLoadLibrary</Filter>
-    </MASM>
+    <ResourceCompile Include="metadata.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
