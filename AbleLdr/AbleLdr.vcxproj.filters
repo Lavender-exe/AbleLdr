@@ -16,9 +16,6 @@
     <Filter Include="Source Files\Utils">
       <UniqueIdentifier>{c8a78c0f-23cc-4b52-85f5-e4f80000a720}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\DarkLoadLibrary">
-      <UniqueIdentifier>{f9cbc89b-0f60-4e1c-8317-4bc9ff657487}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\DarkLoadLibrary">
       <UniqueIdentifier>{05f0cb8d-97f3-4168-bc0b-608580ce573a}</UniqueIdentifier>
     </Filter>

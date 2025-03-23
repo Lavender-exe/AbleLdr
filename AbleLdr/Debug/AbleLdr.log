@@ -1,2 +1,90 @@
-﻿  main.cpp
+﻿  malapi.cpp
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.hpp(1248,14): warning C4091: 'typedef ': ignored on left of 'AMSI_RESULT' when no variable is declared
+  (compiling source file 'malapi.cpp')
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(154,3): warning C4477: 'printf' : format string '%08lX' requires an argument of type 'unsigned long', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(229,4): warning C4477: 'printf' : format string '%016llx' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(229,4): warning C4313: 'printf': '%x' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(232,8): warning C4477: 'printf' : format string '%016llx' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'PVOID'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(232,8): warning C4313: 'printf': '%x' in format string conflicts with argument 1 of type 'PVOID'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(237,4): warning C4477: 'printf' : format string '%016llx' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(237,4): warning C4313: 'printf': '%x' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(244,4): warning C4477: 'printf' : format string '%016llx' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(244,4): warning C4313: 'printf': '%x' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(323,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(323,4): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(326,3): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(326,3): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(335,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(335,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(338,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(338,4): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(343,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(343,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(346,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 3 has type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(346,4): warning C4313: 'printf': '%X' in format string conflicts with argument 3 of type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(355,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(355,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(358,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(358,4): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(363,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(363,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(366,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 3 has type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(366,4): warning C4313: 'printf': '%X' in format string conflicts with argument 3 of type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(370,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(370,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(378,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(378,4): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(386,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(386,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(419,34): warning C4305: 'initializing': truncation from '__int64' to 'size_t'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(419,34): warning C4309: 'initializing': truncation of constant value
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(424,65): warning C4244: 'return': conversion from 'unsigned __int64' to 'SIZE_T', possible loss of data
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(560,9): warning C4005: 'x64_ret': macro redefinition
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(542,9):
+      see previous definition of 'x64_ret'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(628,3): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'PBYTE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(628,3): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'PBYTE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(815,4): warning C4477: 'printf' : format string '%08llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'NTSTATUS'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(815,4):
+      consider using '%lX' in the format string
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(836,4): warning C4477: 'printf' : format string '%08llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'NTSTATUS'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(836,4):
+      consider using '%lX' in the format string
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(856,4): warning C4477: 'printf' : format string '%08llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'NTSTATUS'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(856,4):
+      consider using '%lX' in the format string
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(880,4): warning C4477: 'printf' : format string '%08llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'NTSTATUS'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(880,4):
+      consider using '%lX' in the format string
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(935,4): warning C4477: 'printf' : format string '%08lX' requires an argument of type 'unsigned long', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(938,8): warning C4477: 'printf' : format string '%08lX' requires an argument of type 'unsigned long', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1032,3): warning C4477: 'printf' : format string '%08lX' requires an argument of type 'unsigned long', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1047,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1047,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1056,11): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1056,11): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1063,11): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1063,11): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1075,11): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1075,11): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1198,2): warning C4102: 'CLEANUP': unreferenced label
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1446,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1446,4): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1458,3): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'LPVOID'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1458,3): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'LPVOID'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1499,3): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'LPVOID'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1499,3): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'LPVOID'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1403,10): warning C4101: 'image_base': unreferenced local variable
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1389,1): warning C4715: 'malapi::CreateSuspendedProcess': not all control paths return a value
+  LINK : D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\Debug\AbleLdr.exe not found or not built by the last incremental link; performing full link
   AbleLdr.vcxproj -> D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\Debug\AbleLdr.exe
+  [+] Sign Compiled Program
+  Done Adding Additional Store
+  Successfully signed: D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\Debug\AbleLdr.exe
+  

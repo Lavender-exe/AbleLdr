@@ -1,12 +1,27 @@
-﻿  encrypt.cpp
-  evasion.cpp
-  execute.cpp
-  main.cpp
+﻿  main.cpp
   malapi.cpp
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(229,34): warning C4305: 'initializing': truncation from '__int64' to 'size_t'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(229,34): warning C4309: 'initializing': truncation of constant value
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(234,65): warning C4244: 'return': conversion from 'unsigned __int64' to 'SIZE_T', possible loss of data
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(555,30): warning C4018: '<': signed/unsigned mismatch
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.hpp(1249,14): warning C4091: 'typedef ': ignored on left of 'AMSI_RESULT' when no variable is declared
+  (compiling source file 'main.cpp')
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\main.cpp(30,2): warning C4003: not enough arguments for function-like macro invocation 'PatchEtw'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.hpp(1249,14): warning C4091: 'typedef ': ignored on left of 'AMSI_RESULT' when no variable is declared
+  (compiling source file 'malapi.cpp')
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(407,34): warning C4305: 'initializing': truncation from '__int64' to 'size_t'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(407,34): warning C4309: 'initializing': truncation of constant value
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(412,65): warning C4244: 'return': conversion from 'unsigned __int64' to 'SIZE_T', possible loss of data
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(548,9): warning C4005: 'x64_ret': macro redefinition
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(530,9):
+      see previous definition of 'x64_ret'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1186,2): warning C4102: 'CLEANUP': unreferenced label
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1285,30): warning C4018: '<': signed/unsigned mismatch
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1392,10): warning C4101: 'image_base': unreferenced local variable
   Generating Code...
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1377,1): warning C4715: 'malapi::CreateSuspendedProcess': not all control paths return a value
   LINK : /LTCG specified but no code generation required; remove /LTCG from the link command line to improve linker performance
   AbleLdr.vcxproj -> D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\Release\AbleLdr.exe
+  [+] Sign Compiled Program
+  Done Adding Additional Store
+  Successfully signed: D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\Release\AbleLdr.exe
+  

