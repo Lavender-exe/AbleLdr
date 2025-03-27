@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AbleLdr", "AbleLdr\AbleLdr.vcxproj", "{EACFA273-E5B3-43A8-99A3-ECFB056BFEBD}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AbleRdl", "AbleRdl\AbleRdl.vcxproj", "{049263CA-8721-4C89-AB26-15E34D81B70E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AbleRdi", "AbleRdi\AbleRdl.vcxproj", "{049263CA-8721-4C89-AB26-15E34D81B70E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

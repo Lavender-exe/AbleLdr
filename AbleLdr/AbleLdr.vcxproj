@@ -153,39 +153,59 @@
     <GenerateManifest>false</GenerateManifest>
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
+    <IncludePath>$(ProjectDir)include</IncludePath>
+    <SourcePath>$(ProjectDir)src</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
+    <IncludePath>$(ProjectDir)include</IncludePath>
+    <SourcePath>$(ProjectDir)src</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
+    <IncludePath>$(ProjectDir)include</IncludePath>
+    <SourcePath>$(ProjectDir)src</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DllDebug|Win32'">
     <GenerateManifest>false</GenerateManifest>
+    <IncludePath>$(ProjectDir)include</IncludePath>
+    <SourcePath>$(ProjectDir)src</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SvcDebug|Win32'">
     <GenerateManifest>false</GenerateManifest>
+    <IncludePath>$(ProjectDir)include</IncludePath>
+    <SourcePath>$(ProjectDir)src</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DllRelease|Win32'">
     <GenerateManifest>false</GenerateManifest>
+    <IncludePath>$(ProjectDir)include</IncludePath>
+    <SourcePath>$(ProjectDir)src</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
+    <IncludePath>$(ProjectDir)include</IncludePath>
+    <SourcePath>$(ProjectDir)src</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DllDebug|x64'">
     <GenerateManifest>false</GenerateManifest>
+    <IncludePath>$(ProjectDir)include</IncludePath>
+    <SourcePath>$(ProjectDir)src</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SvcDebug|x64'">
     <GenerateManifest>false</GenerateManifest>
+    <IncludePath>$(ProjectDir)include</IncludePath>
+    <SourcePath>$(ProjectDir)src</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DllRelease|x64'">
     <GenerateManifest>false</GenerateManifest>
+    <IncludePath>$(ProjectDir)include</IncludePath>
+    <SourcePath>$(ProjectDir)src</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -471,13 +491,13 @@
     <None Include="builder.py" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="malapi.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\malapi.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="config.hpp" />
-    <ClInclude Include="malapi.hpp" />
-    <ClInclude Include="resource.h" />
+    <ClInclude Include="include\config.hpp" />
+    <ClInclude Include="include\malapi.hpp" />
+    <ClInclude Include="include\resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="metadata.rc" />

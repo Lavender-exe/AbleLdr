@@ -1,90 +1,1041 @@
-﻿  malapi.cpp
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.hpp(1248,14): warning C4091: 'typedef ': ignored on left of 'AMSI_RESULT' when no variable is declared
-  (compiling source file 'malapi.cpp')
+﻿  main.cpp
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\include\malapi.hpp(1248,14): warning C4091: 'typedef ': ignored on left of 'AMSI_RESULT' when no variable is declared
+  (compiling source file 'src/main.cpp')
   
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(154,3): warning C4477: 'printf' : format string '%08lX' requires an argument of type 'unsigned long', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(229,4): warning C4477: 'printf' : format string '%016llx' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(229,4): warning C4313: 'printf': '%x' in format string conflicts with argument 1 of type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(232,8): warning C4477: 'printf' : format string '%016llx' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'PVOID'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(232,8): warning C4313: 'printf': '%x' in format string conflicts with argument 1 of type 'PVOID'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(237,4): warning C4477: 'printf' : format string '%016llx' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(237,4): warning C4313: 'printf': '%x' in format string conflicts with argument 1 of type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(244,4): warning C4477: 'printf' : format string '%016llx' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(244,4): warning C4313: 'printf': '%x' in format string conflicts with argument 1 of type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(323,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(323,4): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(326,3): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HINTERNET'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(326,3): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HINTERNET'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(335,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(335,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(338,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HINTERNET'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(338,4): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HINTERNET'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(343,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(343,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(346,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 3 has type 'HINTERNET'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(346,4): warning C4313: 'printf': '%X' in format string conflicts with argument 3 of type 'HINTERNET'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(355,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(355,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(358,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HINTERNET'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(358,4): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HINTERNET'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(363,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(363,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(366,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 3 has type 'HINTERNET'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(366,4): warning C4313: 'printf': '%X' in format string conflicts with argument 3 of type 'HINTERNET'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(370,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(370,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(378,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(378,4): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(386,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(386,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(419,34): warning C4305: 'initializing': truncation from '__int64' to 'size_t'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(419,34): warning C4309: 'initializing': truncation of constant value
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(424,65): warning C4244: 'return': conversion from 'unsigned __int64' to 'SIZE_T', possible loss of data
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(560,9): warning C4005: 'x64_ret': macro redefinition
-      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(542,9):
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\main.cpp(30,2): warning C4003: not enough arguments for function-like macro invocation 'PatchEtw'
+  malapi.cpp
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\include\malapi.hpp(1248,14): warning C4091: 'typedef ': ignored on left of 'AMSI_RESULT' when no variable is declared
+  (compiling source file 'src/malapi.cpp')
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(137,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(137,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(137,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(137,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(137,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(138,49): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(138,82):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(138,82):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(138,49):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(138,82):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(195,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(195,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(195,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(195,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(195,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(196,36): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(196,69):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(196,69):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(196,36):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(196,69):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(209,3): warning C4477: 'printf' : format string '%08lX' requires an argument of type 'unsigned long', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(292,33): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(292,66):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(292,66):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(292,33):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(292,66):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(293,42): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(293,75):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(293,75):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(293,42):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(293,75):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(347,33): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(347,66):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(347,66):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(347,33):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(347,66):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(348,37): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(348,70):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(348,70):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(348,37):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(348,70):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(349,37): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(349,70):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(349,70):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(349,37):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(349,70):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(351,36): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(351,69):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(351,69):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(351,36):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(351,69):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(352,39): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(352,72):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(352,72):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(352,39):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(352,72):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(353,43): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(353,76):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(353,76):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(353,43):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(353,76):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(354,43): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(354,76):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(354,76):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(354,43):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(354,76):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(355,47): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(355,80):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(355,80):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(355,47):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(355,80):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(356,40): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(356,73):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(356,73):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(356,40):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(356,73):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(357,43): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(357,76):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(357,76):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(357,43):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(357,76):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(383,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(383,4): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(386,3): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(386,3): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(395,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(395,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(398,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(398,4): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(403,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(403,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(406,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 3 has type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(406,4): warning C4313: 'printf': '%X' in format string conflicts with argument 3 of type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(415,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(415,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(418,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(418,4): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(423,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(423,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(426,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 3 has type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(426,4): warning C4313: 'printf': '%X' in format string conflicts with argument 3 of type 'HINTERNET'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(430,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(430,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(438,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(438,4): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(446,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(446,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(485,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(485,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(485,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(485,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(485,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(486,32): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(486,65):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(486,65):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(486,32):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(486,65):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(500,33): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(500,66):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(500,66):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(500,33):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(500,66):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(501,39): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(501,72):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(501,72):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(501,39):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(501,72):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(547,33): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(547,66):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(547,66):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(547,33):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(547,66):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(548,39): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(548,72):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(548,72):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(548,39):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(548,72):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(591,33): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(591,66):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(591,66):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(591,33):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(591,66):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(592,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(592,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(592,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(592,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(592,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(593,39): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(593,72):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(593,72):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(593,39):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(593,72):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(594,36): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(594,69):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(594,69):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(594,36):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(594,69):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(595,43): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(595,76):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(595,76):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(595,43):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(595,76):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(596,37): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(596,70):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(596,70):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(596,37):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(596,70):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(598,50): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(598,83):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(598,83):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(598,50):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(598,83):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(599,49): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(599,82):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(599,82):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(599,49):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(599,82):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(600,44): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(600,77):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(600,77):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(600,44):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(600,77):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(625,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(625,4): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(637,3): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'LPVOID'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(637,3): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'LPVOID'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(640,3): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'LPVOID'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(640,3): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'LPVOID'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(709,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(709,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(709,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(709,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(709,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(710,50): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(710,83):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(710,83):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(710,50):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(710,83):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(736,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(736,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(736,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(736,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(736,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(737,40): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(737,73):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(737,73):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(737,40):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(737,73):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(738,43): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(738,76):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(738,76):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(738,43):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(738,76):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(789,33): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(789,66):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(789,66):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(789,33):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(789,66):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(790,43): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(790,76):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(790,76):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(790,43):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(790,76):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(791,41): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(791,74):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(791,74):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(791,41):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(791,74):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(792,43): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(792,76):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(792,76):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(792,43):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(792,76):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(793,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(793,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(793,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(793,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(793,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(794,37): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(794,70):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(794,70):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(794,37):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(794,70):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(808,4): warning C4477: 'printf' : format string '%016llx' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(808,4): warning C4313: 'printf': '%x' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(811,8): warning C4477: 'printf' : format string '%016llx' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'PVOID'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(811,8): warning C4313: 'printf': '%x' in format string conflicts with argument 1 of type 'PVOID'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(816,4): warning C4477: 'printf' : format string '%016llx' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(816,4): warning C4313: 'printf': '%x' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(823,4): warning C4477: 'printf' : format string '%016llx' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(823,4): warning C4313: 'printf': '%x' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(845,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(845,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(845,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(845,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(845,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(846,40): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(846,73):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(846,73):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(846,40):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(846,73):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(863,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(863,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(863,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(863,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(863,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(864,42): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(864,75):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(864,75):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(864,42):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(864,75):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(880,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(880,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(880,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(880,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(880,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(881,36): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(881,69):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(881,69):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(881,36):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(881,69):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(966,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(966,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(966,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(966,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(966,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(967,44): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(967,77):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(967,77):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(967,44):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(967,77):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1010,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1010,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1010,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1010,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1010,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1011,40): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1011,73):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1011,73):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1011,40):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1011,73):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1012,43): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1012,76):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1012,76):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1012,43):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1012,76):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1013,45): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1013,78):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1013,78):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1013,45):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1013,78):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1014,44): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1014,77):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1014,77):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1014,44):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1014,77):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1043,4): warning C4477: 'printf' : format string '%08llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'NTSTATUS'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1043,4):
+      consider using '%lX' in the format string
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1064,4): warning C4477: 'printf' : format string '%08llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'NTSTATUS'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1064,4):
+      consider using '%lX' in the format string
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1084,4): warning C4477: 'printf' : format string '%08llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'NTSTATUS'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1084,4):
+      consider using '%lX' in the format string
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1108,4): warning C4477: 'printf' : format string '%08llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'NTSTATUS'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1108,4):
+      consider using '%lX' in the format string
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1135,33): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1135,66):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1135,66):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1135,33):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1135,66):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1136,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1136,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1136,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1136,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1136,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1137,37): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1137,70):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1137,70):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1137,37):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1137,70):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1138,46): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1138,79):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1138,79):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1138,46):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1138,79):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1139,41): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1139,74):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1139,74):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1139,41):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1139,74):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1156,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'NTSTATUS'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1156,4):
+      consider using '%lX' in the format string
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1159,8): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1159,8): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1193,33): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1193,66):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1193,66):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1193,33):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1193,66):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1194,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1194,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1194,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1194,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1194,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1195,37): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1195,70):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1195,70):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1195,37):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1195,70):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1196,38): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1196,71):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1196,71):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1196,38):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1196,71):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1197,37): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1197,70):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1197,70):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1197,37):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1197,70):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1198,46): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1198,79):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1198,79):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1198,46):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1198,79):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1199,39): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1199,72):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1199,72):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1199,39):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1199,72):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1201,49): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1201,82):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1201,82):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1201,49):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1201,82):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1202,38): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1202,71):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1202,71):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1202,38):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1202,71):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1203,37): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1203,70):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1203,70):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1203,37):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1203,70):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1204,35): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1204,68):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1204,68):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1204,35):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1204,68):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1205,38): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1205,71):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1205,71):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1205,38):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1205,71):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1206,40): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1206,73):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1206,73):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1206,40):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1206,73):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1207,40): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1207,73):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1207,73):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1207,40):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1207,73):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1235,3): warning C4477: 'printf' : format string '%08lX' requires an argument of type 'unsigned long', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1250,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1250,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1259,11): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1259,11): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1266,11): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1266,11): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1278,11): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1278,11): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1307,39): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1307,72):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1307,72):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1307,39):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1307,72):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1308,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1308,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1308,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1308,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1308,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1338,33): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1338,66):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1338,66):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1338,33):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1338,66):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1339,37): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1339,70):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1339,70):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1339,37):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1339,70):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1369,39): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1369,72):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1369,72):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1369,39):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1369,72):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1370,37): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1370,70):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1370,70):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1370,37):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1370,70):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1371,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1371,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1371,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1371,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1371,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1372,33): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1372,66):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1372,66):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1372,33):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1372,66):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1411,34): warning C4305: 'initializing': truncation from '__int64' to 'size_t'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1411,34): warning C4309: 'initializing': truncation of constant value
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1416,65): warning C4244: 'return': conversion from 'unsigned __int64' to 'SIZE_T', possible loss of data
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1443,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1443,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1443,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1443,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1443,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1444,48): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1444,81):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1444,81):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1444,48):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1444,81):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1482,33): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1482,66):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1482,66):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1482,33):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1482,66):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1483,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1483,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1483,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1483,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1483,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1484,37): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1484,70):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1484,70):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1484,37):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1484,70):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1485,41): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1485,74):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1485,74):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1485,41):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1485,74):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1514,9): warning C4005: 'x64_ret': macro redefinition
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1496,9):
       see previous definition of 'x64_ret'
   
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(628,3): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'PBYTE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(628,3): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'PBYTE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(815,4): warning C4477: 'printf' : format string '%08llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'NTSTATUS'
-      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(815,4):
-      consider using '%lX' in the format string
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1534,33): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1534,66):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1534,66):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1534,33):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1534,66):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
   
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(836,4): warning C4477: 'printf' : format string '%08llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'NTSTATUS'
-      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(836,4):
-      consider using '%lX' in the format string
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1535,41): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1535,74):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1535,74):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1535,41):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1535,74):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
   
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(856,4): warning C4477: 'printf' : format string '%08llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'NTSTATUS'
-      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(856,4):
-      consider using '%lX' in the format string
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1537,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1537,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1537,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1537,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1537,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
   
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(880,4): warning C4477: 'printf' : format string '%08llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'NTSTATUS'
-      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(880,4):
-      consider using '%lX' in the format string
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1538,38): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1538,71):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1538,71):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1538,38):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1538,71):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
   
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(935,4): warning C4477: 'printf' : format string '%08lX' requires an argument of type 'unsigned long', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(938,8): warning C4477: 'printf' : format string '%08lX' requires an argument of type 'unsigned long', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1032,3): warning C4477: 'printf' : format string '%08lX' requires an argument of type 'unsigned long', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1047,5): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1047,5): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1056,11): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1056,11): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1063,11): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1063,11): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1075,11): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1075,11): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1198,2): warning C4102: 'CLEANUP': unreferenced label
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1446,4): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1446,4): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'HANDLE'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1458,3): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'LPVOID'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1458,3): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'LPVOID'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1499,3): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'LPVOID'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1499,3): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'LPVOID'
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1403,10): warning C4101: 'image_base': unreferenced local variable
-D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\malapi.cpp(1389,1): warning C4715: 'malapi::CreateSuspendedProcess': not all control paths return a value
-  LINK : D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\Debug\AbleLdr.exe not found or not built by the last incremental link; performing full link
-  AbleLdr.vcxproj -> D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\Debug\AbleLdr.exe
-  [+] Sign Compiled Program
-  Done Adding Additional Store
-  Successfully signed: D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\Debug\AbleLdr.exe
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1539,42): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1539,75):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1539,75):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1539,42):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1539,75):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
   
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1582,3): warning C4477: 'printf' : format string '%016llX' requires an argument of type 'unsigned __int64', but variadic argument 1 has type 'PBYTE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1582,3): warning C4313: 'printf': '%X' in format string conflicts with argument 1 of type 'PBYTE'
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1613,30): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1613,63):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1613,63):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1613,30):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1613,63):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1614,47): error C2131: expression did not evaluate to a constant
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1614,80):
+      failure was caused by call of undefined function or one not declared 'constexpr'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1614,80):
+      see usage of 'malapi::HashStringFowlerNollVoVariant1a'
+      D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1614,47):
+      the call stack of the evaluation (the oldest call first) is
+          D:\Cyber Security\Shared Disk\Malware Development\AbleLdr\AbleLdr\src\malapi.cpp(1614,80):
+          while evaluating function 'ULONG malapi::HashStringFowlerNollVoVariant1a(LPCSTR)'
+  
+  Generating Code...
