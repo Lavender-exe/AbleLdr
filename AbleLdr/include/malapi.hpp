@@ -1911,6 +1911,27 @@ typedef HRESULT(WINAPI* typeAmsiScanBuffer)(
 	_Out_          AMSI_RESULT* result
 	);
 
+typedef HRESULT(WINAPI* typeAmsiScanString)(
+	_In_	 HAMSICONTEXT amsiContext,
+	_In_	 LPCWSTR	  string,
+	_In_	 LPCWSTR	  contentName,
+	_In_opt_ HAMSISESSION amsiSession,
+	_Out_	 AMSI_RESULT* result
+	);
+
+typedef HRESULT(WINAPI* typeAmsiInitialize)(
+	_In_ LPCWSTR	    appName,
+	_Out_ HAMSICONTEXT* amsiContext
+	);
+
+typedef void(WINAPI* typeResultIsMalware)(
+	_In_ AMSI_RESULT result
+	);
+
+typedef HRESULT(WINAPI* typeAmsiUninitialize)(
+	_In_ HAMSICONTEXT amsiContext
+	);
+
 typedef HRESULT(WINAPI* typeSetServiceStatus)(
 	_In_ SERVICE_STATUS_HANDLE hServiceStatus,
 	_In_ LPSERVICE_STATUS      lpServiceStatus
@@ -1956,12 +1977,20 @@ typedef HANDLE(WINAPI* typeCreateEventW)(
 	_In_opt_ LPCWSTR               lpName
 	);
 
+typedef BOOL(WINAPI* typeIsDebuggerPresent)();
+
+typedef BOOL(WINAPI* typeCheckRemoteDebuggerPresent)(
+	_In_	HANDLE	hProcess,
+	_Inout_ PBOOL	pbDebuggerPresent
+	);
+
 #pragma endregion
 
 #pragma region [macros]
 
 #define NT_SUCCESS(Status) ((NTSTATUS)(Status) >= 0)
 #define STATUS_SUCCESS  ((NTSTATUS)0x00000000L)
+#define x64_ret "0x3c"
 
 #define COLOUR_DEFAULT "\033[0m"
 #define COLOUR_BOLD "\033[1m"
@@ -2235,10 +2264,12 @@ namespace malapi
  //                   //
 ///////////////////////
 
-//
-// Patch ETW
-// https://github.com/Mr-Un1k0d3r/AMSI-ETW-Patch/blob/main/patch-etw-x64.c
-//
+	void PatchFunction(FARPROC function);
+
+	//
+	// Patch ETW
+	// https://github.com/Mr-Un1k0d3r/AMSI-ETW-Patch/blob/main/patch-etw-x64.c
+	//
 	BOOL PatchEtwSsn();
 
 	//
@@ -2258,6 +2289,11 @@ namespace malapi
 	// https://gist.github.com/wizardy0ga/7cadcc7484092ff25a218615005405b7
 	//
 	BOOL PatchEtwEventWrite(void);
+
+	//
+	// Patch AMSI via ScanBuffer
+	//
+	BOOL PatchAmsiScanBuffer(void);
 
 	//
 	// Get epoch timestamp (ms) from SHARED_USER_DATA
@@ -2281,6 +2317,20 @@ namespace malapi
 	// Defaults to current thread unless specified otherwise.
 	//
 	VOID HideFromDebugger(_In_ HANDLE ThreadHandle = (HANDLE)-2);
+
+	//
+	// Check if debugger is present
+	// Return TRUE if being debugged
+	//
+	BOOL IsDebuggerPresent();
+
+	//
+	// Check if the process is being debugged remotely
+	// If it is then return TRUE
+	//
+	BOOL IsRemoteDebuggerPresent(_In_ HANDLE process_handle);
+
+	VOID SelfDeleteLoader();
 
 	////////////////////////////////
    //                            //

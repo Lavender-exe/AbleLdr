@@ -160,8 +160,8 @@
     <GenerateManifest>false</GenerateManifest>
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
-    <IncludePath>$(ProjectDir)include</IncludePath>
-    <SourcePath>$(ProjectDir)src</SourcePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)include</IncludePath>
+    <SourcePath>$(VC_SourcePath);$(ProjectDir)src</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
@@ -189,23 +189,23 @@
     <GenerateManifest>false</GenerateManifest>
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
-    <IncludePath>$(ProjectDir)include</IncludePath>
-    <SourcePath>$(ProjectDir)src</SourcePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)include</IncludePath>
+    <SourcePath>$(VC_SourcePath);$(ProjectDir)src</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DllDebug|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(ProjectDir)include</IncludePath>
-    <SourcePath>$(ProjectDir)src</SourcePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)include</IncludePath>
+    <SourcePath>$(VC_SourcePath);$(ProjectDir)src</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SvcDebug|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(ProjectDir)include</IncludePath>
-    <SourcePath>$(ProjectDir)src</SourcePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)include</IncludePath>
+    <SourcePath>$(VC_SourcePath);$(ProjectDir)src</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DllRelease|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(ProjectDir)include</IncludePath>
-    <SourcePath>$(ProjectDir)src</SourcePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)include</IncludePath>
+    <SourcePath>$(VC_SourcePath);$(ProjectDir)src</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -8,24 +8,8 @@ VOID entry(void)
 {
 }
 
-BOOL APIENTRY WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
-{
-	switch (fdwReason)
-	{
-	case DLL_PROCESS_ATTACH:
-	{
-		entry();
-		break;
-	}
+#pragma region alternative entrypoint
 
-	case DLL_PROCESS_DETACH:
-	{
-		if (lpvReserved != nullptr)
-		{
-			break;
-		}
-		break;
-	}
-	}
-	return TRUE;
-}
+int main(void) { entry(); return 0; }
+
+#pragma endregion
