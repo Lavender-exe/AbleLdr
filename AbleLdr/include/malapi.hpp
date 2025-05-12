@@ -33,6 +33,54 @@ typedef struct _PEB_LDR_DATA {
 	LIST_ENTRY InMemoryOrderModuleList;
 } PEB_LDR_DATA, * PPEB_LDR_DATA;
 
+typedef struct _SECTION_IMAGE_INFORMATION
+{
+	PVOID TransferAddress;
+	ULONG ZeroBits;
+	SIZE_T MaximumStackSize;
+	SIZE_T CommittedStackSize;
+	ULONG SubSystemType;
+	union
+	{
+		struct
+		{
+			USHORT SubSystemMinorVersion;
+			USHORT SubSystemMajorVersion;
+		};
+		ULONG SubSystemVersion;
+	};
+	union
+	{
+		struct
+		{
+			USHORT MajorOperatingSystemVersion;
+			USHORT MinorOperatingSystemVersion;
+		};
+		ULONG OperatingSystemVersion;
+	};
+	USHORT ImageCharacteristics;
+	USHORT DllCharacteristics;
+	USHORT Machine;
+	BOOLEAN ImageContainsCode;
+	union
+	{
+		UCHAR ImageFlags;
+		struct
+		{
+			UCHAR ComPlusNativeReady : 1;
+			UCHAR ComPlusILOnly : 1;
+			UCHAR ImageDynamicallyRelocated : 1;
+			UCHAR ImageMappedFlat : 1;
+			UCHAR BaseBelow4gb : 1;
+			UCHAR ComPlusPrefer32bit : 1;
+			UCHAR Reserved : 2;
+		};
+	};
+	ULONG LoaderFlags;
+	ULONG ImageFileSize;
+	ULONG CheckSum;
+} SECTION_IMAGE_INFORMATION, * PSECTION_IMAGE_INFORMATION;
+
 typedef struct _RTL_USER_PROCESS_PARAMETERS {
 	ULONG                   MaximumLength;
 	ULONG                   Length;
@@ -1324,6 +1372,93 @@ typedef struct _PS_ATTRIBUTE
 	PSIZE_T ReturnLength;
 } PS_ATTRIBUTE, * PPS_ATTRIBUTE;
 
+typedef enum _PS_CREATE_STATE
+{
+	PsCreateInitialState,
+	PsCreateFailOnFileOpen,
+	PsCreateFailOnSectionCreate,
+	PsCreateFailExeFormat,
+	PsCreateFailMachineMismatch,
+	PsCreateFailExeName, // Debugger specified
+	PsCreateSuccess,
+	PsCreateMaximumStates
+} PS_CREATE_STATE;
+
+typedef struct _PS_CREATE_INFO
+{
+	SIZE_T Size;
+	PS_CREATE_STATE State;
+	union
+	{
+		// PsCreateInitialState
+		struct
+		{
+			union
+			{
+				ULONG InitFlags;
+				struct
+				{
+					UCHAR WriteOutputOnExit : 1;
+					UCHAR DetectManifest : 1;
+					UCHAR IFEOSkipDebugger : 1;
+					UCHAR IFEODoNotPropagateKeyState : 1;
+					UCHAR SpareBits1 : 4;
+					UCHAR SpareBits2 : 8;
+					USHORT ProhibitedImageCharacteristics : 16;
+				};
+			};
+			ACCESS_MASK AdditionalFileAccess;
+		} InitState;
+
+		// PsCreateFailOnSectionCreate
+		struct
+		{
+			HANDLE FileHandle;
+		} FailSection;
+
+		// PsCreateFailExeFormat
+		struct
+		{
+			USHORT DllCharacteristics;
+		} ExeFormat;
+
+		// PsCreateFailExeName
+		struct
+		{
+			HANDLE IFEOKey;
+		} ExeName;
+
+		// PsCreateSuccess
+		struct
+		{
+			union
+			{
+				ULONG OutputFlags;
+				struct
+				{
+					UCHAR ProtectedProcess : 1;
+					UCHAR AddressSpaceOverride : 1;
+					UCHAR DevOverrideEnabled : 1; // from Image File Execution Options
+					UCHAR ManifestDetected : 1;
+					UCHAR ProtectedProcessLight : 1;
+					UCHAR SpareBits1 : 3;
+					UCHAR SpareBits2 : 8;
+					USHORT SpareBits3 : 16;
+				};
+			};
+			HANDLE FileHandle;
+			HANDLE SectionHandle;
+			ULONGLONG UserProcessParametersNative;
+			ULONG UserProcessParametersWow64;
+			ULONG CurrentParameterFlags;
+			ULONGLONG PebAddressNative;
+			ULONG PebAddressWow64;
+			ULONGLONG ManifestAddress;
+			ULONG ManifestSize;
+		} SuccessState;
+	};
+} PS_CREATE_INFO, * PPS_CREATE_INFO;
+
 typedef struct _PS_ATTRIBUTE_LIST
 {
 	SIZE_T TotalLength;
@@ -1434,6 +1569,20 @@ typedef NTSTATUS(NTAPI* typeNtQueryInformationThread)(
 	_Out_opt_ PULONG ReturnLength
 	);
 
+typedef NTSTATUS(NTAPI* typeNtCreateUserProcess)(
+	_Out_ PHANDLE ProcessHandle,
+	_Out_ PHANDLE ThreadHandle,
+	_In_ ACCESS_MASK ProcessDesiredAccess,
+	_In_ ACCESS_MASK ThreadDesiredAccess,
+	_In_opt_ PCOBJECT_ATTRIBUTES ProcessObjectAttributes,
+	_In_opt_ PCOBJECT_ATTRIBUTES ThreadObjectAttributes,
+	_In_ ULONG ProcessFlags, // PROCESS_CREATE_FLAGS_*
+	_In_ ULONG ThreadFlags, // THREAD_CREATE_FLAGS_*
+	_In_opt_ PRTL_USER_PROCESS_PARAMETERS ProcessParameters,
+	_Inout_ PPS_CREATE_INFO CreateInfo,
+	_In_opt_ PPS_ATTRIBUTE_LIST AttributeList
+	);
+
 typedef NTSTATUS(NTAPI* typeNtCreateProcess)(
 	_Out_ PHANDLE ProcessHandle,
 	_In_ ACCESS_MASK DesiredAccess,
@@ -1471,6 +1620,15 @@ typedef NTSTATUS(NTAPI* typeNtCreateThreadEx)(
 	_In_opt_ PPS_ATTRIBUTE_LIST AttributeList
 	);
 
+typedef NTSTATUS(NTAPI* typeNtAllocateVirtualMemory)(
+	_In_	HANDLE ProcessHandle,
+	_Inout_ _At_(*BaseAddress, _Readable_bytes_(*RegionSize) _Writable_bytes_(*RegionSize) _Post_readable_byte_size_(*RegionSize)) PVOID* BaseAddress,
+	_In_	ULONG_PTR ZeroBits,
+	_Inout_ PSIZE_T RegionSize,
+	_In_	ULONG AllocationType,
+	_In_	ULONG PageProtection
+	);
+
 typedef NTSTATUS(NTAPI* typeNtReadVirtualMemory)(
 	_In_	  HANDLE ProcessHandle,
 	_In_opt_  PVOID BaseAddress,
@@ -1479,9 +1637,20 @@ typedef NTSTATUS(NTAPI* typeNtReadVirtualMemory)(
 	_Out_opt_ PSIZE_T NumberOfBytesRead
 	);
 
-typedef NTSTATUS(NTAPI* typeNtTerminateProcess)(
-	_In_opt_ HANDLE ProcessHandle,
-	_In_ NTSTATUS ExitStatus
+typedef NTSTATUS(NTAPI* typeNtWriteVirtualMemory)(
+	_In_		HANDLE ProcessHandle,
+	_In_opt_	PVOID BaseAddress,
+	_In_reads_bytes_(NumberOfBytesToWrite) PVOID Buffer,
+	_In_		SIZE_T NumberOfBytesToWrite,
+	_Out_opt_	PSIZE_T NumberOfBytesWritten
+	);
+
+typedef NTSTATUS(NTAPI* typeNtProtectVirtualMemory)(
+	_In_	HANDLE ProcessHandle,
+	_Inout_ PVOID* BaseAddress,
+	_Inout_ PSIZE_T RegionSize,
+	_In_	ULONG NewProtection,
+	_Out_	PULONG OldProtection
 	);
 
 typedef NTSTATUS(NTAPI* typeNtFreeVirtualMemory)(
@@ -1489,6 +1658,11 @@ typedef NTSTATUS(NTAPI* typeNtFreeVirtualMemory)(
 	_Inout_ PVOID* BaseAddress,
 	_Inout_ PSIZE_T RegionSize,
 	_In_ ULONG FreeType
+	);
+
+typedef NTSTATUS(NTAPI* typeNtTerminateProcess)(
+	_In_opt_ HANDLE ProcessHandle,
+	_In_ NTSTATUS ExitStatus
 	);
 
 typedef NTSTATUS(NTAPI* typeNtResumeProcess)(
@@ -1599,6 +1773,8 @@ typedef BOOL(WINAPI* typeReadProcessMemory)(
 	_Out_ SIZE_T* lpNumberOfBytesWritten
 	);
 
+typedef HANDLE(WINAPI* typeGetCurrentProcess)();
+
 typedef LPVOID(WINAPI* typeHeapAlloc)(
 	_In_ HANDLE hHeap,
 	_In_ DWORD dwFlags,
@@ -1631,6 +1807,46 @@ typedef HANDLE(WINAPI* typeCreateFileA)(
 	_In_opt_	HANDLE hTemplateFile
 	);
 
+typedef HANDLE(WINAPI* typeCreateFileW)(
+	_In_		LPCWSTR lpFileName,
+	_In_		DWORD dwDesiredAccess,
+	_In_		DWORD dwShareMode,
+	_In_opt_	LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+	_In_		DWORD dwCreationDisposition,
+	_In_		DWORD dwFlagsAndAttributes,
+	_In_opt_	HANDLE hTemplateFile
+	);
+
+typedef BOOL(WINAPI* typeDeleteFileA)(
+	_In_ LPCSTR lpFileName
+	);
+
+typedef BOOL(WINAPI* typeDeleteFileW)(
+	_In_ LPCWSTR lpFileName
+	);
+
+typedef BOOL(WINAPI* typeCopyFileA)(
+	_In_ LPCSTR lpExistingFileName,
+	_In_ LPCSTR lpNewFileName,
+	_In_ BOOL	 bFailIfExists
+	);
+
+typedef BOOL(WINAPI* typeCopyFileW)(
+	_In_ LPCWSTR lpExistingFileName,
+	_In_ LPCWSTR lpNewFileName,
+	_In_ BOOL	 bFailIfExists
+	);
+
+typedef BOOL(WINAPI* typeMoveFileA)(
+	_In_ LPCSTR lpExistingFileName,
+	_In_ LPCSTR lpNewFileName
+	);
+
+typedef BOOL(WINAPI* typeMoveFileW)(
+	_In_ LPCWSTR lpExistingFileName,
+	_In_ LPCWSTR lpNewFileName
+	);
+
 typedef DWORD(WINAPI* typeGetProcessId)(
 	_In_ HANDLE Process
 	);
@@ -1649,6 +1865,18 @@ typedef DWORD(WINAPI* typeGetModuleBaseNameW)(
 	_In_	 DWORD nSize
 	);
 
+typedef DWORD(WINAPI* typeGetModuleFileNameA)(
+	_In_opt_ HMODULE hModule,
+	_Out_	 LPSTR  lpFileName,
+	_In_	 DWORD   nSize
+	);
+
+typedef DWORD(WINAPI* typeGetModuleFileNameW)(
+	_In_opt_ HMODULE hModule,
+	_Out_	 LPWSTR  lpFileName,
+	_In_	 DWORD   nSize
+	);
+
 typedef HANDLE(WINAPI* typeCreateToolhelp32Snapshot)(
 	_In_ DWORD dwFlags,
 	_In_ DWORD th32ProcessID
@@ -1660,6 +1888,14 @@ typedef HANDLE(WINAPI* typeOpenProcess)(
 	_In_ DWORD dwDesiredAccess,
 	_In_ BOOL dInheritHandle,
 	_In_ DWORD dwProcessId
+	);
+
+typedef void(WINAPI* typeExitProcess)(
+	_In_ UINT uExitCode
+	);
+
+typedef BOOL(WINAPI* typeUnmapViewOfFile)(
+	_In_ LPCVOID lpBaseAddress
 	);
 
 typedef HANDLE(WINAPI* typeCreateRemoteThread)(
@@ -1984,6 +2220,33 @@ typedef BOOL(WINAPI* typeCheckRemoteDebuggerPresent)(
 	_Inout_ PBOOL	pbDebuggerPresent
 	);
 
+typedef BOOL(WINAPI* typeSetProcessMitigationPolicy)(
+	_In_ PROCESS_MITIGATION_POLICY MitigationPolicy,
+	_In_ PVOID                     lpBuffer,
+	_In_ SIZE_T                    dwLength
+	);
+
+typedef BOOL(WINAPI* typeInitializeProcThreadAttributeList)(
+	_Out_writes_bytes_to_opt_(*lpSize, *lpSize) LPPROC_THREAD_ATTRIBUTE_LIST lpAttributeList,
+	_In_ DWORD dwAttributeCount,
+	_Reserved_ DWORD dwFlags,
+	_When_(lpAttributeList == nullptr, _Out_) _When_(lpAttributeList != nullptr, _Inout_) PSIZE_T lpSize
+	);
+
+typedef void(WINAPI* typeDeleteProcThreadAttributeList)(
+	_Inout_ LPPROC_THREAD_ATTRIBUTE_LIST lpAttributeList
+	);
+
+typedef BOOL(WINAPI* typeUpdateProcThreadAttribute)(
+	_Inout_ LPPROC_THREAD_ATTRIBUTE_LIST lpAttributeList,
+	_In_	DWORD dwFlags,
+	_In_	DWORD_PTR Attribute,
+	_In_reads_bytes_opt_(cbSize) PVOID lpValue,
+	_In_	SIZE_T cbSize,
+	_Out_writes_bytes_opt_(cbSize) PVOID lpPreviousValue,
+	_In_opt_ PSIZE_T lpReturnSize
+	);
+
 #pragma endregion
 
 #pragma region [macros]
@@ -2164,6 +2427,28 @@ namespace malapi
 	//
 	BOOL IsProcessRunningAsAdmin(void);
 
+	//
+	// Uses GetProcessImageFileName to get the file path from a Process Handle
+	//
+#ifdef UNICODE
+	LPWSTR GetFilePathW(void);
+#define GetFilePath GetFilePathW
+#else
+	LPSTR GetFilePathA(void);
+#define GetFilePath GetFilePathA
+#endif
+
+	//
+	// Deletes a file using the full file path
+	//
+#ifdef UNICODE
+	BOOL DeleteFileW(LPCWSTR file_path);
+#define DeleteFile DeleteFileW
+#else
+	BOOL DeleteFileA(LPCSTR file_path);
+#define DeleteFile DeleteFileA
+#endif
+
 	///////////////////////
    //                   //
   //      Staging      //
@@ -2205,7 +2490,7 @@ namespace malapi
 	// Create Suspended Process
 	// Return ProcessHandle
 	//
-	HANDLE CreateSuspendedProcess(_In_ LPSTR file_path, _Out_ HANDLE* process_handle, _Out_ HANDLE* thread_handle);
+	BOOL CreateSuspendedProcess(_In_ LPSTR file_path, _Out_ HANDLE* process_handle, _Out_ HANDLE* thread_handle);
 
 	//
 	// Create Suspended Process
@@ -2258,6 +2543,13 @@ namespace malapi
 	//
 	BOOL InjectionQueueUserAPC(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
 
+	//
+	// Encrypted injector using Caro-Kann
+	// Original Research: https://www.r-tec.net/r-tec-blog-process-injection-avoiding-kernel-triggered-memory-scans.html
+	// Proof of Concept: https://github.com/S3cur3Th1sSh1t/Caro-Kann
+	//
+	BOOL InjectionCaroKann(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle);
+
 	///////////////////////
    //                   //
   //      Evasion      //
@@ -2270,7 +2562,7 @@ namespace malapi
 	// Patch ETW
 	// https://github.com/Mr-Un1k0d3r/AMSI-ETW-Patch/blob/main/patch-etw-x64.c
 	//
-	BOOL PatchEtwSsn();
+	BOOL PatchEtwNtTraceEvent();
 
 	//
 	// Abuse a bug to disable ETW-Ti for a target process.
@@ -2282,7 +2574,7 @@ namespace malapi
 	// Patch ETW
 	// https://github.com/Mr-Un1k0d3r/AMSI-ETW-Patch/blob/main/patch-etw-x64.c
 	//
-	BOOL PatchEtwSsn(void);
+	BOOL PatchEtwNtTraceEvent(void);
 
 	//
 	// Patch ETW via EtwEventWrite/EtwEventWriteFull
@@ -2420,23 +2712,20 @@ namespace malapi
  //                   //
 ///////////////////////
 #ifdef UNICODE
+	HANDLE CreateEventW(_In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes, _In_ BOOL bManualReset, _In_ BOOL bInitialState, _In_opt_ LPCWSTR lpName);
+	SERVICE_STATUS_HANDLE RegisterServiceCtrlHandlerW(_In_ LPCWSTR lpServiceName, _In_ LPHANDLER_FUNCTION lpHandlerProc);
+	BOOL StartServiceCtrlDispatcherW(_In_ CONST SERVICE_TABLE_ENTRYW* lpServiceStartTable);
 #define CreateEvent CreateEventW
 #define RegisterServiceCtrlHandler RegisterServiceCtrlHandlerW
 #define StartServiceCtrlDispatcher StartServiceCtrlDispatcherW
 #else
+	HANDLE CreateEventA(_In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes, _In_ BOOL bManualReset, _In_ BOOL bInitialState, _In_opt_ LPCSTR lpName);
+	SERVICE_STATUS_HANDLE RegisterServiceCtrlHandlerA(_In_ LPCSTR lpServiceName, _In_ LPHANDLER_FUNCTION lpHandlerProc);
+	BOOL StartServiceCtrlDispatcherA(_In_ CONST SERVICE_TABLE_ENTRYA* lpServiceStartTable);
 #define CreateEvent CreateEventA
 #define RegisterServiceCtrlHandler RegisterServiceCtrlHandlerA
 #define StartServiceCtrlDispatcher StartServiceCtrlDispatcherA
 #endif
-
-	HANDLE CreateEventA(_In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes, _In_ BOOL bManualReset, _In_ BOOL bInitialState, _In_opt_ LPCSTR lpName);
-	HANDLE CreateEventW(_In_opt_ LPSECURITY_ATTRIBUTES lpEventAttributes, _In_ BOOL bManualReset, _In_ BOOL bInitialState, _In_opt_ LPCWSTR lpName);
-
-	SERVICE_STATUS_HANDLE RegisterServiceCtrlHandlerA(_In_ LPCSTR lpServiceName, _In_ LPHANDLER_FUNCTION lpHandlerProc);
-	SERVICE_STATUS_HANDLE RegisterServiceCtrlHandlerW(_In_ LPCWSTR lpServiceName, _In_ LPHANDLER_FUNCTION lpHandlerProc);
-
-	BOOL StartServiceCtrlDispatcherA(_In_ CONST SERVICE_TABLE_ENTRYA* lpServiceStartTable);
-	BOOL StartServiceCtrlDispatcherW(_In_ CONST SERVICE_TABLE_ENTRYW* lpServiceStartTable);
 }
 
 #endif

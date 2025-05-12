@@ -196,6 +196,7 @@
     <GenerateManifest>false</GenerateManifest>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)include</IncludePath>
     <SourcePath>$(VC_SourcePath);$(ProjectDir)src</SourcePath>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='SvcDebug|x64'">
     <GenerateManifest>false</GenerateManifest>

